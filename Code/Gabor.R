@@ -1,7 +1,7 @@
 ########################################################################################################
-# HOG.R
+# GLCM.R
 #
-# Analysis of SAR images using histogram of oriented gradients
+# Analysis of SAR images using gray co-occurrence matrices
 #
 # Author: Eduarda Chagas
 # Date : Aug 2020
@@ -9,9 +9,18 @@
 ########################################################################################################
 
 ############################################# Packages #################################################
-if(!require(OpenImageR)) install.packages("OpenImageR")
-if(!require(gtools)) install.packages("gtools")
-if(!require(raster)) install.packages("raster")
+if(!require(gtools)){
+  install.packages("gtools")
+  require(gtools)
+}
+if(!require(raster)){
+  install.packages("raster")
+  require(raster)
+}
+if(!require(OpenImageR)){
+  install.packages("OpenImageR")
+  require(OpenImageR)
+}
 source("imagematrix.R")
 source("theory_information.R")
 
@@ -96,35 +105,48 @@ dimen.guatemala[38:40,] = c(row4[1:3], rep(128, 3), rep(cols[5], 3), rep(128, 3)
 
 ###################################### Function of Analysis ##########################################
 
-HOG.analysis <- function(){
-  hog.data = matrix(nrow = 200, ncol = 54)
+gabor.analysis <- function(){
+  gabor.data = matrix(nrow = 200, ncol = 80)
   load("../../Data/ESAR.Rdata")
+  init_gb = GaborFeatureExtract$new()
   #Guatemala
-  sar_data = raster(paste("../Data/", "guatemala", "/HHHH", ".grd", sep = ""))
+  sar_data = raster(paste("../../Data/", "Guatemala", "/HHHH", ".grd", sep = ""))
   for(j in c(1:ns.guatemala)){
     img = getValuesBlock(sar_data, row = dimen.guatemala[j,1], nrows = dimen.guatemala[j,2], col = dimen.guatemala[j,3], ncols = dimen.guatemala[j,4], format = "matrix")
-    hog.data[j,] = HOG(img, cells = 3, orientations = 6)
+    gb_f = init_gb$gabor_feature_extraction(image = img, scales = 5, orientations = 8, gabor_rows = 40,
+                                            gabor_columns = 40)
+    gb_f$gaborFeatures$energy_aptitude
+    gabor.data[j,] = gb_f$gaborFeatures$energy_aptitude
     cat("Guatemala ", j, "\n")
   }
   #Cape Canaveral - behavior 1
-  sar_data = raster(paste("../Data/", "cape", "/HHHH", ".grd", sep = ""))
+  sar_data = raster(paste("../../Data/", "Cape", "/HHHH", ".grd", sep = ""))
   for(j in c(1:ns.canaveral.behavior1)){
     img = getValuesBlock(sar_data, row = dimen.canaveral.behavior1[j,1], nrows = dimen.canaveral.behavior1[j,2], col = dimen.canaveral.behavior1[j,3], ncols = dimen.canaveral.behavior1[j,4], format = "matrix")
-    hog.data[ns.guatemala + j,] = HOG(img, cells = 3, orientations = 6)
+    gb_f = init_gb$gabor_feature_extraction(image = img, scales = 5, orientations = 8, gabor_rows = 40,
+                                            gabor_columns = 40)
+    gb_f$gaborFeatures$energy_aptitude
+    gabor.data[ns.guatemala + j,] = gb_f$gaborFeatures$energy_aptitude
     cat("Cape 1 ", j, "\n")
   }
   #Cape Canaveral - behavior 2
-  sar_data = raster(paste("../Data/", "cape", "/HHHH", ".grd", sep = ""))
+  sar_data = raster(paste("../../Data/", "Cape", "/HHHH", ".grd", sep = ""))
   for(j in c(1:ns.canaveral.behavior2)){
     img = getValuesBlock(sar_data, row = dimen.canaveral.behavior2[j,1], nrows = dimen.canaveral.behavior2[j,2], col = dimen.canaveral.behavior2[j,3], ncols = dimen.canaveral.behavior2[j,4], format = "matrix")
-    hog.data[(ns.canaveral.behavior1 + ns.guatemala) + j,] = HOG(img, cells = 3, orientations = 6)
+    gb_f = init_gb$gabor_feature_extraction(image = img, scales = 5, orientations = 8, gabor_rows = 40,
+                                            gabor_columns = 40)
+    gb_f$gaborFeatures$energy_aptitude
+    gabor.data[(ns.canaveral.behavior1 + ns.guatemala) + j,] = gb_f$gaborFeatures$energy_aptitude
     cat("Cape 2 ", j, "\n")
   }
   #Munich
-  sar_data = raster(paste("../Data/", "munich", "/HHHH", ".grd", sep = ""))
+  sar_data = raster(paste("../../Data/", "Munich", "/HHHH", ".grd", sep = ""))
   for(j in c(1:ns.munich)){
     img = getValuesBlock(sar_data, row = dimen.munich[j,1], nrows = dimen.munich[j,2], col = dimen.munich[j,3], ncols = dimen.munich[j,4], format = "matrix")
-    hog.data[(ns.canaveral.behavior1 + ns.canaveral.behavior2 + ns.guatemala) + j,] = HOG(img, cells = 3, orientations = 6)
+    gb_f = init_gb$gabor_feature_extraction(image = img, scales = 5, orientations = 8, gabor_rows = 40,
+                                            gabor_columns = 40)
+    gb_f$gaborFeatures$energy_aptitude
+    gabor.data[(ns.canaveral.behavior1 + ns.canaveral.behavior2 + ns.guatemala) + j,] = gb_f$gaborFeatures$energy_aptitude
     cat("Munich ", j, "\n")
   }
   #esar
@@ -132,10 +154,13 @@ HOG.analysis <- function(){
   HH_Int = t(HH_Int)
   for(j in c(1:ns.esar)){
     img = HH_Int[dimen.esar[j,1]:(dimen.esar[j,1] + dimen.esar[j,2]), dimen.esar[j,3]:(dimen.esar[j,3] + dimen.esar[j,4])]
-    hog.data[(ns.canaveral.behavior1 + ns.canaveral.behavior2 + ns.guatemala + ns.munich) + j, ] =  HOG(img, cells = 3, orientations = 6)
+    gb_f = init_gb$gabor_feature_extraction(image = img, scales = 5, orientations = 8, gabor_rows = 40,
+                                            gabor_columns = 40)
+    gb_f$gaborFeatures$energy_aptitude
+    gabor.data[(ns.canaveral.behavior1 + ns.canaveral.behavior2 + ns.guatemala + ns.munich) + j,] = gb_f$gaborFeatures$energy_aptitude
     cat("ESAR ", j, "\n")
   }
-  write.csv(hog.data,'../Data/HOG.csv', row.names = FALSE)
+  write.csv(gabor.data,'../Data/gabor.csv', row.names = FALSE)
 }
 
-HOG.analysis()
+gabor.analysis()

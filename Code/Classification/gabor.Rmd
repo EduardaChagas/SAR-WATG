@@ -1,7 +1,7 @@
 ---
 title: "Classification of Regions with gabor filter"
 author: "Eduarda Chagas"
-date: "March 11, 2020"
+date: "Aug 2020"
 output:
   pdf_document: default
   html_notebook: default
@@ -32,8 +32,8 @@ For this analysis, three SAR images with different regions were used, they are:
 A total of 160 samples were considered during the investigation, with 40 forest regions in Guatemala, 80 ocean regions in Cape Canaveral and 40 urban regions in the city of Munich.
 
 ```{r}
-n.total = 160
-regions = c(rep("Forest",40), rep("Sea",80), rep("Urban", 40))
+n.total = 200
+regions = c(rep("Forest",40), rep("Sea",80), rep("Urban", 40), rep("Pasture", 40))
 gabor.energy = read.csv(file="../../Data/gabor.csv", header=TRUE, sep=",")
 gabor = data.frame(gabor.energy, regions)
 
@@ -69,40 +69,6 @@ confusionMatrix(xtab)
 
 ```{r}
 knnFit
-```
-
-```{r}
-cat("Accuracy: ", Accuracy(pred, y_validation), " Recall: ", Recall(pred, y_validation), " Precision: ", Precision(pred, y_validation), " F1-Score: ", F1_Score(pred, y_validation), "\n")
-```
-
-##SVM Classifier
-
-###Creating SVM model and predicting
-
-```{r}
-svmFit <- train(regions ~., data = gabor, method = "svmRadial",
-                 trControl=ctrl,
-                 preProcess = c("center", "scale"),
-                 tuneLength = 20)
-pred = predict(svmFit, newdata = x_validation)
-
-xtab = table(pred, y_validation)
-confusionMatrix(xtab)
-```
-
-```{r}
-cat("Accuracy: ", Accuracy(pred, y_validation), " Recall: ", Recall(pred, y_validation), " Precision: ", Precision(pred, y_validation), " F1-Score: ", F1_Score(pred, y_validation), "\n")
-```
-
-##Random Forest Classifier
-
-###Creating Random Forest model and predicting
-```{r}
-rfFit <- train(regions ~., data = gabor, method = "rf", 
-               trControl = ctrl, 
-               preProcess = c("center","scale"), 
-               tuneLength = 20)
-pred = predict(rfFit, newdata = x_validation)
 ```
 
 ```{r}
