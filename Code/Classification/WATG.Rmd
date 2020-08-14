@@ -1,7 +1,7 @@
 ---
 title: "Classification of Regions with Transition Graphs"
 author: "Eduarda Chagas"
-date: "March 16, 2020"
+date: "Aug, 2020"
 output:
   pdf_document: default
   html_notebook: default
@@ -34,8 +34,8 @@ For this analysis, three SAR images with different regions were used, they are:
 A total of 160 samples were considered during the investigation, with 40 forest regions in Guatemala, 80 ocean regions in Cape Canaveral and 40 urban regions in the city of Munich.
 
 ```{r}
-n.total = 160
-regions = c(rep("Forest",40), rep("Sea",80), rep("Urban", 40))
+n.total = 200
+regions = c(rep("Forest",40), rep("Sea",80), rep("Urban", 40), rep("Pasture", 40))
 
 Entropy.Complexity = data.frame("Entropy" = numeric(n.total), 
                                 "Complexity" = numeric(n.total),

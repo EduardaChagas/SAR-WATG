@@ -14,6 +14,7 @@ if(!require(gtools)) install.packages("gtools")
 if(!require(ggplot2)) install.packages("ggplot2")
 if(!require(ggthemes)) install.packages("ggthemes")
 if(!require(ggpubr)) install.packages("ggpubr")
+if(!require(latex2exp)) install.packages("latex2exp")
 source("theory_information.R")
 
 ###################################### Function of Plot ################################################
@@ -34,7 +35,7 @@ HC.Plane.no.cota <- function(dimension, color.signal, shape.signal, signal.value
   
   Color = rainbow.colors[color.signal]
   Shape = shape.select[shape.signal]
-  Regions =  c("Forest", "Ocean", "", "Urban")[color.signal]
+  Regions =  c("Forest", "Ocean", "Urban", "Pasture")[color.signal]
   signal.values = data.frame("H" = signal.values[,1], "C" = signal.values[,2], "Color" = Color, "Shape" = Shape, "Regions" = Regions)
   
   p = cotas(dimension)
@@ -59,9 +60,9 @@ plot.BP.analysis <- function(){
     tal = 1 #Delay parameter
     plots = array(list(), 20)
     hilbertcurve = unlist(read.table("../Data/Hilbert/HilbertCurves128.txt")) + 1
-    types = c(rep(1,40), rep(2,80), rep(4, 40))
-    regions = c(rep(1,40), rep(2,80), rep(4, 40))
-    n.total = 160
+    types = c(rep(1,40), rep(2,80), rep(3, 40), rep(4, 40))
+    regions = c(rep(1,40), rep(2,80), rep(3, 40), rep(4, 40))
+    n.total = 200
     
     Entropy.Complexity.csv = read.csv(file="../Data/EntropyComplexityBPD3T1.csv", header=TRUE, sep=",")
     Entropy.Complexity = matrix(nrow = n.total, ncol = 2)
@@ -73,9 +74,9 @@ plot.BP.analysis <- function(){
     return(plot.BP)
 }
 
-pdf("BP.pdf", width = 10, height = 8) 
+#pdf("BP.pdf", width = 10, height = 8) 
 plot.BP = plot.BP.analysis()
-dev.off() 
+#dev.off() 
 
 pdf("HCAnalysis.pdf", width = 18, height = 5) 
 ggarrange(plot.BP, plot.TG, plot.WATG,

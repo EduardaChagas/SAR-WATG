@@ -35,7 +35,7 @@ HC.Plane.zoom <- function(dimension, color.signal, shape.signal, signal.values, 
   
   Color = rainbow.colors[color.signal]
   Shape = shape.select[shape.signal]
-  Regions =  c("Forest", "Ocean", "", "Urban")[color.signal]
+  Regions =  c("Forest", "Ocean", "Urban", "Pasture")[color.signal]
   signal.values = data.frame("H" = signal.values[,1], "C" = signal.values[,2], "Color" = Color, "Shape" = Shape, "Regions" = Regions)
   
   p = cotas(dimension)
@@ -73,7 +73,7 @@ HC.Plane.no.cota <- function(dimension, color.signal, shape.signal, signal.value
   
   Color = rainbow.colors[color.signal]
   Shape = shape.select[shape.signal]
-  Regions =  c("Forest", "Ocean", "", "Urban")[color.signal]
+  Regions =  c("Forest", "Ocean", "Urban", "Pasture")[color.signal]
   signal.values = data.frame("H" = signal.values[,1], "C" = signal.values[,2], "Color" = Color, "Shape" = Shape, "Regions" = Regions)
   
   p = cotas(factorial(dimension)^2)
@@ -106,7 +106,7 @@ HC.Plane.cota <- function(dimension, color.signal, shape.signal, signal.values){
   Color = rainbow.colors[color.signal]
   Shape = shape.select[shape.signal]
   Texture = color.signal
-  Regions =  c("Forest", "Ocean", "", "Urban")[color.signal]
+  Regions =  c("Forest", "Ocean", "Urban", "Pasture")[color.signal]
   signal.values <- data.frame("H" = signal.values[,1], "C" = signal.values[,2], "Color" = Color, "Shape" = Shape, "Regions" = Regions)
   p = cotas(factorial(dimension)^2)
   p = p + 
@@ -125,39 +125,34 @@ plot.transition.graph.analysis <- function(){
   tal = c(1,2,3,4,5) #Delay parameter
   plots = array(list(), 20)
   hilbertcurve = unlist(read.table("../Data/Hilbert/HilbertCurves128.txt")) + 1
-  types = c(rep(1,40), rep(2,80), rep(4, 40))
-  regions = c(rep(1,40), rep(2,80), rep(4, 40))
-  n.total = 160
-  a = b = 0
+  types = c(rep(1,40), rep(2,80), rep(3, 40), rep(4, 40))
+  regions = c(rep(1,40), rep(2,80), rep(3, 40), rep(4, 40))
+  n.total = 200
+  a = 1
   
-  Entropy.Complexity.csv = read.csv(file="../Data/EntropyComplexityWATG.csv", header=TRUE, sep=",")
-  
-  for(i in 1:(length(n)*length(tal))){
-    
-    horizontal = vertical = 0
-    if(i == 1 || i == 6 || i == 11){
-      horizontal = 1
-    }else if(i == 16){
-      horizontal = vertical = 1
-    }else if(i == 17 || i == 18 || i == 19 || i == 20){
-      vertical = 1
-    }else{
+  for(d in n){
+    for(t in tal){
+      Entropy.Complexity.csv = read.csv(paste('../Data/EntropyComplexityWATGD', d, 'T', t, '.csv', sep = ""))
+      
       horizontal = vertical = 0
-    }
-    
-    if(i%%5 == 1){
+      if(t == 1 && (d == 3 || d == 4 || d == 5)){
+        horizontal = 1
+      }else if(t == 1 && d == 6){
+        horizontal = vertical = 1
+      }else if(d == 6 && (t == 2 || t == 3 || t == 4 || t == 5)){
+        vertical = 1
+      }else{
+        horizontal = vertical = 0
+      }
+      
+      cat("- Plane: ", a, "de 20 ", "\n")
+      Entropy.Complexity = matrix(nrow = n.total, ncol = 2)
+      
+      Entropy.Complexity[,1] = Entropy.Complexity.csv[, 1]
+      Entropy.Complexity[,2] = Entropy.Complexity.csv[, 2]
+      plots[[a]] = HC.Plane.zoom(factorial(d)^2, regions, types, Entropy.Complexity, horizontal, vertical, d, t)
       a = a + 1
-      b = 0
     }
-    b = b + 1
-    
-    cat("- Plane: ", i, "de 20 ", "\n")
-    Entropy.Complexity = matrix(nrow = n.total, ncol = 2)
-    
-    Entropy.Complexity[,1] = Entropy.Complexity.csv[((n.total*(i-1))+1):(n.total*i), 1]
-    Entropy.Complexity[,2] = Entropy.Complexity.csv[((n.total*(i-1))+1):(n.total*i), 2]
-    
-    plots[[i]] = HC.Plane.zoom(factorial(n[a])^2, regions, types, Entropy.Complexity, horizontal, vertical, n[a], tal[b])
   }
   
   p = ggarrange(plots[[1]], plots[[2]], plots[[3]], plots[[4]], plots[[5]],
@@ -178,26 +173,22 @@ plot.d3t1 <- function(){
   n = 3 #Dimension parameter
   tal = 1 #Delay parameter
   hilbertcurve = unlist(read.table("../Data/Hilbert/HilbertCurves128.txt")) + 1
-  types = c(rep(1,40), rep(2,80), rep(4, 40))
-  regions = c(rep(1,40), rep(2,80), rep(4, 40))
-  n.total = 160
+  types = c(rep(1,40), rep(2,80), rep(3, 40), rep(4, 40))
+  regions = c(rep(1,40), rep(2,80), rep(3, 40), rep(4, 40))
+  n.total = 200
   
-  Entropy.Complexity.csv = read.csv(file="../Data/EntropyComplexityWATG.csv", header=TRUE, sep=",")
-  Entropy.Complexity = matrix(nrow = n.total, ncol = 2)
-    
-  Entropy.Complexity[,1] = Entropy.Complexity.csv[1:160, 1]
-  Entropy.Complexity[,2] = Entropy.Complexity.csv[1:160, 2]
+  Entropy.Complexity = read.csv(file="../Data/EntropyComplexityWATGD3T1.csv", header=TRUE, sep=",")
     
   plot.WATG = HC.Plane.no.cota(n, regions, types, Entropy.Complexity) + ggtitle(expression(italic("WATG"))) 
   return(plot.WATG)
   
 }
 
-pdf("WATG.pdf", width = 10, height = 8) 
-plot.WATG = plot.d3t1()
-dev.off() 
+#pdf("WATG.pdf", width = 10, height = 8) 
+#plot.WATG = plot.d3t1()
+#dev.off() 
 
-#p = plot.transition.graph.analysis()
-#pdf("WATGHC.pdf", width = 24, height = 15)
-#p
-#dev.off()
+p = plot.transition.graph.analysis()
+pdf("WATGHC.pdf", width = 24, height = 15)
+p
+dev.off()
