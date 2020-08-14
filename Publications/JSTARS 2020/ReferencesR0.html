@@ -1,0 +1,1209 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>JabRef references</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<script type="text/javascript">
+<!--
+// QuickSearch script for JabRef HTML export 
+// Version: 3.0
+//
+// Copyright (c) 2006-2011, Mark Schenk
+//
+// This software is distributed under a Creative Commons Attribution 3.0 License
+// http://creativecommons.org/licenses/by/3.0/
+//
+// Features:
+// - intuitive find-as-you-type searching
+//    ~ case insensitive
+//    ~ ignore diacritics (optional)
+//
+// - search with/without Regular Expressions
+// - match BibTeX key
+//
+
+// Search settings
+var searchAbstract = true;	// search in abstract
+var searchComment = true;	// search in comment
+
+var noSquiggles = true; 	// ignore diacritics when searching
+var searchRegExp = false; 	// enable RegExp searches
+
+
+if (window.addEventListener) {
+	window.addEventListener("load",initSearch,false); }
+else if (window.attachEvent) {
+	window.attachEvent("onload", initSearch); }
+
+function initSearch() {
+	// check for quick search table and searchfield
+	if (!document.getElementById('qs_table')||!document.getElementById('quicksearch')) { return; }
+
+	// load all the rows and sort into arrays
+	loadTableData();
+	
+	//find the query field
+	qsfield = document.getElementById('qs_field');
+
+	// previous search term; used for speed optimisation
+	prevSearch = '';
+
+	//find statistics location
+	stats = document.getElementById('stat');
+	setStatistics(-1);
+	
+	// set up preferences
+	initPreferences();
+
+	// shows the searchfield
+	document.getElementById('quicksearch').style.display = 'block';
+	document.getElementById('qs_field').onkeyup = quickSearch;
+}
+
+function loadTableData() {
+	// find table and appropriate rows
+	searchTable = document.getElementById('qs_table');
+	var allRows = searchTable.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+
+	// split all rows into entryRows and infoRows (e.g. abstract, comment, bibtex)
+	entryRows = new Array(); infoRows = new Array(); absRows = new Array(); revRows = new Array();
+
+	// get data from each row
+	entryRowsData = new Array(); absRowsData = new Array(); revRowsData = new Array(); 
+	
+	BibTeXKeys = new Array();
+	
+	for (var i=0, k=0, j=0; i<allRows.length;i++) {
+		if (allRows[i].className.match(/entry/)) {
+			entryRows[j] = allRows[i];
+			entryRowsData[j] = stripDiacritics(getTextContent(allRows[i]));
+			allRows[i].id ? BibTeXKeys[j] = allRows[i].id : allRows[i].id = 'autokey_'+j;
+			j ++;
+		} else {
+			infoRows[k++] = allRows[i];
+			// check for abstract/comment
+			if (allRows[i].className.match(/abstract/)) {
+				absRows.push(allRows[i]);
+				absRowsData[j-1] = stripDiacritics(getTextContent(allRows[i]));
+			} else if (allRows[i].className.match(/comment/)) {
+				revRows.push(allRows[i]);
+				revRowsData[j-1] = stripDiacritics(getTextContent(allRows[i]));
+			}
+		}
+	}
+	//number of entries and rows
+	numEntries = entryRows.length;
+	numInfo = infoRows.length;
+	numAbs = absRows.length;
+	numRev = revRows.length;
+}
+
+function quickSearch(){
+	
+	tInput = qsfield;
+
+	if (tInput.value.length == 0) {
+		showAll();
+		setStatistics(-1);
+		qsfield.className = '';
+		return;
+	} else {
+		t = stripDiacritics(tInput.value);
+
+		if(!searchRegExp) { t = escapeRegExp(t); }
+			
+		// only search for valid RegExp
+		try {
+			textRegExp = new RegExp(t,"i");
+			closeAllInfo();
+			qsfield.className = '';
+		}
+			catch(err) {
+			prevSearch = tInput.value;
+			qsfield.className = 'invalidsearch';
+			return;
+		}
+	}
+	
+	// count number of hits
+	var hits = 0;
+
+	// start looping through all entry rows
+	for (var i = 0; cRow = entryRows[i]; i++){
+
+		// only show search the cells if it isn't already hidden OR if the search term is getting shorter, then search all
+		if(cRow.className.indexOf('noshow')==-1 || tInput.value.length <= prevSearch.length){
+			var found = false; 
+
+			if (entryRowsData[i].search(textRegExp) != -1 || BibTeXKeys[i].search(textRegExp) != -1){ 
+				found = true;
+			} else {
+				if(searchAbstract && absRowsData[i]!=undefined) {
+					if (absRowsData[i].search(textRegExp) != -1){ found=true; } 
+				}
+				if(searchComment && revRowsData[i]!=undefined) {
+					if (revRowsData[i].search(textRegExp) != -1){ found=true; } 
+				}
+			}
+			
+			if (found){
+				cRow.className = 'entry show';
+				hits++;
+			} else {
+				cRow.className = 'entry noshow';
+			}
+		}
+	}
+
+	// update statistics
+	setStatistics(hits)
+	
+	// set previous search value
+	prevSearch = tInput.value;
+}
+
+
+// Strip Diacritics from text
+// http://stackoverflow.com/questions/990904/javascript-remove-accents-in-strings
+
+// String containing replacement characters for stripping accents 
+var stripstring = 
+    'AAAAAAACEEEEIIII'+
+    'DNOOOOO.OUUUUY..'+
+    'aaaaaaaceeeeiiii'+
+    'dnooooo.ouuuuy.y'+
+    'AaAaAaCcCcCcCcDd'+
+    'DdEeEeEeEeEeGgGg'+
+    'GgGgHhHhIiIiIiIi'+
+    'IiIiJjKkkLlLlLlL'+
+    'lJlNnNnNnnNnOoOo'+
+    'OoOoRrRrRrSsSsSs'+
+    'SsTtTtTtUuUuUuUu'+
+    'UuUuWwYyYZzZzZz.';
+
+function stripDiacritics(str){
+
+    if(noSquiggles==false){
+        return str;
+    }
+
+    var answer='';
+    for(var i=0;i<str.length;i++){
+        var ch=str[i];
+        var chindex=ch.charCodeAt(0)-192;   // Index of character code in the strip string
+        if(chindex>=0 && chindex<stripstring.length){
+            // Character is within our table, so we can strip the accent...
+            var outch=stripstring.charAt(chindex);
+            // ...unless it was shown as a '.'
+            if(outch!='.')ch=outch;
+        }
+        answer+=ch;
+    }
+    return answer;
+}
+
+// http://stackoverflow.com/questions/3446170/escape-string-for-use-in-javascript-regex
+// NOTE: must escape every \ in the export code because of the JabRef Export...
+function escapeRegExp(str) {
+  return str.replace(/[-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+}
+
+function toggleInfo(articleid,info) {
+
+	var entry = document.getElementById(articleid);
+	var abs = document.getElementById('abs_'+articleid);
+	var rev = document.getElementById('rev_'+articleid);
+	var bib = document.getElementById('bib_'+articleid);
+	
+	if (abs && info == 'abstract') {
+		abs.className.indexOf('noshow') == -1?abs.className = 'abstract noshow':abs.className = 'abstract show';
+	} else if (rev && info == 'comment') {
+		rev.className.indexOf('noshow') == -1?rev.className = 'comment noshow':rev.className = 'comment show';
+	} else if (bib && info == 'bibtex') {
+		bib.className.indexOf('noshow') == -1?bib.className = 'bibtex noshow':bib.className = 'bibtex show';
+	} else { 
+		return;
+	}
+
+	// check if one or the other is available
+	var revshow; var absshow; var bibshow;
+	(abs && abs.className.indexOf('noshow') == -1)? absshow = true: absshow = false;
+	(rev && rev.className.indexOf('noshow') == -1)? revshow = true: revshow = false;	
+	(bib && bib.className.indexOf('noshow') == -1)? bibshow = true: bibshow = false;
+	
+	// highlight original entry
+	if(entry) {
+		if (revshow || absshow || bibshow) {
+		entry.className = 'entry highlight show';
+		} else {
+		entry.className = 'entry show';
+		}
+	}
+	
+	// When there's a combination of abstract/comment/bibtex showing, need to add class for correct styling
+	if(absshow) {
+		(revshow||bibshow)?abs.className = 'abstract nextshow':abs.className = 'abstract';
+	} 
+	if (revshow) {
+		bibshow?rev.className = 'comment nextshow': rev.className = 'comment';
+	}	
+	
+}
+
+function setStatistics (hits) {
+	if(hits < 0) { hits=numEntries; }
+	if(stats) { stats.firstChild.data = hits + '/' + numEntries}
+}
+
+function getTextContent(node) {
+	// Function written by Arve Bersvendsen
+	// http://www.virtuelvis.com
+	
+	if (node.nodeType == 3) {
+	return node.nodeValue;
+	} // text node
+	if (node.nodeType == 1 && node.className != "infolinks") { // element node
+	var text = [];
+	for (var chld = node.firstChild;chld;chld=chld.nextSibling) {
+		text.push(getTextContent(chld));
+	}
+	return text.join("");
+	} return ""; // some other node, won't contain text nodes.
+}
+
+function showAll(){
+	closeAllInfo();
+	for (var i = 0; i < numEntries; i++){ entryRows[i].className = 'entry show'; }
+}
+
+function closeAllInfo(){
+	for (var i=0; i < numInfo; i++){
+		if (infoRows[i].className.indexOf('noshow') ==-1) {
+			infoRows[i].className = infoRows[i].className + ' noshow';
+		}
+	}
+}
+
+function clearQS() {
+	qsfield.value = '';
+	showAll();
+}
+
+function redoQS(){
+	showAll();
+	quickSearch(qsfield);
+}
+
+function updateSetting(obj){
+	var option = obj.id;
+	var checked = obj.value;
+
+	switch(option)
+	 {
+	 case "opt_searchAbs":
+	   searchAbstract=!searchAbstract;
+	   redoQS();
+	   break;
+	 case "opt_searchRev":
+	   searchComment=!searchComment;
+	   redoQS();
+	   break;
+	 case "opt_useRegExp":
+	   searchRegExp=!searchRegExp;
+	   redoQS();
+	   break;
+	 case "opt_noAccents":
+	   noSquiggles=!noSquiggles;
+	   loadTableData();
+	   redoQS();
+	   break;
+	 }
+}
+
+function initPreferences(){
+	if(searchAbstract){document.getElementById("opt_searchAbs").checked = true;}
+	if(searchComment){document.getElementById("opt_searchRev").checked = true;}
+	if(noSquiggles){document.getElementById("opt_noAccents").checked = true;}
+	if(searchRegExp){document.getElementById("opt_useRegExp").checked = true;}
+	
+	if(numAbs==0) {document.getElementById("opt_searchAbs").parentNode.style.display = 'none';}
+	if(numRev==0) {document.getElementById("opt_searchRev").parentNode.style.display = 'none';}
+}
+
+function toggleSettings(){
+	var togglebutton = document.getElementById('showsettings');
+	var settings = document.getElementById('settings');
+	
+	if(settings.className == "hidden"){
+		settings.className = "show";
+		togglebutton.innerText = "close settings";
+		togglebutton.textContent = "close settings";
+	}else{
+		settings.className = "hidden";
+		togglebutton.innerText = "settings...";		
+		togglebutton.textContent = "settings...";
+	}
+}
+
+-->
+</script>
+<style type="text/css">
+body { background-color: white; font-family: Arial, sans-serif; font-size: 13px; line-height: 1.2; padding: 1em; color: #2E2E2E; margin: auto 2em; }
+
+form#quicksearch { width: auto; border-style: solid; border-color: gray; border-width: 1px 0px; padding: 0.7em 0.5em; display:none; position:relative; }
+span#searchstat {padding-left: 1em;}
+
+div#settings { margin-top:0.7em; /* border-bottom: 1px transparent solid; background-color: #efefef; border: 1px grey solid; */ }
+div#settings ul {margin: 0; padding: 0; }
+div#settings li {margin: 0; padding: 0 1em 0 0; display: inline; list-style: none; }
+div#settings li + li { border-left: 2px #efefef solid; padding-left: 0.5em;}
+div#settings input { margin-bottom: 0px;}
+
+div#settings.hidden {display:none;}
+
+#showsettings { border: 1px grey solid; padding: 0 0.5em; float:right; line-height: 1.6em; text-align: right; }
+#showsettings:hover { cursor: pointer; }
+
+.invalidsearch { background-color: red; }
+input[type="button"] { background-color: #efefef; border: 1px #2E2E2E solid;}
+
+table { width: 100%; empty-cells: show; border-spacing: 0em 0.2em; margin: 1em 0em; border-style: none; }
+th, td { border: 1px gray solid; border-width: 1px 1px; padding: 0.5em; vertical-align: top; text-align: left; }
+th { background-color: #efefef; }
+td + td, th + th { border-left: none; }
+
+td a { color: navy; text-decoration: none; }
+td a:hover  { text-decoration: underline; }
+
+tr.noshow { display: none;}
+tr.highlight td { background-color: #EFEFEF; border-top: 2px #2E2E2E solid; font-weight: bold; }
+tr.abstract td, tr.comment td, tr.bibtex td { background-color: #EFEFEF; text-align: justify; border-bottom: 2px #2E2E2E solid; }
+tr.nextshow td { border-bottom: 1px gray solid; }
+
+tr.bibtex pre { width: 100%; overflow: auto; white-space: pre-wrap;}
+p.infolinks { margin: 0.3em 0em 0em 0em; padding: 0px; }
+
+@media print {
+	p.infolinks, #qs_settings, #quicksearch, t.bibtex { display: none !important; }
+	tr { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+
+<form action="" id="quicksearch">
+<input type="text" id="qs_field" autocomplete="off" placeholder="Type to search..." /> <input type="button" onclick="clearQS()" value="clear" />
+<span id="searchstat">Matching entries: <span id="stat">0</span></span>
+<div id="showsettings" onclick="toggleSettings()">settings...</div>
+<div id="settings" class="hidden">
+<ul>
+<li><input type="checkbox" class="search_setting" id="opt_searchAbs" onchange="updateSetting(this)"><label for="opt_searchAbs"> include abstract</label></li>
+<li><input type="checkbox" class="search_setting" id="opt_searchRev" onchange="updateSetting(this)"><label for="opt_searchRev"> include comment</label></li>
+<li><input type="checkbox" class="search_setting" id="opt_useRegExp" onchange="updateSetting(this)"><label for="opt_useRegExp"> use RegExp</label></li>
+<li><input type="checkbox" class="search_setting" id="opt_noAccents" onchange="updateSetting(this)"><label for="opt_noAccents"> ignore accents</label></li>
+</ul>
+</div>
+</form>
+<table id="qs_table" border="1">
+<thead><tr><th width="20%">Author</th><th width="30%">Title</th><th width="5%">Year</th><th width="30%">Journal/Proceedings</th><th width="10%">Reftype</th><th width="5%">DOI/URL</th></tr></thead>
+<tbody><tr id="Yue2020Gaussian" class="entry">
+	<td>Yue, D.-X., Xu, F., Frery, A.C. and Jin, Y.-Q.</td>
+	<td>A Generalized Gaussian Coherent Scatterer Model for Correlated SAR Texture <p class="infolinks">[<a href="javascript:toggleInfo('Yue2020Gaussian','abstract')">Abstract</a>] [<a href="javascript:toggleInfo('Yue2020Gaussian','bibtex')">BibTeX</a>]</p></td>
+	<td>2020</td>
+	<td>IEEE Trans. Geosci. Remote Sens.<br/>Vol. 58(4), pp. 2947-2964&nbsp;</td>
+	<td>article</td>
+	<td><a href="https://doi.org/10.1109/TGRS.2019.2958125">DOI</a> &nbsp;</td>
+</tr>
+<tr id="abs_Yue2020Gaussian" class="abstract noshow">
+	<td colspan="6"><b>Abstract</b>: This article proposes a generalized modeling and simulation approach for correlated synthetic aperture radar (SAR) texture based on the Gaussian coherent scatterer model. It is rooted in the physics-based coherent scatterer assumption where each observation in an SAR image is a coherent sum of multiple underlying Gaussian scatterers. The proposal generalizes existing single-point statistical models by allowing the number of scatterers to be a correlated random field. It can also generate the desired spatial correlation texture by stipulating the structure in both the Gaussian scattered field and the number of scatterers. This generalized model is derived theoretically and then validated by both simulations and experiments with SAR data from actual sensors.</td>
+</tr>
+<tr id="bib_Yue2020Gaussian" class="bibtex noshow">
+<td colspan="6"><b>BibTeX</b>:
+<pre>
+@article{Yue2020Gaussian,
+  author = {D.-X. Yue and F. Xu and A. C. Frery and Y.-Q. Jin},
+  title = {A Generalized Gaussian Coherent Scatterer Model for Correlated SAR Texture},
+  journal = {IEEE Trans. Geosci. Remote Sens.},
+  year = {2020},
+  volume = {58},
+  number = {4},
+  pages = {2947--2964},
+  doi = {https://doi.org/10.1109/TGRS.2019.2958125}
+}
+</pre></td>
+</tr>
+<tr id="kankaku2013alos" class="entry">
+	<td>Kankaku, Y., Suzuki, S. and Osawa, Y.</td>
+	<td>ALOS-2 mission and development status <p class="infolinks">[<a href="javascript:toggleInfo('kankaku2013alos','abstract')">Abstract</a>] [<a href="javascript:toggleInfo('kankaku2013alos','bibtex')">BibTeX</a>]</p></td>
+	<td>2013</td>
+	<td>IGARSS 2013 -- IEEE International Geoscience and Remote Sensing Symposium, pp. 2396-2399&nbsp;</td>
+	<td>inproceedings</td>
+	<td><a href="https://doi.org/10.1109/IGARSS.2013.6723302">DOI</a> &nbsp;</td>
+</tr>
+<tr id="abs_kankaku2013alos" class="abstract noshow">
+	<td colspan="6"><b>Abstract</b>: JAXA is developing the Advanced Land Observing Satellite-2 (ALOS-2) carrying the state of the art L-band SAR named PALSAR-2. ALOS-2 mission is the follow-on of ALOS “Daichi” mission and PALSAR-2 succeeds to PALSAR onboard ALOS. PALSAR contributed to domestic and international disaster management activities by its interferometric application (InSAR). Compared to the PALSAR, higher spatial resolution, better NESZ (Noise Equivalent Sigma Zero) and better S/A (Signal to Ambiguity ratio) are required for PALSAR-2. In order to meet these requirements, JAXA introduced several improvements such as maximum bandwidth observation for PALSAR-2, spotlight mode with Active Phased Array Antenna, high power efficiency device, chirp modulation technique and dual receiving antenna system. In addition, very accurate orbit control and short repeat-pass orbit (14 days) will give higher coherence of interferometry.</td>
+</tr>
+<tr id="bib_kankaku2013alos" class="bibtex noshow">
+<td colspan="6"><b>BibTeX</b>:
+<pre>
+@inproceedings{kankaku2013alos,
+  author = {Kankaku, Yukihiro and Suzuki, Shinichi and Osawa, Yuji},
+  title = {ALOS-2 mission and development status},
+  booktitle = {IGARSS 2013 -- IEEE International Geoscience and Remote Sensing Symposium},
+  year = {2013},
+  pages = {2396--2399},
+  doi = {https://doi.org/10.1109/IGARSS.2013.6723302}
+}
+</pre></td>
+</tr>
+<tr id="azami2016amplitude" class="entry">
+	<td>Azami, H. and Escudero, J.</td>
+	<td>Amplitude-aware permutation entropy: Illustration in spike detection and signal segmentation <p class="infolinks">[<a href="javascript:toggleInfo('azami2016amplitude','abstract')">Abstract</a>] [<a href="javascript:toggleInfo('azami2016amplitude','bibtex')">BibTeX</a>]</p></td>
+	<td>2016</td>
+	<td>Comput. Methods Programs Biomed.<br/>Vol. 128, pp. 40-51&nbsp;</td>
+	<td>article</td>
+	<td><a href="https://doi.org/10.1016/j.cmpb.2016.02.008">DOI</a> &nbsp;</td>
+</tr>
+<tr id="abs_azami2016amplitude" class="abstract noshow">
+	<td colspan="6"><b>Abstract</b>: Background and objective: Signal segmentation and spike detection are two important biomedical signal processing applications. Often, non-stationary signals must be segmented into piece-wise stationary epochs or spikes need to be found among a background of noise before being further analyzed. Permutation entropy (PE) has been proposed to evaluate the irregularity of a time series. PE is conceptually simple, structurally robust to artifacts, and computationally fast. It has been extensively used in many applications, but it has two key shortcomings. First, when a signal is symbolized using the Bandt-Pompe procedure, only the order of the amplitude values is considered and information regarding the amplitudes is discarded. Second, in the PE, the effect of equal amplitude values in each embedded vector is not addressed. To address these issues, we propose a new entropy measure based on PE: the amplitude-aware permutation entropy (AAPE). Methods: AAPE is sensitive to the changes in the amplitude, in addition to the frequency, of the signals thanks to it being more flexible than the classical PE in the quantification of the signal motifs. To demonstrate how the AAPE method can enhance the quality of the signal segmentation and spike detection, a set of synthetic and realistic synthetic neuronal signals, electroencephalograms and neuronal data are processed. We compare the performance of AAPE in these problems against state-of-the-art approaches and evaluate the significance of the differences with a repeated ANOVA with post hoc Tukey's test. Results: In signal segmentation, the accuracy of AAPE-based method is higher than conventional segmentation methods. AAPE also leads to more robust results in the presence of noise. The spike detection results show that AAPE can detect spikes well, even when presented with single-sample spikes, unlike PE. For multi-sample spikes, the changes in AAPE are larger than in PE. Conclusion: We introduce a new entropy metric, AAPE, that enables us to consider amplitude information in the formulation of PE. The AAPE algorithm can be used in almost every irregularity-based application in various signal and image processing fields. We also made freely available the Matlab code of the AAPE.</td>
+</tr>
+<tr id="bib_azami2016amplitude" class="bibtex noshow">
+<td colspan="6"><b>BibTeX</b>:
+<pre>
+@article{azami2016amplitude,
+  author = {Azami, Hamed and Escudero, Javier},
+  title = {Amplitude-aware permutation entropy: Illustration in spike detection and signal segmentation},
+  journal = {Comput. Methods Programs Biomed.},
+  publisher = {Elsevier},
+  year = {2016},
+  volume = {128},
+  pages = {40--51},
+  doi = {https://doi.org/10.1016/j.cmpb.2016.02.008}
+}
+</pre></td>
+</tr>
+<tr id="morena2004introduction" class="entry">
+	<td>Morena, L., James, K. and Beck, J.</td>
+	<td>An introduction to the RADARSAT-2 mission <p class="infolinks">[<a href="javascript:toggleInfo('morena2004introduction','abstract')">Abstract</a>] [<a href="javascript:toggleInfo('morena2004introduction','bibtex')">BibTeX</a>]</p></td>
+	<td>2004</td>
+	<td>Canadian Journal of Remote Sensing<br/>Vol. 30(3), pp. 221-234&nbsp;</td>
+	<td>article</td>
+	<td><a href="https://doi.org/10.5589/m04-004">DOI</a> &nbsp;</td>
+</tr>
+<tr id="abs_morena2004introduction" class="abstract noshow">
+	<td colspan="6"><b>Abstract</b>: The RADARSAT-2 mission comprises the construction, launch, and operation of Canada's second synthetic aperture radar earth observation spacecraft and the establishment of ground infrastructure to support the spacecraft and the data users. The RADARSAT-2 mission is being implemented in a partnership arrangement between government and private industry and will be operated and commercialized by industry. This paper provides an introduction to RADARSAT-2 and the overall context for the mission, including the background, an overview of the major operating parameters, and a description of the major elements and events in the mission. Other papers in this special issue provide details on the design of the spacecraft, the ground segment, applications, and other aspects.</td>
+</tr>
+<tr id="bib_morena2004introduction" class="bibtex noshow">
+<td colspan="6"><b>BibTeX</b>:
+<pre>
+@article{morena2004introduction,
+  author = {Morena, LC and James, KV and Beck, J},
+  title = {An introduction to the RADARSAT-2 mission},
+  journal = {Canadian Journal of Remote Sensing},
+  publisher = {Taylor &amp; Francis},
+  year = {2004},
+  volume = {30},
+  number = {3},
+  pages = {221--234},
+  doi = {https://doi.org/10.5589/m04-004}
+}
+</pre></td>
+</tr>
+<tr id="zhu2016antarctic" class="entry">
+	<td>Zhu, T., Li, F., Heygster, G. and Zhang, S.</td>
+	<td>Antarctic Sea-Ice Classification Based on Conditional Random Fields From RADARSAT-2 Dual-Polarization Satellite Images <p class="infolinks">[<a href="javascript:toggleInfo('zhu2016antarctic','abstract')">Abstract</a>] [<a href="javascript:toggleInfo('zhu2016antarctic','bibtex')">BibTeX</a>]</p></td>
+	<td>2016</td>
+	<td>IEEE J. Sel. Topics Appl. Earth Observ. Remote Sens.<br/>Vol. 9(6), pp. 2451-2467&nbsp;</td>
+	<td>article</td>
+	<td><a href="https://doi.org/10.1109/JSTARS.2016.2551318">DOI</a> &nbsp;</td>
+</tr>
+<tr id="abs_zhu2016antarctic" class="abstract noshow">
+	<td colspan="6"><b>Abstract</b>: In January 2014, Chinese National Antarctic Research Expedition (CHINARE) 30th cruise raised public concern since the Xuelong, the Chinese polar research vessel, was trapped in the sea-ice zone (66°39'20.88"S, 144°25'2.28"E) in the vicinity of the Adélie Depression area on the east Antarctic continent. This event highlighted the importance of an operational sea-ice classification map for ice routing to serve ship navigation. In this paper, unprecedented Antarctic sea-ice classification algorithms from RADARSAT-2 satellite dual-polarization synthetic aperture radar (SAR) images were developed using the conditional random fields (CRF) approach by including multiple features from sea-ice concentration, gray-level cooccurrence matrix textures, polarization ratio, backscatter coefficients, and intensity data. Coincident RADARSAT-2 Satellite SAR datasets with five scenes were collected for ice classification into categories such as open water, thin ice, smooth first year ice, deformed first year ice, and old ice during the CHINARE-30th cruise. The effects of deformation, rafting, and ridging during the spring-summer transition period were overwhelmed by the spatial and contextual CRF models in combination with the rich features extracted for sea-ice classification. Four strategies including statistical distribution and region connection, multiple features and support vector machine (SVM) integrated into the CRF model are proposed to describe the sea-ice-type relationships among pixels. By conducting comparative experiments between the proposed methods and state-of-the-art sea-ice classification based on the SVM algorithm, the best was obtained from the SVM-based CRF (SVM-CRF) algorithm for sea-ice classification with respect to the three scenes from the Indian Ocean sector and two scenes of Pacific Ocean sectors including medium-resolution dual-polarization SAR imagery with a pixel spacing of 50 m and higher resolution dual-polarization SAR imagery with a pixel spacing of 6.25 m. Results indicate that the SVM-CRF approach has the capacity for improving sea-ice classification, which can provide accurate and reliable sea-ice class information for sea-ice analysis.</td>
+</tr>
+<tr id="bib_zhu2016antarctic" class="bibtex noshow">
+<td colspan="6"><b>BibTeX</b>:
+<pre>
+@article{zhu2016antarctic,
+  author = {Zhu, Tingting and Li, Fei and Heygster, Georg and Zhang, Shengkai},
+  title = {Antarctic Sea-Ice Classification Based on Conditional Random Fields From RADARSAT-2 Dual-Polarization Satellite Images},
+  journal = {IEEE J. Sel. Topics Appl. Earth Observ. Remote Sens.},
+  publisher = {IEEE},
+  year = {2016},
+  volume = {9},
+  number = {6},
+  pages = {2451--2467},
+  doi = {https://doi.org/10.1109/JSTARS.2016.2551318}
+}
+</pre></td>
+</tr>
+<tr id="kuhn2008building" class="entry">
+	<td>Kuhn, M.</td>
+	<td>Building predictive models in R using the caret package <p class="infolinks">[<a href="javascript:toggleInfo('kuhn2008building','abstract')">Abstract</a>] [<a href="javascript:toggleInfo('kuhn2008building','bibtex')">BibTeX</a>]</p></td>
+	<td>2008</td>
+	<td>Journal of Statistical Software<br/>Vol. 28(5), pp. 1-26&nbsp;</td>
+	<td>article</td>
+	<td><a href="https://doi.org/10.18637/jss.v028.i05">DOI</a> &nbsp;</td>
+</tr>
+<tr id="abs_kuhn2008building" class="abstract noshow">
+	<td colspan="6"><b>Abstract</b>: The caret package, short for classification and regression training, contains numerous tools for developing predictive models using the rich set of models available in R. The package focuses on simplifying model training and tuning across a wide variety of modeling techniques. It also includes methods for pre-processing training data, calculating variable importance, and model visualizations. An example from computational chemistry is used to illustrate the functionality on a real data set and to benchmark the benefits of parallel processing with several types of models.</td>
+</tr>
+<tr id="bib_kuhn2008building" class="bibtex noshow">
+<td colspan="6"><b>BibTeX</b>:
+<pre>
+@article{kuhn2008building,
+  author = {Kuhn, Max},
+  title = {Building predictive models in R using the caret package},
+  journal = {Journal of Statistical Software},
+  year = {2008},
+  volume = {28},
+  number = {5},
+  pages = {1--26},
+  doi = {https://doi.org/10.18637/jss.v028.i05}
+}
+</pre></td>
+</tr>
+<tr id="Zhang2017ConstructingOP" class="entry">
+	<td>Zhang, J., Zhou, J., Tang, M., Guo, H., Small, M. and Zou, Y.</td>
+	<td>Constructing ordinal partition transition networks from multivariate time series <p class="infolinks">[<a href="javascript:toggleInfo('Zhang2017ConstructingOP','abstract')">Abstract</a>] [<a href="javascript:toggleInfo('Zhang2017ConstructingOP','bibtex')">BibTeX</a>]</p></td>
+	<td>2017</td>
+	<td>Scientific Reports&nbsp;</td>
+	<td>inproceedings</td>
+	<td><a href="https://doi.org/10.1038/s41598-017-08245-x">DOI</a> &nbsp;</td>
+</tr>
+<tr id="abs_Zhang2017ConstructingOP" class="abstract noshow">
+	<td colspan="6"><b>Abstract</b>: A growing number of algorithms have been proposed to map a scalar time series into ordinal partition transition networks. However, most observable phenomena in the empirical sciences are of a multivariate nature. We construct ordinal partition transition networks for multivariate time series. This approach yields weighted directed networks representing the pattern transition properties of time series in velocity space, which hence provides dynamic insights of the underling system. Furthermore, we propose a measure of entropy to characterize ordinal partition transition dynamics, which is sensitive to capturing the possible local geometric changes of phase space trajectories. We demonstrate the applicability of pattern transition networks to capture phase coherence to non-coherence transitions, and to characterize paths to phase synchronizations. Therefore, we conclude that the ordinal partition transition network approach provides complementary insight to the traditional symbolic analysis of nonlinear multivariate time series.</td>
+</tr>
+<tr id="bib_Zhang2017ConstructingOP" class="bibtex noshow">
+<td colspan="6"><b>BibTeX</b>:
+<pre>
+@inproceedings{Zhang2017ConstructingOP,
+  author = {Jiayang Zhang and Jie Zhou and Ming Tang and Heng Guo and Michael Small and Yong Zou},
+  title = {Constructing ordinal partition transition networks from multivariate time series},
+  booktitle = {Scientific Reports},
+  year = {2017},
+  doi = {https://doi.org/10.1038/s41598-017-08245-x}
+}
+</pre></td>
+</tr>
+<tr id="guan2019covariance" class="entry">
+	<td>Guan, D., Xiang, D., Tang, X., Wang, L. and Kuang, G.</td>
+	<td>Covariance of Textural Features: A New Feature Descriptor for SAR Image Classification <p class="infolinks">[<a href="javascript:toggleInfo('guan2019covariance','abstract')">Abstract</a>] [<a href="javascript:toggleInfo('guan2019covariance','bibtex')">BibTeX</a>]</p></td>
+	<td>2019</td>
+	<td>IEEE J. Sel. Topics Appl. Earth Observ. Remote Sens.<br/>Vol. 12(10), pp. 3932-3942&nbsp;</td>
+	<td>article</td>
+	<td><a href="https://doi.org/10.1109/JSTARS.2019.2944943">DOI</a> &nbsp;</td>
+</tr>
+<tr id="abs_guan2019covariance" class="abstract noshow">
+	<td colspan="6"><b>Abstract</b>: Synthetic aperture radar (SAR) image land-cover classification is an important research topic in SAR image interpretation. However, speckle, inherent of active coherent imaging systems, diminishes the performances of feature extraction techniques and classifiers. In this article, we firstly present a simple yet powerful feature extraction method based on the covariance matrix of textural feature. In comparison with the original textural feature, the use of second-order statistics makes the proposed covariance descriptor more distinguishable for various land covers and robust to speckle noise. Considering that the covariance descriptors are symmetric positive definite (SPD) matrices which form a Riemannian manifold, we then propose to map the manifold with Log-Euclidean metric in a high dimensional reproducing kernel Hilbert space by means of the positive definite kernel defined on manifolds. As a result, the kernel not only allows us to make full use of algorithms developed for linear spaces but also preserves geometric structure of SPD matrices. Our experiments demonstrate that the proposed method can provide promising results in terms of classification accuracy and label consistency.</td>
+</tr>
+<tr id="bib_guan2019covariance" class="bibtex noshow">
+<td colspan="6"><b>BibTeX</b>:
+<pre>
+@article{guan2019covariance,
+  author = {Guan, Dongdong and Xiang, Deliang and Tang, Xiaoan and Wang, Li and Kuang, Gangyao},
+  title = {Covariance of Textural Features: A New Feature Descriptor for SAR Image Classification},
+  journal = {IEEE J. Sel. Topics Appl. Earth Observ. Remote Sens.},
+  publisher = {IEEE},
+  year = {2019},
+  volume = {12},
+  number = {10},
+  pages = {3932--3942},
+  doi = {https://doi.org/10.1109/JSTARS.2019.2944943}
+}
+</pre></td>
+</tr>
+<tr id="yu2019detection" class="entry">
+	<td>Yu, Q., Xing, M., Liu, X., Wang, L., Luo, K. and Quan, X.</td>
+	<td>Detection of Land Use Type Using Multitemporal SAR Images <p class="infolinks">[<a href="javascript:toggleInfo('yu2019detection','abstract')">Abstract</a>] [<a href="javascript:toggleInfo('yu2019detection','bibtex')">BibTeX</a>]</p></td>
+	<td>2019</td>
+	<td>IGARSS 2019 -- IEEE International Geoscience and Remote Sensing Symposium, pp. 1534-1537&nbsp;</td>
+	<td>inproceedings</td>
+	<td><a href="https://doi.org/10.1109/IGARSS.2019.8898077">DOI</a> &nbsp;</td>
+</tr>
+<tr id="abs_yu2019detection" class="abstract noshow">
+	<td colspan="6"><b>Abstract</b>: This paper studies the applicability of multi-temporal synthetic aperture radar (SAR) images in detecting urban land use types change. In this paper, the study area is 128×358 pixels covers Shuangliu International Airport, Chengdu, China. Nine scenes of ALOS-PALSAR HV images from July 2007 to October 2010 were collected. the logarithmic ratio operator was used to generate the intensity and texture feature difference images. Texture features were extracted by the gray level co-occurrence matrix (GLCM). Then the redundant difference information was compressed by PCA transformation. The index of dynamic change image was generated to represent the change in land use type in Chengdu Shuangliu International Airport.</td>
+</tr>
+<tr id="bib_yu2019detection" class="bibtex noshow">
+<td colspan="6"><b>BibTeX</b>:
+<pre>
+@inproceedings{yu2019detection,
+  author = {Yu, Qiwen and Xing, Minfeng and Liu, Xiaofang and Wang, Long and Luo, Kaiwei and Quan, Xingwen},
+  title = {Detection of Land Use Type Using Multitemporal SAR Images},
+  booktitle = {IGARSS 2019 -- IEEE International Geoscience and Remote Sensing Symposium},
+  year = {2019},
+  pages = {1534--1537},
+  doi = {https://doi.org/10.1109/IGARSS.2019.8898077}
+}
+</pre></td>
+</tr>
+<tr id="Sorrentino2015periodic" class="entry">
+	<td>Sorrentino, T., Quintero-Quiroz, C., Aragoneses, A., Torrent, M. and Masoller, C.</td>
+	<td>Effects of periodic forcing on the temporally correlated spikes of a semiconductor laser with feedback <p class="infolinks">[<a href="javascript:toggleInfo('Sorrentino2015periodic','abstract')">Abstract</a>] [<a href="javascript:toggleInfo('Sorrentino2015periodic','bibtex')">BibTeX</a>]</p></td>
+	<td>2015</td>
+	<td>Opt. Express<br/>Vol. 23&nbsp;</td>
+	<td>article</td>
+	<td><a href="https://doi.org/10.1364/OE.23.005571">DOI</a> &nbsp;</td>
+</tr>
+<tr id="abs_Sorrentino2015periodic" class="abstract noshow">
+	<td colspan="6"><b>Abstract</b>: Optical excitable devices that mimic neuronal behavior can be building-blocks of novel, brain-inspired information processing systems. A relevant issue is to understand how such systems represent, via correlated spikes, the information of a weak external input. Semiconductor lasers with optical feedback operating in the low frequency fluctuations regime have been shown to display optical spikes with intrinsic temporal correlations similar to those of biological neurons. Here we investigate how the spiking laser output represents a weak periodic input that is implemented via direct modulation of the laser pump current. We focus on understanding the influence of the modulation frequency. Experimental sequences of inter-spike-intervals (ISIs) are recorded and analyzed by using the ordinal symbolic methodology that identifies and characterizes serial correlations in datasets. The change in the statistics of the various symbols with the modulation frequency is empirically shown to be related to specific changes in the ISI distribution, which arise due to different phase-locking regimes. A good qualitative agreement is also found between simulations of the Lang and Kobayashi model and observations. This methodology is an efficient way to detect subtle changes in noisy correlated ISI sequences and may be applied to investigate other optical excitable devices.</td>
+</tr>
+<tr id="bib_Sorrentino2015periodic" class="bibtex noshow">
+<td colspan="6"><b>BibTeX</b>:
+<pre>
+@article{Sorrentino2015periodic,
+  author = {Sorrentino, Taciano and Quintero-Quiroz, Carlos and Aragoneses, Andres and Torrent, M.C. and Masoller, Cristina},
+  title = {Effects of periodic forcing on the temporally correlated spikes of a semiconductor laser with feedback},
+  journal = {Opt. Express},
+  year = {2015},
+  volume = {23},
+  doi = {https://doi.org/10.1364/OE.23.005571}
+}
+</pre></td>
+</tr>
+<tr id="weldon1996efficient" class="entry">
+	<td>Weldon, T.P., Higgins, W.E. and Dunn, D.F.</td>
+	<td>Efficient Gabor filter design for texture segmentation <p class="infolinks">[<a href="javascript:toggleInfo('weldon1996efficient','abstract')">Abstract</a>] [<a href="javascript:toggleInfo('weldon1996efficient','bibtex')">BibTeX</a>]</p></td>
+	<td>1996</td>
+	<td>Pattern Recognit.<br/>Vol. 29(12), pp. 2005-2015&nbsp;</td>
+	<td>article</td>
+	<td><a href="https://doi.org/10.1016/S0031-3203(96)00047-7">DOI</a> &nbsp;</td>
+</tr>
+<tr id="abs_weldon1996efficient" class="abstract noshow">
+	<td colspan="6"><b>Abstract</b>: Gabor filters have been successfully applied to a broad range of image processing tasks. The present paper considers the design of a single filter to segment a two-texture image. A new efficient algorithm for Gabor-filter design is presented, along with methods for estimating filter output statistics. The algorithm draws upon previous results that showed that the output of a Gabor-filtered texture is modeled well by a Rician distribution. A measure of the total output power is used to select the center frequency of the filter and is used to estimate the Rician statistics of the Gabor-filtered image. The method is further generalized to include the statistics of postfiltered outputs that are generated by a Gaussian filtering operation following the Gabor filter. The new method typically requires an order of magnitude less computation to design a filter than a previously proposed method. Experimental results demonstrate the efficacy of the method.</td>
+</tr>
+<tr id="bib_weldon1996efficient" class="bibtex noshow">
+<td colspan="6"><b>BibTeX</b>:
+<pre>
+@article{weldon1996efficient,
+  author = {Weldon, Thomas P and Higgins, William E and Dunn, Dennis F},
+  title = {Efficient Gabor filter design for texture segmentation},
+  journal = {Pattern Recognit.},
+  publisher = {Citeseer},
+  year = {1996},
+  volume = {29},
+  number = {12},
+  pages = {2005--2015},
+  doi = {https://doi.org/10.1016/S0031-3203(96)00047-7}
+}
+</pre></td>
+</tr>
+<tr id="hagensieker2018evaluation" class="entry">
+	<td>Hagensieker, R. and Waske, B.</td>
+	<td>Evaluation of multi-frequency SAR images for tropical land cover mapping <p class="infolinks">[<a href="javascript:toggleInfo('hagensieker2018evaluation','abstract')">Abstract</a>] [<a href="javascript:toggleInfo('hagensieker2018evaluation','bibtex')">BibTeX</a>]</p></td>
+	<td>2018</td>
+	<td>Remote Sensing<br/>Vol. 10(2), pp. 257&nbsp;</td>
+	<td>article</td>
+	<td><a href="https://doi.org/10.3390/rs10020257">DOI</a> &nbsp;</td>
+</tr>
+<tr id="abs_hagensieker2018evaluation" class="abstract noshow">
+	<td colspan="6"><b>Abstract</b>: Earth Observation (EO) data plays a major role in supporting surveying compliance of several multilateral environmental treaties, such as UN-REDD+ (United Nations Reducing Emissions from Deforestation and Degradation). In this context, land cover maps of remote sensing data are the most commonly used EO products and development of adequate classification strategies is an ongoing research topic. However, the availability of meaningful multispectral data sets can be limited due to cloud cover, particularly in the tropics. In such regions, the use of SAR systems (Synthetic Aperture Radar), which are nearly independent form weather conditions, is particularly promising. With an ever-growing number of SAR satellites, as well as the increasing accessibility of SAR data, potentials for multi-frequency remote sensing are becoming numerous. In our study, we evaluate the synergistic contribution of multitemporal L-, C-, and X-band data to tropical land cover mapping. We compare classification outcomes of ALOS-2, RADARSAT-2, and TerraSAR-X datasets for a study site in the Brazilian Amazon using a wrapper approach. After preprocessing and calculation of GLCM texture (Grey Level Co-Occurence), the wrapper utilizes Random Forest classifications to estimate scene importance. Comparing the contribution of different wavelengths, ALOS-2 data perform best in terms of overall classification accuracy, while the classification of TerraSAR-X data yields higher accuracies when compared to the results achieved by RADARSAT-2. Moreover, the wrapper underlines potentials of multi-frequency classification as integration of multi-frequency images is always preferred over multi-temporal, mono-frequent composites. We conclude that, despite distinct advantages of certain sensors, for land cover classification, multi-sensoral integration is beneficial.</td>
+</tr>
+<tr id="bib_hagensieker2018evaluation" class="bibtex noshow">
+<td colspan="6"><b>BibTeX</b>:
+<pre>
+@article{hagensieker2018evaluation,
+  author = {Hagensieker, Ron and Waske, Bj&ouml;rn},
+  title = {Evaluation of multi-frequency SAR images for tropical land cover mapping},
+  journal = {Remote Sensing},
+  publisher = {Multidisciplinary Digital Publishing Institute},
+  year = {2018},
+  volume = {10},
+  number = {2},
+  pages = {257},
+  doi = {https://doi.org/10.3390/rs10020257}
+}
+</pre></td>
+</tr>
+<tr id="xiao2009fine" class="entry">
+	<td>Xiao-Feng, L. and Yue, W.</td>
+	<td>Fine-grained permutation entropy as a measure of natural complexity for time series <p class="infolinks">[<a href="javascript:toggleInfo('xiao2009fine','abstract')">Abstract</a>] [<a href="javascript:toggleInfo('xiao2009fine','bibtex')">BibTeX</a>]</p></td>
+	<td>2009</td>
+	<td>Chin. Phys. B<br/>Vol. 18(7), pp. 2690&nbsp;</td>
+	<td>article</td>
+	<td><a href="https://doi.org/10.1088/1674-1056/18/7/011">DOI</a> &nbsp;</td>
+</tr>
+<tr id="abs_xiao2009fine" class="abstract noshow">
+	<td colspan="6"><b>Abstract</b>: In a recent paper [2002 Phys. Rev. Lett. 88 174102], Bandt and Pompe propose permutation entropy (PE) as a natural complexity measure for arbitrary time series which may be stationary or nonstationary, deterministic or stochastic. Their method is based on a comparison of neighbouring values. This paper further develops PE, and proposes the concept of fine-grained PE (FGPE) defined by the order pattern and magnitude of the difference between neighbouring values. This measure excludes the case where vectors with a distinct appearance are mistakenly mapped onto the same permutation type, and consequently FGPE becomes more sensitive to the dynamical change of time series than does PE, according to our simulation and experimental results.</td>
+</tr>
+<tr id="bib_xiao2009fine" class="bibtex noshow">
+<td colspan="6"><b>BibTeX</b>:
+<pre>
+@article{xiao2009fine,
+  author = {Xiao-Feng, Liu and Yue, Wang},
+  title = {Fine-grained permutation entropy as a measure of natural complexity for time series},
+  journal = {Chin. Phys. B},
+  year = {2009},
+  volume = {18},
+  number = {7},
+  pages = {2690},
+  doi = {https://doi.org/10.1088/1674-1056/18/7/011}
+}
+</pre></td>
+</tr>
+<tr id="Florindo2012Fractal" class="entry">
+	<td>Florindo, J.B. and Bruno, O.M.</td>
+	<td>Fractal descriptors based on Fourier spectrum applied to texture analysis <p class="infolinks">[<a href="javascript:toggleInfo('Florindo2012Fractal','abstract')">Abstract</a>] [<a href="javascript:toggleInfo('Florindo2012Fractal','bibtex')">BibTeX</a>]</p></td>
+	<td>2012</td>
+	<td>Physica A<br/>Vol. 391(20), pp. 4909-4922&nbsp;</td>
+	<td>article</td>
+	<td><a href="https://doi.org/10.1016/j.physa.2012.03.039">DOI</a> &nbsp;</td>
+</tr>
+<tr id="abs_Florindo2012Fractal" class="abstract noshow">
+	<td colspan="6"><b>Abstract</b>: This work proposes the development and study of a novel technique for the generation of fractal descriptors used in texture analysis. The novel descriptors are obtained from a multiscale transform applied to the Fourier technique of fractal dimension calculus. The power spectrum of the Fourier transform of the image is plotted against the frequency in a log- log scale and a multiscale transform is applied to this curve. The obtained values are taken as the fractal descriptors of the image. The validation of the propose is performed by the use of the descriptors for the classification of a dataset of texture images whose real classes are previously known. The classification precision is compared to other fractal descriptors known in the literature. The results confirm the efficiency of the proposed method.</td>
+</tr>
+<tr id="bib_Florindo2012Fractal" class="bibtex noshow">
+<td colspan="6"><b>BibTeX</b>:
+<pre>
+@article{Florindo2012Fractal,
+  author = {J. B. Florindo and O. Martinez Bruno},
+  title = {Fractal descriptors based on Fourier spectrum applied to texture analysis},
+  journal = {Physica A},
+  year = {2012},
+  volume = {391},
+  number = {20},
+  pages = {4909--4922},
+  doi = {https://doi.org/10.1016/j.physa.2012.03.039}
+}
+</pre></td>
+</tr>
+<tr id="martin2006generalized" class="entry">
+	<td>Mart&iacute;n, M.T., Plastino, A. and Rosso, O.A.</td>
+	<td>Generalized statistical complexity measures: Geometrical and analytical properties <p class="infolinks">[<a href="javascript:toggleInfo('martin2006generalized','abstract')">Abstract</a>] [<a href="javascript:toggleInfo('martin2006generalized','bibtex')">BibTeX</a>]</p></td>
+	<td>2006</td>
+	<td>Physica A<br/>Vol. 369(2), pp. 439-462&nbsp;</td>
+	<td>article</td>
+	<td><a href="https://doi.org/10.1016/j.physa.2005.11.053">DOI</a> &nbsp;</td>
+</tr>
+<tr id="abs_martin2006generalized" class="abstract noshow">
+	<td colspan="6"><b>Abstract</b>: We discuss bounds on the values adopted by the generalized statistical complexity measures [M.T. Martin et al., Phys. Lett. A 311 (2003) 126; P.W. Lamberti et al., Physica A 334 (2004) 119] introduced by López Ruiz et al. [Phys. Lett. A 209 (1995) 321] and Shiner et al. [Phys. Rev. E 59 (1999) 1459]. Several new theorems are proved and illustrated with reference to the celebrated logistic map.</td>
+</tr>
+<tr id="bib_martin2006generalized" class="bibtex noshow">
+<td colspan="6"><b>BibTeX</b>:
+<pre>
+@article{martin2006generalized,
+  author = {M. T. Mart&iacute;n and A. Plastino and O. A. Rosso},
+  title = {Generalized statistical complexity measures: Geometrical and analytical properties},
+  journal = {Physica A},
+  publisher = {Elsevier},
+  year = {2006},
+  volume = {369},
+  number = {2},
+  pages = {439--462},
+  doi = {https://doi.org/10.1016/j.physa.2005.11.053}
+}
+</pre></td>
+</tr>
+<tr id="radford2018geological" class="entry">
+	<td>Radford, D.D., Cracknell, M.J., Roach, M.J. and Cumming, G.V.</td>
+	<td>Geological mapping in Western Tasmania using radar and random forests <p class="infolinks">[<a href="javascript:toggleInfo('radford2018geological','abstract')">Abstract</a>] [<a href="javascript:toggleInfo('radford2018geological','bibtex')">BibTeX</a>]</p></td>
+	<td>2018</td>
+	<td>IEEE J. Sel. Topics Appl. Earth Observ. Remote Sens.<br/>Vol. 11(9), pp. 3075-3087&nbsp;</td>
+	<td>article</td>
+	<td><a href="https://doi.org/10.1109/JSTARS.2018.2855207">DOI</a> &nbsp;</td>
+</tr>
+<tr id="abs_radford2018geological" class="abstract noshow">
+	<td colspan="6"><b>Abstract</b>: Mineral exploration and geological mapping of highly prospective areas in western Tasmania, southern Australia, is challenging due to steep topography, dense vegetation, and limited outcrop. Synthetic aperture radar (SAR) can potentially penetrate vegetation canopies and assist geological mapping in this environment. This study applies manual and automated lithological classification methods to airborne polarimetric TopSAR and geophysical data in the Heazlewood region, western Tasmania. Major discrepancies between classification results and the existing geological map generated fieldwork targets that led to the discovery of previously unmapped rock units. Manual analysis of radar image texture was essential for the identification of lithological boundaries. Automated pixel-based classification of radar data using Random Forests achieved poor results despite the inclusion of textural information derived from gray level co-occurrence matrices. This is because the majority of manually identified features within the radar imagery result from geobotanical and geomorphological relationships, rather than direct imaging of surficial lithological variations. Inconsistent relationships between geology and vegetation or geology and topography limit the reliability of TopSAR interpretations for geological mapping in this environment. However, Random Forest classifications, based on geophysical data and validated against manual interpretations, were accurate (&nbsp;90%) even when using limited training data (&nbsp;0.15% of total data). These classifications identified a previously unmapped region of mafic-ultramafic rocks, the presence of which was verified through fieldwork. This study validates the application of machine learning for geological mapping in remote and inaccessible localities but also highlights the limitations of SAR data in thickly vegetated terrain.</td>
+</tr>
+<tr id="bib_radford2018geological" class="bibtex noshow">
+<td colspan="6"><b>BibTeX</b>:
+<pre>
+@article{radford2018geological,
+  author = {Radford, Declan DG and Cracknell, Matthew J and Roach, Michael J and Cumming, Grace V},
+  title = {Geological mapping in Western Tasmania using radar and random forests},
+  journal = {IEEE J. Sel. Topics Appl. Earth Observ. Remote Sens.},
+  publisher = {IEEE},
+  year = {2018},
+  volume = {11},
+  number = {9},
+  pages = {3075--3087},
+  doi = {https://doi.org/10.1109/JSTARS.2018.2855207}
+}
+</pre></td>
+</tr>
+<tr id="Lamberti2004Entropic" class="entry">
+	<td>Lamberti, P.W., Mart&iacute;n, M.T., Plastino, A. and Rosso, O.A.</td>
+	<td>Intensive entropic non-triviality measure <p class="infolinks">[<a href="javascript:toggleInfo('Lamberti2004Entropic','abstract')">Abstract</a>] [<a href="javascript:toggleInfo('Lamberti2004Entropic','bibtex')">BibTeX</a>]</p></td>
+	<td>2004</td>
+	<td>Physica A<br/>Vol. 334(1-2), pp. 119-131&nbsp;</td>
+	<td>article</td>
+	<td><a href="https://doi.org/10.1016/j.physa.2003.11.005">DOI</a> <a href="http://www.sciencedirect.com/science/article/pii/S0378437103010963">URL</a>&nbsp;</td>
+</tr>
+<tr id="abs_Lamberti2004Entropic" class="abstract noshow">
+	<td colspan="6"><b>Abstract</b>: We discuss a way of characterizing probability distributions, complementing that provided by the celebrated notion of information measure, with reference to a measure of complexity that we call a "nontriviality measure". Our starting point is the "LMC" measure of complexity advanced by López-Ruiz et al. (Phys. Lett. A 209 (1995) 321) and its analysis by Anteneodo and Plastino (Phys. Lett. A 223 (1997) 348). An improvement of some of their troublesome characteristics is thereby achieved. Basically, we replace the Euclidean distance to equilibrium by the Jensen-Shannon divergence. The resulting measure turns out to be (i) an intensive quantity and (ii) allows one to distinguish between different degrees of periodicity. We apply the "cured measure to the logistic map so as to clearly exhibit its advantages.</td>
+</tr>
+<tr id="bib_Lamberti2004Entropic" class="bibtex noshow">
+<td colspan="6"><b>BibTeX</b>:
+<pre>
+@article{Lamberti2004Entropic,
+  author = {P. W. Lamberti and M. T. Mart&iacute;n and A. Plastino and O. A. Rosso},
+  title = {Intensive entropic non-triviality measure},
+  journal = {Physica A},
+  year = {2004},
+  volume = {334},
+  number = {1--2},
+  pages = {119--131},
+  url = {http://www.sciencedirect.com/science/article/pii/S0378437103010963},
+  doi = {https://doi.org/10.1016/j.physa.2003.11.005}
+}
+</pre></td>
+</tr>
+<tr id="Borges2019Transition" class="entry">
+	<td>Borges, J., Ramos, H., Mini, R., Rosso, O.A., Frery, A.C. and Loureiro, A.A.F.</td>
+	<td>Learning and Distinguishing Time Series Dynamics via Ordinal Patterns Transition Graphs <p class="infolinks">[<a href="javascript:toggleInfo('Borges2019Transition','abstract')">Abstract</a>] [<a href="javascript:toggleInfo('Borges2019Transition','bibtex')">BibTeX</a>]</p></td>
+	<td>2019</td>
+	<td>Appl. Math. Comput.<br/>Vol. 362, pp. UNSP 124554&nbsp;</td>
+	<td>article</td>
+	<td><a href="https://doi.org/10.1016/j.amc.2019.06.068">DOI</a> &nbsp;</td>
+</tr>
+<tr id="abs_Borges2019Transition" class="abstract noshow">
+	<td colspan="6"><b>Abstract</b>: Strategies based on the extraction of measures from ordinal patterns transformation, such as probability distributions and transition graphs, have reached relevant advancements in distinguishing different time series dynamics. However, the reliability of such measures depends on the appropriate selection of parameters and the need for large time series. In this paper we present a method for the characterization of distinct time series behaviors based on the probability of self-transitions, a measure extracted from their transformation onto ordinal patterns transition graphs. We validate our method by investigating the main characteristics of periodic, random, and chaotic time series. By the application of learning strategies, we precisely classify different randomness levels in time series, reaching 100% in accuracy, and advances in performing the hard task of distinguishing random noises from chaotic time series, correctly distinguishing 96.61% of the cases. Furthermore, we show that this strategy is well suitable to be used by many applications, even for short time series, and does not depend on the selection of parameters.</td>
+</tr>
+<tr id="bib_Borges2019Transition" class="bibtex noshow">
+<td colspan="6"><b>BibTeX</b>:
+<pre>
+@article{Borges2019Transition,
+  author = {J. Borges and H. Ramos and R. Mini and O. A. Rosso and A. C. Frery and A. A. F. Loureiro},
+  title = {Learning and Distinguishing Time Series Dynamics via Ordinal Patterns Transition Graphs},
+  journal = {Appl. Math. Comput.},
+  year = {2019},
+  volume = {362},
+  pages = {UNSP 124554},
+  doi = {https://doi.org/10.1016/j.amc.2019.06.068}
+}
+</pre></td>
+</tr>
+<tr id="mitchell1997machine" class="entry">
+	<td>Mitchell, T.M.</td>
+	<td>Machine Learning <p class="infolinks">[<a href="javascript:toggleInfo('mitchell1997machine','abstract')">Abstract</a>] [<a href="javascript:toggleInfo('mitchell1997machine','bibtex')">BibTeX</a>]</p></td>
+	<td>1997</td>
+	<td>&nbsp;</td>
+	<td>misc</td>
+	<td>&nbsp;</td>
+</tr>
+<tr id="abs_mitchell1997machine" class="abstract noshow">
+	<td colspan="6"><b>Abstract</b>: This book covers the field of machine learning, which is the study of algorithms that allow computer programs to automatically improve through experience. The book is intended to support upper level undergraduate and introductory level graduate courses in machine learning.</td>
+</tr>
+<tr id="bib_mitchell1997machine" class="bibtex noshow">
+<td colspan="6"><b>BibTeX</b>:
+<pre>
+@misc{mitchell1997machine,
+  author = {Mitchell, Tom M},
+  title = {Machine Learning},
+  publisher = {McGraw-hill New York},
+  year = {1997}
+}
+</pre></td>
+</tr>
+<tr id="numbisi2018multi" class="entry">
+	<td>Numbisi, F.N., Van Coillie, F. and De Wulf, R.</td>
+	<td>Multi-date Sentinel SAR Image Textures Discriminate Perennial Agroforests in a Tropical Forest-Savannah Transition Landscape <p class="infolinks">[<a href="javascript:toggleInfo('numbisi2018multi','abstract')">Abstract</a>] [<a href="javascript:toggleInfo('numbisi2018multi','bibtex')">BibTeX</a>]</p></td>
+	<td>2018</td>
+	<td>International Archives of the Photogrammetry, Remote Sensing &amp; Spatial Information Sciences<br/>Vol. 42(1)&nbsp;</td>
+	<td>article</td>
+	<td><a href="https://doi.org/10.5194/isprs-archives-XLII-1-339-2018">DOI</a> &nbsp;</td>
+</tr>
+<tr id="abs_numbisi2018multi" class="abstract noshow">
+	<td colspan="6"><b>Abstract</b>: Synthetic Aperture Radar (SAR) provides consistent information on target land features; especially in tropical conditions that restrain penetration of optical imaging sensors. Because radar response signal is influenced by geometric and di-electrical properties of surface features’, the different land cover may appear similar in radar images. For discriminating perennial cocoa agroforestry land cover, we compare a multi-spectral optical image from RapidEye, acquired in the dry season, and multi-seasonal C-band SAR of Sentinel 1: A final set of 10 (out of 50) images that represent six dry and four wet seasons from 2015 to 2017. We ran eight RF models for different input band combinations; multi-spectral reflectance, vegetation indices, co-(VV) and cross-(VH) polarised SAR intensity and Grey Level Co-occurrence Matrix (GLCM) texture measures. Following a pixel-based image analysis, we evaluated accuracy metrics and uncertainty Shannon entropy. The model comprising co- and cross-polarised texture bands had the highest accuracy of 88.07% (95% CI: 85.52 - 90.31) and kappa of 85.37; and the low class uncertainty for perennial agroforests and transition forests. The optical image had low classification uncertainty for the entire image; but, it performed better in discriminating non-vegetated areas. The measured uncertainty provides reliable validation for comparing class discrimination from different image resolution. The GLCM texture measures that are crucial in delineating vegetation cover differed for the season and polarization of SAR image. Given the high accuracies of mapping, our approach has value for landscape monitoring; and, an improved valuation of agroforestry contribution to REDD+ strategies in the Congo basin sub-region.</td>
+</tr>
+<tr id="bib_numbisi2018multi" class="bibtex noshow">
+<td colspan="6"><b>BibTeX</b>:
+<pre>
+@article{numbisi2018multi,
+  author = {Numbisi, Frederick N and Van Coillie, F and De Wulf, R},
+  title = {Multi-date Sentinel SAR Image Textures Discriminate Perennial Agroforests in a Tropical Forest-Savannah Transition Landscape},
+  journal = {International Archives of the Photogrammetry, Remote Sensing &amp; Spatial Information Sciences},
+  year = {2018},
+  volume = {42},
+  number = {1},
+  doi = {https://doi.org/10.5194/isprs-archives-XLII-1-339-2018}
+}
+</pre></td>
+</tr>
+<tr id="Bandt2002Permutation" class="entry">
+	<td>Bandt, C. and Pompe, B.</td>
+	<td>Permutation Entropy: A Natural Complexity Measure for Time Series <p class="infolinks">[<a href="javascript:toggleInfo('Bandt2002Permutation','abstract')">Abstract</a>] [<a href="javascript:toggleInfo('Bandt2002Permutation','bibtex')">BibTeX</a>]</p></td>
+	<td>2002</td>
+	<td>Phys. Rev. Lett.<br/>Vol. 88, pp. 174102&nbsp;</td>
+	<td>article</td>
+	<td><a href="https://doi.org/10.1103/PhysRevLett.88.174102">DOI</a> &nbsp;</td>
+</tr>
+<tr id="abs_Bandt2002Permutation" class="abstract noshow">
+	<td colspan="6"><b>Abstract</b>: We introduce complexity parameters for time series based on comparison of neighboring values. The definition directly applies to arbitrary real-world data. For some well-known chaotic dynamical systems it is shown that our complexity behaves similar to Lyapunov exponents, and is particularly useful in the presence of dynamical or observational noise. The advantages of our method are its simplicity, extremely fast calculation, robustness, and invariance with respect to nonlinear monotonous transformations.</td>
+</tr>
+<tr id="bib_Bandt2002Permutation" class="bibtex noshow">
+<td colspan="6"><b>BibTeX</b>:
+<pre>
+@article{Bandt2002Permutation,
+  author = {Bandt, C. and Pompe, B.},
+  title = {Permutation Entropy: A Natural Complexity Measure for Time Series},
+  journal = {Phys. Rev. Lett.},
+  year = {2002},
+  volume = {88},
+  pages = {174102},
+  doi = {https://doi.org/10.1103/PhysRevLett.88.174102}
+}
+</pre></td>
+</tr>
+<tr id="nguyen1982space" class="entry">
+	<td>Nguyen, P. and Quinqueton, J.</td>
+	<td>Space filling curves and texture analysis <p class="infolinks">[<a href="javascript:toggleInfo('nguyen1982space','abstract')">Abstract</a>] [<a href="javascript:toggleInfo('nguyen1982space','bibtex')">BibTeX</a>]</p></td>
+	<td>1982</td>
+	<td>IEEE Intl. Conf. Pattern Recognition, pp. 282-285&nbsp;</td>
+	<td>inproceedings</td>
+	<td>&nbsp;</td>
+</tr>
+<tr id="abs_nguyen1982space" class="abstract noshow">
+	<td colspan="6"><b>Abstract</b>: The application discloses a pressure controlled switch which includes a plunger actuated by a fluid pressure responsive diaphragm. A pair of coil springs having different spring rates oppose the movement of the plunger caused by the diaphragm. The springs are dimensioned to exert different movement resisting forces over different portions of the length of travel of the plunger and in cooperation with a spring contact structure provide low pressure dropout values, high pressure cutout values and intermediate pressure cut-in values operating the switch.</td>
+</tr>
+<tr id="bib_nguyen1982space" class="bibtex noshow">
+<td colspan="6"><b>BibTeX</b>:
+<pre>
+@inproceedings{nguyen1982space,
+  author = {Nguyen, PT and Quinqueton, J},
+  title = {Space filling curves and texture analysis},
+  booktitle = {IEEE Intl. Conf. Pattern Recognition},
+  year = {1982},
+  pages = {282--285}
+}
+</pre></td>
+</tr>
+<tr id="breit2009terrasar" class="entry">
+	<td>Breit, H., Fritz, T., Balss, U., Lachaise, M., Niedermeier, A. and Vonavka, M.</td>
+	<td>TerraSAR-X SAR processing and products <p class="infolinks">[<a href="javascript:toggleInfo('breit2009terrasar','abstract')">Abstract</a>] [<a href="javascript:toggleInfo('breit2009terrasar','bibtex')">BibTeX</a>]</p></td>
+	<td>2009</td>
+	<td>IEEE Trans. Geosci. Remote Sens.<br/>Vol. 48(2), pp. 727-740&nbsp;</td>
+	<td>article</td>
+	<td><a href="https://doi.org/10.1109/TGRS.2009.2035497">DOI</a> &nbsp;</td>
+</tr>
+<tr id="abs_breit2009terrasar" class="abstract noshow">
+	<td colspan="6"><b>Abstract</b>: The TerraSAR-X mission was launched in June 2007. After successful completion of the commissioning phase, the mission entered its operational phase in January 2008. Since that time, TerraSAR-X provides the scientific remote sensing community and commercial customers with high-quality spaceborne synthetic aperture radar (SAR) data products. The intention of this paper is to present the SAR data processing concept and the comprehensive portfolio of products reflecting the instrument's diverse imaging capabilities together with options of processing and achieved product quality as well as the essentials of SAR processing. Furthermore, it shall also provide details on how to fully exploit the precision of the TerraSAR-X products.</td>
+</tr>
+<tr id="bib_breit2009terrasar" class="bibtex noshow">
+<td colspan="6"><b>BibTeX</b>:
+<pre>
+@article{breit2009terrasar,
+  author = {Breit, Helko and Fritz, Thomas and Balss, Ulrich and Lachaise, Marie and Niedermeier, Andreas and Vonavka, Martin},
+  title = {TerraSAR-X SAR processing and products},
+  journal = {IEEE Trans. Geosci. Remote Sens.},
+  publisher = {IEEE},
+  year = {2009},
+  volume = {48},
+  number = {2},
+  pages = {727--740},
+  doi = {https://doi.org/10.1109/TGRS.2009.2035497}
+}
+</pre></td>
+</tr>
+<tr id="Lee1994Texture" class="entry">
+	<td>Lee, J.-H. and Hsueh, Y.-C.</td>
+	<td>Texture classification method using multiple space filling curves <p class="infolinks">[<a href="javascript:toggleInfo('Lee1994Texture','abstract')">Abstract</a>] [<a href="javascript:toggleInfo('Lee1994Texture','bibtex')">BibTeX</a>]</p></td>
+	<td>1994</td>
+	<td>Pattern Recognit. Lett.<br/>Vol. 15(12), pp. 1241-1244&nbsp;</td>
+	<td>article</td>
+	<td><a href="https://doi.org/10.1016/0167-8655(94)90114-7">DOI</a> &nbsp;</td>
+</tr>
+<tr id="abs_Lee1994Texture" class="abstract noshow">
+	<td colspan="6"><b>Abstract</b>: Texture analysis by using the Peano curve does not provide sufficient discriminatory power to classify natural textures. An improved method by simultaneously using several space filling curves to the texture analysis and classification is proposed.</td>
+</tr>
+<tr id="bib_Lee1994Texture" class="bibtex noshow">
+<td colspan="6"><b>BibTeX</b>:
+<pre>
+@article{Lee1994Texture,
+  author = {Jia-Hong Lee and Yuang-Cheh Hsueh},
+  title = {Texture classification method using multiple space filling curves},
+  journal = {Pattern Recognit. Lett.},
+  year = {1994},
+  volume = {15},
+  number = {12},
+  pages = {1241--1244},
+  doi = {https://doi.org/10.1016/0167-8655(94)90114-7}
+}
+</pre></td>
+</tr>
+<tr id="kourgli2012texture" class="entry">
+	<td>Kourgli, A., Ouarzeddine, M., Oukil, Y. and Belhadj-Aissa, A.</td>
+	<td>Texture modelling for land cover classification of fully polarimetric SAR images <p class="infolinks">[<a href="javascript:toggleInfo('kourgli2012texture','abstract')">Abstract</a>] [<a href="javascript:toggleInfo('kourgli2012texture','bibtex')">BibTeX</a>]</p></td>
+	<td>2012</td>
+	<td>International Journal of Image and Data Fusion<br/>Vol. 3(2), pp. 129-148&nbsp;</td>
+	<td>article</td>
+	<td><a href="https://doi.org/10.1080/19479832.2010.551521">DOI</a> &nbsp;</td>
+</tr>
+<tr id="abs_kourgli2012texture" class="abstract noshow">
+	<td colspan="6"><b>Abstract</b>: Classification based on polarimetric data alone does not provide sufficient sensitivity for classes’ separation such as forests. The use of other characteristics such as texture provides a powerful tool to get better class discrimination. Thus, this article outlines an approach for texture modelling adapted to land identification using polarimetric synthetic aperture radar (PolSAR) images. As radar images may contain a myriad of textures and to take into account their non-stationarity feature, the model is non-parametric and is based on a likeness measure between neighbourhoods. This measure is incorporated in probability formulation of the textural model. The latter is validated through texture synthesis applied to Brodatz’ natural textures. While having multiple applications, we focused here on the issue of terrain mapping of PolSAR images. Using Bayesian approach and some basic assumptions, we defined a classification scheme based on the textural model. It was tested on original Pauli decomposed images and filtered ones. The test area used is the Oberpfaffenhofen in Munich and the PolSAR images were acquired in the P band. For evaluation purposes, the classifications results obtained were compared with the Wishart classifier result performed on H–α partition showing interesting results and reaching classification rates ≈90%. Such an analysis has allowed us to assess the importance of texture considering and proved that the proposed texture model is able to describe the target's physical properties of PolSAR data.</td>
+</tr>
+<tr id="bib_kourgli2012texture" class="bibtex noshow">
+<td colspan="6"><b>BibTeX</b>:
+<pre>
+@article{kourgli2012texture,
+  author = {Kourgli, Assia and Ouarzeddine, Mounira and Oukil, Youcef and Belhadj-Aissa, Aichouche},
+  title = {Texture modelling for land cover classification of fully polarimetric SAR images},
+  journal = {International Journal of Image and Data Fusion},
+  publisher = {Taylor &amp; Francis},
+  year = {2012},
+  volume = {3},
+  number = {2},
+  pages = {129--148},
+  doi = {https://doi.org/10.1080/19479832.2010.551521}
+}
+</pre></td>
+</tr>
+<tr id="TheCursesofDimensionality2018" class="entry">
+	<td>Altman, N. and Krzywinski, M.</td>
+	<td>The curse(s) of dimensionality <p class="infolinks">[<a href="javascript:toggleInfo('TheCursesofDimensionality2018','bibtex')">BibTeX</a>]</p></td>
+	<td>2018</td>
+	<td>Nat. Methods<br/>Vol. 15(6), pp. 399-400&nbsp;</td>
+	<td>article</td>
+	<td><a href="https://doi.org/10.1038/s41592-018-0019-x">DOI</a> &nbsp;</td>
+</tr>
+<tr id="bib_TheCursesofDimensionality2018" class="bibtex noshow">
+<td colspan="6"><b>BibTeX</b>:
+<pre>
+@article{TheCursesofDimensionality2018,
+  author = {N. Altman and M. Krzywinski},
+  title = {The curse(s) of dimensionality},
+  journal = {Nat. Methods},
+  publisher = {Springer Nature},
+  year = {2018},
+  volume = {15},
+  number = {6},
+  pages = {399--400},
+  doi = {https://doi.org/10.1038/s41592-018-0019-x}
+}
+</pre></td>
+</tr>
+<tr id="McCullough2015lagged" class="entry">
+	<td>McCullough, M., Small, M., Stemler, T. and Iu, H.H.-C.</td>
+	<td>Time lagged ordinal partition networks for capturing dynamics of continuous dynamical systems <p class="infolinks">[<a href="javascript:toggleInfo('McCullough2015lagged','abstract')">Abstract</a>] [<a href="javascript:toggleInfo('McCullough2015lagged','bibtex')">BibTeX</a>]</p></td>
+	<td>2015</td>
+	<td>Chaos: An Interdisciplinary Journal of Nonlinear Science<br/>Vol. 25(5), pp. 053101&nbsp;</td>
+	<td>article</td>
+	<td><a href="https://doi.org/10.1063/1.4919075">DOI</a> &nbsp;</td>
+</tr>
+<tr id="abs_McCullough2015lagged" class="abstract noshow">
+	<td colspan="6"><b>Abstract</b>: We investigate a generalised version of the recently proposed ordinal partition time series to network transformation algorithm. First, we introduce a fixed time lag for the elements of each partition that is selected using techniques from traditional time delay embedding. The resulting partitions define regions in the embedding phase space that are mapped to nodes in the network space. Edges are allocated between nodes based on temporal succession thus creating a Markov chain representation of the time series. We then apply this new transformation algorithm to time series generated by the Rössler system and find that periodic dynamics translate to ring structures whereas chaotic time series translate to band or tube-like structures—thereby indicating that our algorithm generates networks whose structure is sensitive to system dynamics. Furthermore, we demonstrate that simple network measures including the mean out degree and variance of out degrees can track changes in the dynamical behaviour in a manner comparable to the largest Lyapunov exponent. We also apply the same analysis to experimental time series generated by a diode resonator circuit and show that the network size, mean shortest path length, and network diameter are highly sensitive to the interior crisis captured in this particular data set.</td>
+</tr>
+<tr id="bib_McCullough2015lagged" class="bibtex noshow">
+<td colspan="6"><b>BibTeX</b>:
+<pre>
+@article{McCullough2015lagged,
+  author = {McCullough,Michael and Small,Michael and Stemler,Thomas and Iu,Herbert Ho-Ching},
+  title = {Time lagged ordinal partition networks for capturing dynamics of continuous dynamical systems},
+  journal = {Chaos: An Interdisciplinary Journal of Nonlinear Science},
+  year = {2015},
+  volume = {25},
+  number = {5},
+  pages = {053101},
+  doi = {https://doi.org/10.1063/1.4919075}
+}
+</pre></td>
+</tr>
+<tr id="Carincotte2006changeDetection" class="entry">
+	<td>Carincotte, C., Derrode, S. and Bourennane, S.</td>
+	<td>Unsupervised change detection on SAR images using fuzzy hidden Markov chains <p class="infolinks">[<a href="javascript:toggleInfo('Carincotte2006changeDetection','abstract')">Abstract</a>] [<a href="javascript:toggleInfo('Carincotte2006changeDetection','bibtex')">BibTeX</a>]</p></td>
+	<td>2006</td>
+	<td>IEEE Trans. Geosci. Remote Sens.<br/>Vol. 44(2), pp. 432-441&nbsp;</td>
+	<td>article</td>
+	<td><a href="https://doi.org/10.1109/TGRS.2005.861007">DOI</a> &nbsp;</td>
+</tr>
+<tr id="abs_Carincotte2006changeDetection" class="abstract noshow">
+	<td colspan="6"><b>Abstract</b>: This work deals with unsupervised change detection in temporal sets of synthetic aperture radar (SAR) images. We focus on one of the most widely used change detector in the SAR context, the so-called log-ratio. In order to deal with the classification issue, we propose to use a new fuzzy version of hidden Markov chains (HMCs), and thus to address fuzzy change detection with a statistical approach. The main characteristic of the proposed model is to simultaneously use Dirac and Lebesgue measures at the class chain level. This allows the coexistence of hard pixels (obtained with the classical HMC segmentation) and fuzzy pixels (obtained with the fuzzy measure) in the same image. The quality assessment of the proposed method is achieved with several bidate sets of simulated images, and comparisons with classical HMC are also provided. Experimental results on real European Remote Sensing 2 Precision Image (ERS-2 PRI) images confirm the effectiveness of the proposed approach.</td>
+</tr>
+<tr id="bib_Carincotte2006changeDetection" class="bibtex noshow">
+<td colspan="6"><b>BibTeX</b>:
+<pre>
+@article{Carincotte2006changeDetection,
+  author = {C. Carincotte and S. Derrode and S. Bourennane},
+  title = {Unsupervised change detection on SAR images using fuzzy hidden Markov chains},
+  journal = {IEEE Trans. Geosci. Remote Sens.},
+  year = {2006},
+  volume = {44},
+  number = {2},
+  pages = {432-441},
+  doi = {https://doi.org/10.1109/TGRS.2005.861007}
+}
+</pre></td>
+</tr>
+<tr id="storie2018urban" class="entry">
+	<td>Storie, C.D.</td>
+	<td>Urban Boundary Mapping Using Sentinel-1A SAR Data <p class="infolinks">[<a href="javascript:toggleInfo('storie2018urban','abstract')">Abstract</a>] [<a href="javascript:toggleInfo('storie2018urban','bibtex')">BibTeX</a>]</p></td>
+	<td>2018</td>
+	<td>IGARSS 2018 -- IEEE International Geoscience and Remote Sensing Symposium, pp. 2960-2963&nbsp;</td>
+	<td>inproceedings</td>
+	<td><a href="https://doi.org/10.1109/IGARSS.2018.8519051">DOI</a> &nbsp;</td>
+</tr>
+<tr id="abs_storie2018urban" class="abstract noshow">
+	<td colspan="6"><b>Abstract</b>: Mapping urban boundaries is an area of considerable research interest. The ability to monitor growth and change is facilitated by the ease and accuracy of boundary delineation. This research proposes an open-source (data and software) workflow for detecting and delineating the urban-rural boundary. Using Sentinel-la SAR data for the city of Melbourne, Australia and a combination of texture and k-means classifications, using ESA SNAP software, a three-category map is produced that distinguishes urban from rural areas. A simple raster to polygon conversion produces a useable shapefile that can be added to a broader GIS based analysis.</td>
+</tr>
+<tr id="bib_storie2018urban" class="bibtex noshow">
+<td colspan="6"><b>BibTeX</b>:
+<pre>
+@inproceedings{storie2018urban,
+  author = {Storie, Christopher D},
+  title = {Urban Boundary Mapping Using Sentinel-1A SAR Data},
+  booktitle = {IGARSS 2018 -- IEEE International Geoscience and Remote Sensing Symposium},
+  year = {2018},
+  pages = {2960--2963},
+  doi = {https://doi.org/10.1109/IGARSS.2018.8519051}
+}
+</pre></td>
+</tr>
+<tr id="Kulp2016ordinal" class="entry">
+	<td>Kulp, C.W., Chobot, J.M., Freitas, H.R. and Sprechini, G.D.</td>
+	<td>Using ordinal partition transition networks to analyze ECG data <p class="infolinks">[<a href="javascript:toggleInfo('Kulp2016ordinal','abstract')">Abstract</a>] [<a href="javascript:toggleInfo('Kulp2016ordinal','bibtex')">BibTeX</a>]</p></td>
+	<td>2016</td>
+	<td>Chaos: An Interdisciplinary Journal of Nonlinear Science<br/>Vol. 26(7), pp. 073114&nbsp;</td>
+	<td>article</td>
+	<td><a href="https://doi.org/10.1063/1.4959537">DOI</a> &nbsp;</td>
+</tr>
+<tr id="abs_Kulp2016ordinal" class="abstract noshow">
+	<td colspan="6"><b>Abstract</b>: Electrocardiogram (ECG) data from patients with a variety of heart conditions are studied using ordinal pattern partition networks. The ordinal pattern partition networks are formed from the ECG time series by symbolizing the data into ordinal patterns. The ordinal patterns form the nodes of the network and edges are defined through the time ordering of the ordinal patterns in the symbolized time series. A network measure, called the mean degree, is computed from each time series-generated network. In addition, the entropy and number of non-occurring ordinal patterns (NFP) is computed for each series. The distribution of mean degrees, entropies, and NFPs for each heart condition studied is compared. A statistically significant difference between healthy patients and several groups of unhealthy patients with varying heart conditions is found for the distributions of the mean degrees, unlike for any of the distributions of the entropies or NFPs.</td>
+</tr>
+<tr id="bib_Kulp2016ordinal" class="bibtex noshow">
+<td colspan="6"><b>BibTeX</b>:
+<pre>
+@article{Kulp2016ordinal,
+  author = {Kulp,Christopher W. and Chobot,Jeremy M. and Freitas,Helena R. and Sprechini,Gene D.},
+  title = {Using ordinal partition transition networks to analyze ECG data},
+  journal = {Chaos: An Interdisciplinary Journal of Nonlinear Science},
+  year = {2016},
+  volume = {26},
+  number = {7},
+  pages = {073114},
+  doi = {https://doi.org/10.1063/1.4959537}
+}
+</pre></td>
+</tr>
+<tr id="Fadlallah2013Weightedpermutation" class="entry">
+	<td>Fadlallah, B.H., Chen, B., Keil, A. and Pr&iacute;ncipe, J.C.</td>
+	<td>Weighted-permutation entropy: a complexity measure for time series incorporating amplitude information. <p class="infolinks">[<a href="javascript:toggleInfo('Fadlallah2013Weightedpermutation','abstract')">Abstract</a>] [<a href="javascript:toggleInfo('Fadlallah2013Weightedpermutation','bibtex')">BibTeX</a>]</p></td>
+	<td>2013</td>
+	<td>Phys. Rev. E: Stat., Nonlinear, Soft Matter Phys.<br/>Vol. 87 2, pp. 022911&nbsp;</td>
+	<td>article</td>
+	<td><a href="https://doi.org/10.1103/PhysRevE.87.022911">DOI</a> &nbsp;</td>
+</tr>
+<tr id="abs_Fadlallah2013Weightedpermutation" class="abstract noshow">
+	<td colspan="6"><b>Abstract</b>: Permutation entropy (PE) has been recently suggested as a novel measure to characterize the complexity of nonlinear time series. In this paper, we propose a simple method to address some of PE's limitations, mainly its inability to differentiate between distinct patterns of a certain motif and the sensitivity of patterns close to the noise floor. The method relies on the fact that patterns may be too disparate in amplitudes and variances and proceeds by assigning weights for each extracted vector when computing the relative frequencies associated with every motif. Simulations were conducted over synthetic and real data for a weighting scheme inspired by the variance of each pattern. Results show better robustness and stability in the presence of higher levels of noise, in addition to a distinctive ability to extract complexity information from data with spiky features or having abrupt changes in magnitude.</td>
+</tr>
+<tr id="bib_Fadlallah2013Weightedpermutation" class="bibtex noshow">
+<td colspan="6"><b>BibTeX</b>:
+<pre>
+@article{Fadlallah2013Weightedpermutation,
+  author = {Bilal H. Fadlallah and Badong Chen and Andreas Keil and Jos&eacute; Carlos Pr&iacute;ncipe},
+  title = {Weighted-permutation entropy: a complexity measure for time series incorporating amplitude information.},
+  journal = {Phys. Rev. E: Stat., Nonlinear, Soft Matter Phys.},
+  year = {2013},
+  volume = {87 2},
+  pages = {022911},
+  doi = {https://doi.org/10.1103/PhysRevE.87.022911}
+}
+</pre></td>
+</tr>
+</tbody>
+</table>
+<footer>
+ <small>Created by <a href="http://jabref.sourceforge.net">JabRef</a> on 13/05/2020.</small>
+</footer>
+<!-- file generated by JabRef -->
+</body>
+</html>
+

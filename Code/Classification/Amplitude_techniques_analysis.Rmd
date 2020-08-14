@@ -1,0 +1,123 @@
+---
+title: "Analysis of amplitude information techniques in classification of regions"
+author: "Eduarda Chagas"
+date: "May 7, 2020"
+output:
+  pdf_document: default
+  html_notebook: default
+---
+
+In this script, we will evaluate the performance of the WATG technique for region classification in PolSAR textures.
+
+###Importing the packages
+
+```{r}
+# Load some packages: 
+if(!require(caret)) install.packages("caret")
+if(!require(MLmetrics)) install.packages("MLmetrics")
+
+```
+
+###FGPE with $\alpha = 0.5$
+
+```{r}
+n.total = 200
+regions = c(rep("Forest",40), rep("Sea",80), rep("Urban", 40), rep("Pasture", 40))
+
+Entropy.Complexity = data.frame("Entropy" = numeric(n.total), 
+                                "Complexity" = numeric(n.total),
+                                "Region" = character(n.total), 
+                                stringsAsFactors=FALSE)
+
+Entropy.Complexity.csv = read.csv(file="../../Data/EntropyComplexityFGPET1A05.csv", 
+                                  header=TRUE, sep=",")
+Entropy.Complexity$Entropy = Entropy.Complexity.csv[,1]
+Entropy.Complexity$Complexity = Entropy.Complexity.csv[,2]
+Entropy.Complexity$Region = regions
+
+
+split = 0.85
+trainIndex = createDataPartition(Entropy.Complexity$Region, p = split, list = FALSE)
+
+x = data.frame(Entropy.Complexity$Entropy[trainIndex], Entropy.Complexity$Complexity[trainIndex])
+y = factor(Entropy.Complexity$Region[trainIndex])
+
+x_validation = data.frame("Entropy" = Entropy.Complexity$Entropy[-trainIndex], "Complexity" = Entropy.Complexity$Complexity[-trainIndex])
+y_validation = factor(Entropy.Complexity$Region[-trainIndex])
+
+Entropy.Complexity = data.frame("Entropy" = Entropy.Complexity$Entropy[trainIndex], 
+                                "Complexity" = Entropy.Complexity$Complexity[trainIndex],
+                                "Region" = Entropy.Complexity$Region[trainIndex], 
+                                stringsAsFactors=FALSE)
+```
+
+####Creating KNN model and predicting
+```{r}
+set.seed(123)
+ctrl = trainControl(method="repeatedcv", number = 10, repeats = 10)
+knnFit = train(Region~., data = Entropy.Complexity, method = "knn", 
+               trControl = ctrl, 
+               preProcess = c("center","scale"), 
+               tuneLength = 20)
+
+pred = predict(knnFit, newdata = x_validation)
+
+xtab = table(pred, y_validation)
+confusionMatrix(xtab)
+```
+
+```{r}
+cat("Accuracy: ", Accuracy(pred, y_validation), " Recall: ", Recall(pred, y_validation), " Precision: ", Precision(pred, y_validation), " F1-Score: ", F1_Score(pred, y_validation), "\n")
+```
+
+###AAPE with A = 0.5
+
+```{r}
+n.total = 200
+regions = c(rep("Forest",40), rep("Sea",80), rep("Urban", 40), rep("Pasture", 40))
+
+Entropy.Complexity = data.frame("Entropy" = numeric(n.total), 
+                                "Complexity" = numeric(n.total),
+                                "Region" = character(n.total), 
+                                stringsAsFactors=FALSE)
+
+Entropy.Complexity.csv = read.csv(file="../../Data/EntropyComplexityAAPED3T1A05.csv", 
+                                  header=TRUE, sep=",")
+Entropy.Complexity$Entropy = Entropy.Complexity.csv[,1]
+Entropy.Complexity$Complexity = Entropy.Complexity.csv[,2]
+Entropy.Complexity$Region = regions
+
+
+split = 0.85
+trainIndex = createDataPartition(Entropy.Complexity$Region, p = split, list = FALSE)
+
+x = data.frame(Entropy.Complexity$Entropy[trainIndex], Entropy.Complexity$Complexity[trainIndex])
+y = factor(Entropy.Complexity$Region[trainIndex])
+
+x_validation = data.frame("Entropy" = Entropy.Complexity$Entropy[-trainIndex], "Complexity" = Entropy.Complexity$Complexity[-trainIndex])
+y_validation = factor(Entropy.Complexity$Region[-trainIndex])
+
+Entropy.Complexity = data.frame("Entropy" = Entropy.Complexity$Entropy[trainIndex], 
+                                "Complexity" = Entropy.Complexity$Complexity[trainIndex],
+                                "Region" = Entropy.Complexity$Region[trainIndex], 
+                                stringsAsFactors=FALSE)
+```
+
+####Creating KNN model and predicting
+```{r}
+set.seed(123)
+ctrl = trainControl(method="repeatedcv", number = 10, repeats = 10)
+knnFit = train(Region~., data = Entropy.Complexity, method = "knn", 
+               trControl = ctrl, 
+               preProcess = c("center","scale"), 
+               tuneLength = 20)
+
+pred = predict(knnFit, newdata = x_validation)
+
+xtab = table(pred, y_validation)
+confusionMatrix(xtab)
+```
+
+```{r}
+cat("Accuracy: ", Accuracy(pred, y_validation), " Recall: ", Recall(pred, y_validation), " Precision: ", Precision(pred, y_validation), " F1-Score: ", F1_Score(pred, y_validation), "\n")
+```

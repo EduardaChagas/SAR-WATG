@@ -1,0 +1,441 @@
+\RequirePackage{xr}
+\externaldocument{SARTexture-IT.R0}
+
+\documentclass[journal,onecolumn,draftcls,11pt]{IEEEtran}
+
+\usepackage{graphicx}
+\usepackage{subfigure}
+\usepackage{booktabs}
+\usepackage[T1]{fontenc}
+\usepackage[cmex10]{amsmath}
+\usepackage{amsfonts}
+\usepackage{color}
+\usepackage{todonotes}
+\usepackage{bm,bbm}
+\usepackage{wasysym}
+\usepackage{texnames}
+\usepackage{url}
+\usepackage[boxed]{algorithm2e}   % AAB inserido
+\usepackage[listings]{tcolorbox}
+\usepackage[binary-units]{siunitx}
+\usepackage{multirow,bigstrut}
+
+\begin{document}
+\title{Analysis and Classification of SAR Textures using Information Theory}
+
+\author{Eduarda~T.~C.~Chagas,
+	Alejandro~C.~Frery,
+	Osvaldo~A.~Rosso,
+	and~Heitor~S.~Ramos}
+
+\maketitle
+
+\IEEEpeerreviewmaketitle
+
+\section{Editor-in-Chief}
+\begin{tcolorbox}[colback=red!5!white,colframe=red!75!black,title=Comment \#1]
+Your manuscript JSTARS-2020-00645 Analysis and Classification of SAR Textures using Information Theory has been reviewed by the J-STARS Editorial Review Board and recommended for publication subject to satisfactory response to major revisions suggested. 
+
+It is recommended that you resubmit your manuscript as revised in accordance with the Editorial Review Board comments given below.
+\end{tcolorbox}
+
+Thank you very much for handling this manuscript.
+
+We have prepared a revised version taking into account all the comments and suggestions made by the reviewers.
+In fact, we found the reviews well-informed and constructive, and we would like to thank the reviewers for helping us make a better contribution.
+
+This response letter addresses all the comments in red, followed by
+our reactions, and, whenever necessary, the changes made.
+We also include the \texttt{diff} article between the prior and current versions, where deletions are in red and additions are in blue.
+As a final comment, we would like to stress that we added a link to a repository with the code and data that promote the reproducibility of this work.
+
+\section{Associate Editor}
+\begin{tcolorbox}[colback=red!5!white,colframe=red!75!black,title=Comment \#1]
+This manuscript presents a method of information theory to analysis and classification of SAR image textures, whose idea is interesting to the readers in SAR community. However, it is suggested to carefully make the revision according to the reviewers’ comments for significantly improving the quality of this manuscript, including clear motivation and novelty, good language organization, convincing quantitative evaluation, detailed experimental analysis, etc.
+\end{tcolorbox}
+
+Thank you very much.
+To the best of our knowledge, we have addressed all the comments and suggestions.
+
+\section{Reviewer \#1}
+
+\vskip3em\begin{tcolorbox}[colback=red!5!white,colframe=red!75!black,title=Comment \#1]
+As well known, SAR images have inherent speckle. Then, the robustness of features against speckle is very important to classification. Is it possible to analyze the robustness against speckle of the new features for SAR texture classification? 
+\end{tcolorbox}
+\todo[inline]{Estamos trabalhando nisso}
+
+\vskip3em\begin{tcolorbox}[colback=red!5!white,colframe=red!75!black,title=Comment \#2]
+The equivalent number of looks of the experimental data should be mentioned.
+\end{tcolorbox}
+
+\begin{tcolorbox}[colback=white,colframe=black,title=Changes \#2]
+	We updated the information regarding the dataset of SAR images textures presented in section III-A:
+
+    "The proposed method was evaluated by dataset based on three quad-polarimetric L-band SAR images from the NASA Jet Propulsion Laboratory’s (JPL’s) uninhabited aerial vehicle synthetic aperture radar (UAVSAR) with $\sim 2$m range resolution and $36$ looks."
+\end{tcolorbox}
+
+%Thank you very much for this suggestion.
+%We made the changes, as requested:
+
+
+\vskip3em\begin{tcolorbox}[colback=red!5!white,colframe=red!75!black,title=Comment \#3]
+In the experiments on sliding window selection, the authors analyze the impact of the delay $\tau$ on the classification of textures, and claim that $\tau$ should be set as 1 to preserve the spatial dependence. Does this parameter have some relation with the resolution of SAR image? 
+\end{tcolorbox}
+
+Since the resolution of an image is associated with the number of pixels, we can establish a relationship between this and the parameter $\tau$.
+
+If the number of pixels used to describe the texture is greater, the finer the granularity of the information captured in small values of $\tau$, and the less the loss of information captured between the elements of the same ordinal pattern when $\tau$ is higher.
+
+
+\vskip3em\begin{tcolorbox}[colback=red!5!white,colframe=red!75!black,title=Comment \#4]
+The resolution of the experimental data should be mentioned.
+\end{tcolorbox}
+
+\begin{tcolorbox}[colback=white,colframe=black,title=Changes \#4]
+	We updated the information regarding each of the images presented in section III-A:
+	\begin{itemize}
+		\item Sierra del Lacandón National Park, forest region in Guatemala (acquired on April 10, 2015). 
+		It was $8917 \times 3300$ pixels and its image resolution is $10m \times 2m$;
+		\item Cape Canaveral Ocean Regions (acquired on September 22, 2016).
+		It was $7038 \times 3300$ pixels and its image resolution is $10m \times 2m$;
+		\item Urban area of the city of Munich, Germany (acquired on June 5, 2015).
+		It was $5773 \times 3300$ pixels and its image resolution is $10m \times 3m$.
+	\end{itemize}
+\end{tcolorbox}
+
+%We added a rationale for the choice of this Algorithm:
+
+\vskip3em\begin{tcolorbox}[colback=red!5!white,colframe=red!75!black,title=Comment \#5]
+	In Fig.4, the four types of regions, forest, ocean type-1, ocean type-2,  and urban area, are given. In the following experiment, only three kinds of textures, forest, ocean, and urban area, are classified, as shown in Fig.7 and listed in Table I. Then, does the “ocean” in Fig.7 and Table I denote “ocean type-1” or “ocean type-2”?
+\end{tcolorbox}
+
+The results presented were based on samples organized as follows: 40 samples from the forest regions of Guatemala; 80 samples from the oceanic regions of Cape Canaveral, divided into two types with different contrasts; and 40 samples from urban areas in the city of Munich. Thus, the results are shown in Fig. 7 and Table I configure a set of samples with both types of contrast.
+Details on the dataset used and the dataset of oceanic regions are provided in the second paragraph in section III in "Image Dataset".
+
+
+\vskip3em\begin{tcolorbox}[colback=red!5!white,colframe=red!75!black,title=Comment \#6]
+	It is interesting to add some other classes, such as grass and bare soil, in the experiment. 
+	Actually, the three types of textures in the experiment are very different from each other.
+\end{tcolorbox}
+\todo[inline]{Estamos trabalhando nisso}
+
+\vskip3em\begin{tcolorbox}[colback=red!5!white,colframe=red!75!black,title=Comment \#7]
+	In WATG, the authors take the scattering properties of target into account. What do the scattering properties denote? Are they related to the scattering statistics? Could the authors explain it in detail?	
+\end{tcolorbox}
+
+In general, we know that the intensity of dispersion in urban areas is stronger than in forest regions.
+Most man-made targets are anisotropic scatterers because their particular shape determines the relationship between their scatterings and directions of vision.
+Natural targets, such as lawns and forests, are generally isotropic in flat areas because they produce volume scatterings with random phases.
+In this way, we can correlate non-stationary targets with man-made targets and correlate stationary targets with natural targets.
+Since WATG consists of a proposal for weighting the edges of the transition graph based on the amplitude of the signal, information on the intensity of dispersion can be captured and used to distinguish classes of regions.
+
+On the other hand, water surfaces cause the mirror-like reflection to reflect incident electromagnetic wave away from the sensor.
+This results in a particularly low backscatter which, in turn, thanks to the multiplicative noise, translates into a homogeneous region, almost without characteristics and without textures.
+At WATG we know that when the 1-D signal presents a uniform amplitude variation, the weights are well distributed between the edges, thus obtaining a random probability distribution and consequently a high entropy.
+
+\begin{tcolorbox}[colback=white,colframe=black,title=Changes \#7]
+	We updated the first paragraph of subsection II E to emphasize which physical properties of the signal the technique can emphasize in characterization and classification activities:
+	
+	"Our proposal for computing the probability distribution, henceforth referred to as Weighted Amplitude Transition Graph (WATG), takes into account the dispersion intensity of the target's backscatter, leading to a good characterization of the textures.
+	We propose a modification of the current ordinal pattern transition graph, incorporating the absolute difference between the observations that produced the patterns."
+\end{tcolorbox}
+
+
+\vskip3em\begin{tcolorbox}[colback=red!5!white,colframe=red!75!black,title=Comment \#8]
+	In the quantitative evaluation, the formulation or the reference about TPR, PPV, and F1-score should be given.
+\end{tcolorbox} 
+
+I agree with the reviewer and modifications have been incorporated into the manuscript.
+
+\begin{tcolorbox}[colback=white,colframe=black,title=Changes \#8]
+	The metrics formulas used in the work were incorporated in "Quantitative Evaluation" in section III.
+\end{tcolorbox}
+
+
+\vskip3em\begin{tcolorbox}[colback=red!5!white,colframe=red!75!black,title=Comment \#9]
+In the quantitative evaluation, the GLCM-based classification method obtains good TPR and PPV, but why the OA of this method is so poor?
+\end{tcolorbox} 
+
+The problem presented here consists of classification with small samples. 
+As reported in section III-A, the data set that we built for conducting the experiments have only $160$ samples.
+Therefore, the presence of false positives and false negatives has a bigger impact on the final result of OA.
+
+\begin{tcolorbox}[colback=white,colframe=black,title=Changes \#9]
+	We updated the subsection III-D, adding more details about the result obtained by the GLCM-based classification method.
+	
+	"Although GLCM-based classification method obtains good TPR and PPV, it has a low OA provided by the impact of the presence of false positives and false negatives results."	
+\end{tcolorbox}
+\todo[inline]{Precisa ser atualizado após os novos experimentos}
+
+\vskip3em\begin{tcolorbox}[colback=red!5!white,colframe=red!75!black,title=Comment \#10]
+	In section II, by using Hilbert-Peano curve, the authors turn the 2-D patch into a sequence, i.e., a 1-D signal, and maintain the spatial dependence. However, it may be not very suitable to name this 1-D signal as “a time series”, because this 1-D signal is not multi-temporal data.
+\end{tcolorbox} 
+
+I agree with the reviewer and modifications have been incorporated into the manuscript.
+
+\begin{tcolorbox}[colback=white,colframe=black,title=Changes \#10]
+	In the article, we replaced the term "time series" with "1-D signal".
+\end{tcolorbox}
+
+\section{Reviewer \#2}
+
+\vskip3em\begin{tcolorbox}[colback=red!5!white,colframe=red!75!black,title=Comment \#1]
+	The paper entitled "Analysis and Classification of SAR Textures using information theory" proposes an interesting approach to deal with texture from SAR images (in intensity or amplitude mode only). Nevertheless, it fails in giving a goal in the thematic use of this texture characterization: the paper shows some results through $256 \times 256$ patches but we do not know how to use this methodology on real images. Does it performs segmentation? Texture retrieval? How this technique behave on heterogeneous areas with mix forest and urban zones for instance? So please help the user in giving some ideas on the thematic problem this material can address.
+\end{tcolorbox} 
+
+The use of Bandt-Pompe symbolization and Information Theory descriptors has been showing excellent results in the time series characterization and classification.
+However, the application of this approach in images, especially in SAR image textures, still presents many problems with the descriptive power of the technique in data that do not have explicit temporal dependence.
+Thus, our objective is to present the first work in this line, and as such our technique has some limitations because we initially performed the classification of patches from homogeneous regions.
+On the other hand, WATG has great potential for applicability in the semantic segmentation of regions.
+For this, a new step would need to be included to detect transitions between the different types of regions along with the 1-D signal before sending signals to WATG.
+We believe that fruitful results can be obtained in this line in future works.
+
+\begin{tcolorbox}[colback=white,colframe=black,title=Changes \#1]
+	Thank you for the comment. To solve this problem, we added in the conclusion one paragraph explains our thematic problem and possible applications, how the potential applicability of the work in the semantic segmentation of regions.
+	
+	"Since the application of this work is limited to texture patches from homogeneous regions, we aim in the future study the possible impacts of analysis on heterogeneous areas, such as cultivation zones and mixed urban regions.
+	The use of transition detection techniques and the segmentation of these signals in a stage before the use of WATG may increase the power of its application and will be fruitful avenues for future work."
+\end{tcolorbox}
+
+
+\vskip3em\begin{tcolorbox}[colback=red!5!white,colframe=red!75!black,title=Comment \#2]
+	Why using "Bandt-Pompe Symbolisation" term instead of Permutation Entropy?
+\end{tcolorbox} 
+
+When using the term "Bandt-Pompe symbolization" we focus only on the stage of obtaining the probability distribution of ordinal patterns.
+Thus, we report separately the analysis of information theory descriptors, such as permutation entropy.
+By opting for this choice of approach, we were able to highlight the main differences between the techniques present in the literature, as is the case with WATG and the other ordinal pattern weighting algorithms.
+
+\vskip3em\begin{tcolorbox}[colback=red!5!white,colframe=red!75!black,title=Comment \#3]
+	Why hidden the fact that its goal is to estimate the Lyapunov exponent?
+\end{tcolorbox} 
+
+Although the Lyapunov exponent is a good indicator of chaotic systems, we intend to present a framework that:
+\begin{itemize}
+    \item through the symbolization of Bandt-Pompe and the linearization of Hilbert-Peano can extract patterns from the textures,
+    \item use WATG to apply backscatter intensity information to targets in a probability distribution, and
+    \item use the HC plane to characterize the dynamics of the texture generation system based on the degree of dependence and randomness of the elements.
+\end{itemize}
+
+\vskip3em\begin{tcolorbox}[colback=red!5!white,colframe=red!75!black,title=Comment \#4]
+	Permutation entropy has be dedicated to ergodic systems, how to deal with surface heterogeneity?
+\end{tcolorbox} 
+
+To deal with surface heterogeneity, one new step for signal segmentation would have to be added before using WATG, as reported in response to comment \#1.
+As this is an initial work focused on the application of the presented methodology (Bandt-Pompe permutation entropy), we did not attack this problem, focusing on patch analysis of homogeneous regions.
+
+\vskip3em\begin{tcolorbox}[colback=red!5!white,colframe=red!75!black,title=Comment \#5]
+ 	Fig 1 is miss-leading: are horizontal and vertical scans used as well?
+\end{tcolorbox} 
+
+No, we just cite such scanning techniques to exemplify other space-filing-curves that could be applied in the patch linearization process.
+We opted for the choice of Hilbert-Peano curves due to their property of preserving the spatial correlation of pixels~\cite{Lee1994Texture}, a desired characteristic in the characterization and classification of textures.
+
+\begin{tcolorbox}[colback=white,colframe=black,title=Changes \#5]
+	We updated the article, reinforcing only the use of Hilbert-Peano curves. 
+	For this, we add the following modification at the end of subsection II. A:
+	
+	"In this work, we use Hilbert-Peano patches of size $128 \times 128$."
+\end{tcolorbox}
+
+\vskip3em\begin{tcolorbox}[colback=red!5!white,colframe=red!75!black,title=Comment \#6]
+	Why a patch restriction and not an Peano-Hilbert scan applied on the entire image?
+\end{tcolorbox} 
+
+Our technique presents a first proposal for the use of ordinal patterns in textures of SAR images and obtained good results in the experiments carried out to classify homogeneous regions.
+As we mentioned in the reply to comment \#5, we chose to choose Hilbert-Peano curves due to their ability to preserve spatial correlation information of pixels.
+Thus, when applying it to the entire image, we would obtain as a result 1-D signals formed by segments of different regions samples, being necessary to apply an additional step of detection of the transition of the classes present in this signal.
+
+\vskip3em\begin{tcolorbox}[colback=red!5!white,colframe=red!75!black,title=Comment \#7]
+	As this "2D to causal 1D" transformation is artificial and as the reader will understand latter that a sub-sampling of $\tau$ will be used, why not investigating local "2D -> 1D" random projection much easier to use on SAR images?
+\end{tcolorbox} 
+
+The objective of Hilbert-Peano linearization is given by its ability to preserve spatial correlation information, as mentioned in the reply to comment \#5.
+In addition to this motivation, its application has a low computational cost, once the indexes are generated for a given patch of dimension $2^k \times 2^k$, $k \in \mathbb{N}$, the linearization step is performed with a computational complexity of $\mathcal{O}(1)$.
+
+\begin{tcolorbox}[colback=white,colframe=black,title=Changes \#7]
+	We updated the first paragraph of subsection II A:
+	
+	"In this work, we chose to use the Hilbert-Peano~\cite{Lee1994Texture} curve, due to its low computational cost and its ability to preserve relevant properties of pixel spatial correlation."
+\end{tcolorbox}
+
+
+\vskip3em\begin{tcolorbox}[colback=red!5!white,colframe=red!75!black,title=Comment \#8]
+	The use of "time-series" is deeply awkward in remote sensing, please just use "1D signal" or "ordered 1D signal"$\dots$ Remove "Time-Series" from keywords, you are NOT doing time-series analysis.
+\end{tcolorbox} 
+
+I agree with the reviewer and modifications have been incorporated into the manuscript.
+
+\begin{tcolorbox}[colback=white,colframe=black,title=Changes \#8]
+	The keyword "Time Series" was removed, and the new keywords are: 
+	
+	"Synthetic Aperture Radar (SAR), 
+	Texture, 
+	Terrain Classification,		
+	Permutation Entropy, 
+	Ordinal Patterns Transition Graphs."
+\end{tcolorbox}
+
+\vskip3em\begin{tcolorbox}[colback=red!5!white,colframe=red!75!black,title=Comment \#9]
+	The use of Entropy-Complexity plane refers to encoding-length approaches that have been used to SAR image segmentation. Complexity part acts as an added value in this approach, nevertheless, it can be seen as a parameter very dependent from the entropy itself (entropy refers to gaussiannity, complexity is based on distance to uniform distribution). In fact, the pixel distribution and correlation can be known accurately in SAR images (related to Gamma, K, or inverse Gamma distribution for instance). So why this couple Entropy-Complexity appears more discriminant for texture segmentation than pure entropy-based approaches? 
+\end{tcolorbox} 
+
+Statistical complexity can measure the degree of dependence structure between the elements of a given analyzed sequence.
+Through the HC plane, we can characterize the nature of the analyzed signal, determining whether it corresponds to a deterministic or stochastic dynamic.
+Data generated by deterministic dynamics have a greater structural dependence between its elements than those arising from a stochastic dynamic.
+As argued in response to comment \#7 from reviewer \#1, we can differentiate classes from different regions based on target properties and their backscatter.
+
+\vskip3em\begin{tcolorbox}[colback=red!5!white,colframe=red!75!black,title=Comment \#10]
+	A more radar-compilant complexity measure would be possible and useful?
+\end{tcolorbox} 
+
+The statistical complexity is obtained by the product of the permutation entropy and the Jensen-Shannon divergence from a uniform distribution.
+The uniform distribution is applied in divergence to measure how far the probability distribution obtained is from a system that does not carry information.
+In this way, a possible measure of statistical complexity for SAR texture images could be proposed by modifying the method of measuring the amount of information of a given distribution associated with a texture.
+ 
+\vskip3em\begin{tcolorbox}[colback=red!5!white,colframe=red!75!black,title=Comment \#11]
+	I am very surprised that $\tau$ give so contrasted results on True/False positive rates. Changing from $\tau = 1$ to $\tau = 3$ most of the time corresponds to considering neighbor in the horizontal direction instead of the vertical direction (and conversely) on the path of the Peano-Hilbert scan, so why this parameter so discriminant?
+\end{tcolorbox} 
+
+We would first like to thank you for the question because it was of this that we can verify a failure of the values applied for the linearization of the images.
+The results have already been updated and carefully reviewed by the authors of the article.
+
+In response to the question raised, we will consider the following sequence of pixels accessed by the Hilbert-Peano curve of area $128 \times 128$:
+\begin{equation*}
+    \{[1,1], [2,1], [2,2], [1,2], [1,3], [1,4], [2,4], [2,3], [3,3], [3,4]\}
+\end{equation*}
+Considering $D = 3$ and $\tau = 1$, we will have:
+\begin{equation*}
+    \{[1,1], [2,1], [2,2]\}, \{[2,1], [2,2], [1,2]\}, \{[2,2], [1,2], [1,3]\}, \{[1,2], [1,3], [1,4]\},
+\end{equation*}
+\begin{equation*}
+    \{[1,3], [1,4], [2,4]\}, \{[1,4], [2,4], [2,3]\}, \{[2,4], [2,3], [3,3]\}, \{[2,3], [3,3], [3,4]\}
+\end{equation*}
+However, considering $D = 3$ and $\tau = 3$ we will have:
+\begin{equation*}
+    \{[1,1], [1,2], [2,4]\}, \{[2,1], [1,3], [2,3]\}, \{[2,2], [1,4], [3,3]\}, \{[1,2], [2,4], [3,4]\}
+\end{equation*}
+As we can see, when considering $\tau = 1$, more patterns related to the image in question are obtained, adding more information in the analysis and consequently, we will have more patterns formed by neighboring pixels.
+ 
+\vskip3em\begin{tcolorbox}[colback=red!5!white,colframe=red!75!black,title=Comment \#12] Is this technique sensitive to oriented textures?
+\end{tcolorbox} 
+
+Oriented textures are composed of straight and/or elongated patterns, so we can infer that such types of images have high values of statistical complexity.
+
+\vskip3em\begin{tcolorbox}[colback=red!5!white,colframe=red!75!black,title=Comment \#13]
+	What can we conclude on all the presented weight techniques? What to use at the end from a thematic point of view?
+\end{tcolorbox} 
+
+In the experiments carried out to analyze homogeneous textures, among the weighting techniques presented, the ones that produced the worst performance were WPE and AAPE.
+These results can be explained by the weighting method applied, as both algorithms apply the parameter referring to the amplitude under the histogram of ordinal patterns.
+On the other hand, FGPE creates a new set of symbols by adding to the end of each ordinal pattern a parameter referring to its amplitude, managing to increase the granularity of the analysis, and improving performance.
+The best results, in general, are obtained by WATG, since it weighs the amplitude using no longer the pattern histogram, but using the transition graph.
+
+\begin{tcolorbox}[colback=white,colframe=black,title=Changes \#13]
+	Thank you very much for the comment.
+	At the end of subsection III D, we add a paragraph with the evaluation of the results obtained by these techniques.
+	
+	"Among the methods of weighting ordinal patterns, WPE produced the worst results: OA = $\text{OA}=\SI{87.5}{\percent}$ and $\text{F1-score}=\SI{72.7}{\percent}$.
+	%
+	AAPE also produced the worst overall precision result, but it produced more consistent results in the other metrics, presenting $\text{F1-score} = \SI{76,9}{\percent}$.
+	Such results can be explained by the granularity of amplitude information considered in the calculation of the probability distribution since these techniques perform the weighting based on the histogram of ordinal patterns.
+	%
+	On the other hand, FGPE creates a new set of symbols by adding to the end of each ordinal pattern a variable referring to its amplitude, achieving an improvement in performance."	
+\end{tcolorbox}
+\todo[inline]{Precisa ser atualizado após os novos experimentos}
+
+\section{Reviewer \#3}
+
+\vskip3em\begin{tcolorbox}[colback=red!5!white,colframe=red!75!black,title=Comment \#1]
+	The authors would better provide a clear motivation of proposed method in abstract. Why the Bandt-Peano symbolization is employed in this paper. The readers can be then interested in this work
+\end{tcolorbox} 
+
+We agree that the abstract did not describe well the motivations of the work, as well as our contribution. Therefore, the abstract was reformulated so that we can meet these expectations.
+
+\begin{tcolorbox}[colback=white,colframe=black,title=Changes \#1]
+	We updated the abstract as :
+	
+	“The use of Bandt-Pompe probability distributions and descriptors of Information Theory has been presenting satisfactory results with low computational cost in the time series analysis literature~\cite{Aquino2017Characterization, Rosso2016Signatures, Schieber2016network}.
+	However, these tools have limitations when applied to data without time dependency.  Given this context, we present a newly proposed technique for texture analysis and classification based on the Bandt-Pompe symbolization for SAR data. It consists of  (i) linearize a 2-D patch of the image using the Hilbert-Peano curve, (ii) build an Ordinal Pattern Transition Graph that considers the data amplitude encoded into the weight of the edges; (iii) obtain a probability distribution function derived from this graph; (iv) compute Information Theory descriptors (Permutation Entropy and Statistical Complexity) from this distribution and use them as features to feed a classifier. The ordinal pattern graph we propose considers that the weight of the edges is related to the absolute difference of observations, which encodes the information about the data amplitude.         This modification takes into account the scattering properties of the target and leads to the characterization of several types of textures. Experiments with data from Munich urban areas, Guatemala forest regions and Cape Canaveral ocean samples show the effectiveness of our technique in homogeneous areas, which achieves satisfactory levels of separability. The two descriptors chosen in this work are easy and quick to calculate and are used as input for a k-nearest neighbor classifier. Experiments show that this technique presents results similar to state-of-the-art techniques that employ a much larger number of features and, consequently, require a higher computational cost. ”
+	
+\end{tcolorbox}
+
+\vskip3em\begin{tcolorbox}[colback=red!5!white,colframe=red!75!black,title=Comment \#2]
+	The authors would better polish the English description. The current version is really not up to scratch of a top-tier journal.
+\end{tcolorbox} 
+
+I agree with the reviewer and modifications have been incorporated into the manuscript.
+
+\vskip3em\begin{tcolorbox}[colback=red!5!white,colframe=red!75!black,title=Comment \#3]
+	In the first page, there are more than 10 paragraphs. The similar structure can be found in the remaining sections. The authors would better organize this paper in the formalism of scientific paper.
+\end{tcolorbox} 
+
+I agree with the reviewer and modifications have been incorporated into the manuscript.
+
+\begin{tcolorbox}[colback=white,colframe=black,title=Changes \#3]
+	The introduction was restructured to solve the problem pointed out by the reviewer.
+\end{tcolorbox}
+
+\vskip3em\begin{tcolorbox}[colback=red!5!white,colframe=red!75!black,title=Comment \#4]
+	The recent development of texture analysis and classification in SAR images are very short. The authors would better discuss much more related studies in literature. Both the handcrafted features and the learned representations should be reviewed.
+\end{tcolorbox} 
+
+\begin{tcolorbox}[colback=white,colframe=black,title=Changes \#8]
+	Thank you very much for this suggestion, we agree with the reviewer and to correct this gap in the article we have reformulated the introduction by adding the analysis of related work in the fourth and fifth paragraph of the introduction.
+\end{tcolorbox}
+
+
+\vskip3em\begin{tcolorbox}[colback=red!5!white,colframe=red!75!black,title=Comment \#5]
+	In Section II, the motivation of proposed strategy is not described clearly. Why the Bandt-Peano symbolization has been employed. The author would better provide a clear explanations.
+\end{tcolorbox} 
+
+Thank you very much for this suggestion.
+We agree with the reviewer and modifications have been incorporated into the manuscript.
+
+\begin{tcolorbox}[colback=white,colframe=black,title=Changes \#5]
+We modified the first paragraph of section II, adding details of the methodology motivation used:
+
+"The methodology applied in this work is shown in Alg. 1.
+The main idea of the technique is as follows.
+Since the Bandt-Pompe symbolization is performed on 1-D signals, after receiving the P texture patch, the algorithm uses Hilbert-Peano curves to linearizes the image, thus preserving the spatial correlation structure of the pixels.
+Then, the procedure calls WATG subroutine to calculate the probability distribution under the linearized texture, considering the transition of ordinal patterns and their amplitude, thus taking into account the spreading properties of the target that influence the pixel intensity.
+Finally, Shannon's permutation entropy and statistical complexity are calculated to estimate the randomness and structural dependence degree of the signal dynamics underlying.
+This features obtained in the last step can be used either for characterization or classification."
+\end{tcolorbox}
+
+
+\vskip3em\begin{tcolorbox}[colback=red!5!white,colframe=red!75!black,title=Comment \#6]
+	The organization of this paper is a bit chaos. What is the relation between Section II-D and Section III. In my opinion, Section III can be merged into Section II.
+\end{tcolorbox} 
+
+I agree with the reviewer and modifications have been incorporated into the manuscript.
+
+\begin{tcolorbox}[colback=white,colframe=black,title=Changes \#6]
+	We added a new subsection called "Weighted Ordinal Patterns Methods" in Section II, before presenting the technique proposed in the present work.
+\end{tcolorbox}
+
+\vskip3em\begin{tcolorbox}[colback=red!5!white,colframe=red!75!black,title=Comment \#7]
+	The experiments on Quantitative Evaluation is very limited. In my opinion, they are not convincing. The authors would better provide much more comparative studies with state-of-the-art methods. The comparisons with deep learned representations may be much more convincing than handcrafted features.
+\end{tcolorbox} 
+
+We present the proposal of a handcrafted method that presents interpretability and good results in the dataset of few samples presented.
+Based on this, we do not use DL techniques as a baseline due to the following points:
+\begin{itemize}
+    \item interpretability,
+    \item dataset size, and
+    \item need for specific software.
+\end{itemize}
+
+\begin{tcolorbox}[colback=white,colframe=black,title=Changes \#7]
+	To improve the baseline used, we added three more techniques:
+    Histogram of oriented gradients (HOG)~\cite{dalal2005histograms},
+    Speeded-Up Robust Features (SURF)~\cite{bay2006surf}, and
+    Short Time Fourier Transform (STFT)~\cite{portnoff1980time} with Speeded-Up Robust Features (SURF).
+\end{tcolorbox}
+
+\bibliographystyle{IEEEtran}
+%\bibliography{bibtex/sar.bib}
+\bibliography{AbbrevRefs}
+
+\end{document}
+

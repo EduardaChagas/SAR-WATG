@@ -1,0 +1,111 @@
+---
+title: "Classification of Regions with glcm"
+author: "Eduarda Chagas"
+date: "March 11, 2020"
+output:
+  pdf_document: default
+  html_notebook: default
+---
+
+###Importing the packages
+
+```{r}
+# Load some packages: 
+if(!require(caret)) install.packages("caret")
+if(!require(MLmetrics)) install.packages("MLmetrics")
+
+setwd("/home/eduarda/Desktop/Repositories/SAR/SAR-WATG-master/Code/Classification")
+```
+
+###Importing the dataset
+
+For this analysis, three SAR images with different regions were used, they are:
+
+* Sierra del Lacandon National Park, Guatemala (purchased April 10, 2015), available at [https://uavsar.jpl.nasa.gov/cgi-bin/product.pl?jobName=Lacand_30202_15043_
+006_150410_L090_CX_01 # data] (https://uavsar.jpl.nasa.gov/cgi-bin/product.pl?jobName=Lacand_30202_15043_
+006_150410_L090_CX_01 # data);
+
+* Oceanic regions of Cape Canaveral (acquired on September 22, 2016);
+
+* Urban area of the city of Munich, Germany (acquired on June 5, 2015).
+
+A total of 160 samples were considered during the investigation, with 40 forest regions in Guatemala, 80 ocean regions in Cape Canaveral and 40 urban regions in the city of Munich.
+
+```{r}
+n.total = 160
+regions = c(rep("Forest",40), rep("Sea",80), rep("Urban", 40))
+glcm.descriptors = read.csv(file="../../Data/glcm.csv", header=TRUE, sep=",")
+GLCM = data.frame(glcm.descriptors, regions)
+
+split = 0.85
+trainIndex = createDataPartition(GLCM$regions, p = split, list = FALSE)
+
+x = data.frame(GLCM[trainIndex, 1:4])
+y = factor(GLCM$regions[trainIndex])
+
+x_validation = data.frame(GLCM[-trainIndex, 1:4])
+y_validation = factor(GLCM$regions[-trainIndex])
+
+GLCM = data.frame(GLCM[trainIndex, 1:4], "regions" = GLCM$regions[trainIndex])
+```
+
+##KNN Classifier
+
+###Creating KNN model and predicting
+```{r}
+set.seed(123)
+ctrl = trainControl(method="repeatedcv", number = 10, repeats = 10)
+knnFit = train(regions ~., data = GLCM, method = "knn", 
+               trControl = ctrl, 
+               preProcess = c("center","scale"), 
+               tuneLength = 20)
+
+pred = predict(knnFit, newdata = x_validation)
+
+xtab = table(pred, y_validation)
+confusionMatrix(xtab)
+```
+
+
+```{r}
+knnFit
+```
+
+```{r}
+cat("Accuracy: ", Accuracy(pred, y_validation), " Recall: ", Recall(pred, y_validation), " Precision: ", Precision(pred, y_validation), " F1-Score: ", F1_Score(pred, y_validation), "\n")
+```
+
+
+##SVM Classifier
+
+###Creating SVM model and predicting
+
+```{r}
+svmFit <- train(regions ~., data = GLCM, method = "svmRadial",
+                 trControl=ctrl,
+                 preProcess = c("center", "scale"),
+                 tuneLength = 20)
+pred = predict(svmFit, newdata = x_validation)
+
+xtab = table(pred, y_validation)
+confusionMatrix(xtab)
+```
+
+```{r}
+cat("Accuracy: ", Accuracy(pred, y_validation), " Recall: ", Recall(pred, y_validation), " Precision: ", Precision(pred, y_validation), " F1-Score: ", F1_Score(pred, y_validation), "\n")
+```
+
+##Random Forest Classifier
+
+###Creating Random Forest model and predicting
+```{r}
+rfFit <- train(regions ~., data = GLCM, method = "rf", 
+               trControl = ctrl, 
+               preProcess = c("center","scale"), 
+               tuneLength = 20)
+pred = predict(rfFit, newdata = x_validation)
+```
+
+```{r}
+cat("Accuracy: ", Accuracy(pred, y_validation), " Recall: ", Recall(pred, y_validation), " Precision: ", Precision(pred, y_validation), " F1-Score: ", F1_Score(pred, y_validation), "\n")
+```
