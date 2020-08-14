@@ -37,7 +37,7 @@ A total of 160 samples were considered during the investigation, with 40 forest 
 n.total = 200
 regions = c(rep("Forest",40), rep("Sea",80), rep("Urban", 40), rep("Pasture", 40))
 
-surf.data = read.csv(file="../../Data/SURF2.csv", header=TRUE, sep=",")
+surf.data = read.csv(file="../../Data/SURF.csv", header=TRUE, sep=",")
 
 split = 0.85
 trainIndex = createDataPartition(regions, p = split, list = FALSE)
@@ -68,7 +68,6 @@ pred = predict(knnFit, newdata = x_validation)
 xtab = table(pred, y_validation)
 confusionMatrix(xtab)
 ```
-
 
 ```{r}
 knnFit
