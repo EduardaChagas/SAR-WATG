@@ -117,25 +117,12 @@ TG <- function(series, dimension, delay){
 ###################################### Image Sample Parameters #######################################
 
 #Defining the number of samples from each region analyzed
-ns.guatemala = ns.canaveral.behavior1 = ns.canaveral.behavior2 = ns.munich = ns.esar = 40
-dimen.esar = dimen.guatemala = dimen.canaveral.behavior1 = dimen.canaveral.behavior2 = dimen.munich = matrix(nrow = 40, ncol = 4)
-n.total = (ns.guatemala + ns.canaveral.behavior1 + ns.canaveral.behavior2 + ns.munich + ns.esar)
+ns.guatemala = ns.canaveral.behavior1 = ns.canaveral.behavior2 = ns.munich = ns.pasture = 40
+dimen.pasture = dimen.guatemala = dimen.canaveral.behavior1 = dimen.canaveral.behavior2 = dimen.munich = matrix(nrow = 40, ncol = 4)
+n.total = (ns.guatemala + ns.canaveral.behavior1 + ns.canaveral.behavior2 + ns.munich + ns.pasture)
 
 #The SAR data is available on https://drive.google.com/file/d/1jtbOcYwQfysfcUp4UhoA7lSl4_tPIqfa/view?usp=sharing and
 # correspond to HHHH band of an image taken from the Cape Canaveral (acquired Sep 22, 2016)
-
-#Ocean regions in esar
-row.pasture <- c(rep(650, 8), rep(490, 7), rep(515, 5), rep(840, 3), 850, 450, 450, 440, 
-                 470, 460, 450, 480, rep(1200, 6), 700, 690, 900)
-
-col.pasture <- c(1550, 1678, 1700, 1560, 1575, 1590, 1610, 1650, 2000, 1990, 2010, 
-                 2050, 2020, 2075, 2060, 1990, 2000, 2010, 2020, 2050, 4450, 4500, 
-                 4430, 4410, rep(4300, 5), 4290, 5950, 5960, 5940, 5900, 5800, 5850,
-                 6500, rep(7000, 3))
-dimen.esar[1:40,1] = row.pasture
-dimen.esar[1:40,2] = rep(128, 40)
-dimen.esar[1:40,3] = col.pasture
-dimen.esar[1:40,4] = rep(128, 40)
 
 #Ocean regions in Cape Canaveral
 row1 = c(50, 100, 150, 200, 250, 350, 450, 550, 650, 750)
@@ -153,7 +140,6 @@ dimen.canaveral.behavior1[11:19,] = c(row2[1:9], rep(128, 9), rep(cols[2], 9), r
 dimen.canaveral.behavior1[20,] = c(row2[10], 128, 1350, 128)
 dimen.canaveral.behavior1[21:30,] = c(row3, rep(128, 10), rep(cols[3], 10), rep(128, 10))
 dimen.canaveral.behavior1[31:40,] = c(row3, rep(128, 10), rep(cols[4], 10), rep(128, 10))
-
 #{Behavior 2}
 dimen.canaveral.behavior2[1:9,] = c(row4, rep(128, 9), rep(cols[5], 9), rep(128, 9))
 dimen.canaveral.behavior2[10:20,] = c(row5, rep(128, 11), rep(cols[6], 11), rep(128, 11))
@@ -186,13 +172,23 @@ dimen.guatemala[31:33,] = c(row3, rep(128, 3), rep(cols[3], 3), rep(128, 3))
 dimen.guatemala[34:37,] = c(row4, rep(128, 4), rep(cols[4], 4), rep(128, 4))
 dimen.guatemala[38:40,] = c(row4[1:3], rep(128, 3), rep(cols[5], 3), rep(128, 3))
 
+#Pasture regions in Guatemala
+row = c(1, 50, 100, 200)
+col1 = seq(from = 910, to = 955, by = 5)
+col23 = seq(from = 950, to = 995, by = 5)
+col4 = seq(from = 1000, to = 1050, by = 5)
+dimen.pasture[1:10,] = c(rep(row[1], 10), rep(128, 10), col1, rep(128, 10))
+dimen.pasture[11:20,] = c(rep(row[2], 10), rep(128, 10), col23, rep(128, 10))
+dimen.pasture[21:30,] = c(rep(row[3], 10), rep(128, 10), col23, rep(128, 10))
+dimen.pasture[31:40,] = c(rep(row[4], 10), rep(128, 10), col4, rep(128, 10))
+
+
 ###################################### Function of Analysis ##########################################
 
 TG.analysis <- function(){
   
   n = 3
   tal = 1
-  load("../Data/ESAR.Rdata")
   hilbertcurve = unlist(read.table("../Data/Hilbert/HilbertCurves.txt")) + 1
   
   Entropy.Complexity = matrix(nrow = n.total, ncol = 2)
@@ -237,16 +233,15 @@ TG.analysis <- function(){
     Entropy.Complexity[(ns.canaveral.behavior1 + ns.canaveral.behavior2 + ns.guatemala) + j, 2] <- Ccomplexity(as.vector(g))
     cat("Munich ", j, "\n")
   }
-  #esar
-  HH_Int = imagematrix(equalize(matrix(Mod(SingleLookComplex[[1]]), nrow = 7134), nrow = 7134, ncol = 1475))
-  HH_Int = t(HH_Int)
-  for(j in c(1:ns.esar)){
-    img = HH_Int[dimen.esar[j,1]:(dimen.esar[j,1] + dimen.esar[j,2]), dimen.esar[j,3]:(dimen.esar[j,3] + dimen.esar[j,4])]
+  #Pasture
+  sar_data = raster(paste("../Data/", "guatemala", "/HHHH", ".grd", sep = ""))
+  for(j in c(1:ns.pasture)){
+    img = getValuesBlock(sar_data, row = dimen.pasture[j,1], nrows = dimen.pasture[j,2], col = dimen.pasture[j,3], ncols = dimen.pasture[j,4], format = "matrix")
     ts = img[hilbertcurve]/max(img[hilbertcurve])
     g = TG(ts, n, tal)
     Entropy.Complexity[(ns.canaveral.behavior1 + ns.canaveral.behavior2 + ns.guatemala + ns.munich) + j, 1] = shannonNormalized(as.vector(g))
     Entropy.Complexity[(ns.canaveral.behavior1 + ns.canaveral.behavior2 + ns.guatemala + ns.munich) + j, 2] = Ccomplexity(as.vector(g))
-    cat("ESAR ", j, "\n")
+    cat("Pasture ", j, "\n")
   }
   
   write.csv(Entropy.Complexity,'../Data/EntropyComplexityTGD3T1.csv', row.names = FALSE)

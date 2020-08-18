@@ -1,5 +1,5 @@
 source("imagematrix.R")
-library("png")
+require("png")
 
 equalize <- function(data, nrow, ncol){
   
@@ -9,7 +9,7 @@ equalize <- function(data, nrow, ncol){
 }
 
 ### Three complex bands from the ESAR sensor
-load("ESAR.Rdata")
+load("../../Data/ESAR.Rdata")
 
 typeof(SingleLookComplex)
 
@@ -27,10 +27,8 @@ plot(HV_Int)
 
 X11(width = 7134/5, height = 1475/5)
 ### Lexicographic color assignation
-plot(imagematrix(c(HH_Int, HV_Int, VV_Int), 
-                 type = "rgb", ncol = 1475, nrow = 7134))
-writePNG(imagematrix(c(HH_Int, HV_Int, VV_Int), 
-                     type = "rgb", ncol = 1475, nrow = 7134), target = "A_image_Test1.png")
+#plot(imagematrix(c(HH_Int, HV_Int, VV_Int), type = "rgb", ncol = 1475, nrow = 7134))
+writePNG(imagematrix(c(HH_Int, HV_Int, VV_Int), type = "rgb", ncol = 1475, nrow = 7134), target = "A_image_Test1.png")
 
 X11(width = 7134/5, height = 1475/5)
 ### Pauli decomposition color assignation

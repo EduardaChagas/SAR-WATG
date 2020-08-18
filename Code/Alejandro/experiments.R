@@ -136,31 +136,31 @@ g = transition.graph.weight(ts, dimension, 1)
 Entropy.Complexity[1,1] = shannonNormalized(as.vector(g))
 Entropy.Complexity[1,2] = Ccomplexity(as.vector(g))
 
-z1Look <- z * Speckle1Look 
+z1Look <- z * t(Speckle1Look)
 ts = z1Look[hilbertcurve]/max(z1Look[hilbertcurve])
 g = transition.graph.weight(ts, dimension, 1)
 Entropy.Complexity[2,1] = shannonNormalized(as.vector(g))
 Entropy.Complexity[2,2] = Ccomplexity(as.vector(g))
 
-z3Looks <- z * Speckle3Looks
+z3Looks <- z * t(Speckle3Looks)
 ts = z3Looks[hilbertcurve]/max(z3Looks[hilbertcurve])
 g = transition.graph.weight(ts, dimension, 1)
 Entropy.Complexity[3, 1] = shannonNormalized(as.vector(g))
 Entropy.Complexity[3, 2] = Ccomplexity(as.vector(g))
 
-z8Looks <- z * Speckle8Looks
+z8Looks <- z * t(Speckle8Looks)
 ts = z8Looks[hilbertcurve]/max(z8Looks[hilbertcurve])
 g = transition.graph.weight(ts, dimension, 1)
 Entropy.Complexity[4,1] = shannonNormalized(as.vector(g))
 Entropy.Complexity[4, 2] = Ccomplexity(as.vector(g))
 
-z100Looks <- z * Speckle100Looks
+z100Looks <- z * t(Speckle100Looks)
 ts = z100Looks[hilbertcurve]/max(z100Looks[hilbertcurve])
 g = transition.graph.weight(ts, dimension, 1)
 Entropy.Complexity[5, 1] = shannonNormalized(as.vector(g))
 Entropy.Complexity[5, 2] = Ccomplexity(as.vector(g))
 
-z500Looks <- z * Speckle500Looks
+z500Looks <- z * t(Speckle500Looks)
 ts = z500Looks[hilbertcurve]/max(z500Looks[hilbertcurve])
 g = transition.graph.weight(ts, dimension, 1)
 Entropy.Complexity[6, 1] = shannonNormalized(as.vector(g))
@@ -175,9 +175,6 @@ p = p + geom_point(data = Entropy.Complexity, aes(x = H, y = C),size = 1.5, alph
                    segment.size = 0.5, min.segment.length = 0, force = 18, alpha = .4) +
   ggtitle(expression(italic("H x C Plane"))) + 
   xlim(limits=c(0.3, 0.6)) + ylim(limits=c(0.3, 0.6)) +  
-  theme_few()
-
-pdf("p1.pdf", width = 8, height = 6) 
+  theme_few() 
 p
-dev.off() 
 
