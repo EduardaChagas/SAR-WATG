@@ -37,7 +37,7 @@ n.total = (ns.guatemala + ns.canaveral.behavior1 + ns.canaveral.behavior2 + ns.m
 row = c(1, 50, 100, 200)
 col1 = seq(from = 910, to = 955, by = 5)
 col23 = seq(from = 950, to = 995, by = 5)
-col4 = seq(from = 1000, to = 1050, by = 5)
+col4 = seq(from = 1000, to = 1045, by = 5)
 dimen.pasture[1:10,] = c(rep(row[1], 10), rep(128, 10), col1, rep(128, 10))
 dimen.pasture[11:20,] = c(rep(row[2], 10), rep(128, 10), col23, rep(128, 10))
 dimen.pasture[21:30,] = c(rep(row[3], 10), rep(128, 10), col23, rep(128, 10))
@@ -59,7 +59,6 @@ dimen.canaveral.behavior1[11:19,] = c(row2[1:9], rep(128, 9), rep(cols[2], 9), r
 dimen.canaveral.behavior1[20,] = c(row2[10], 128, 1350, 128)
 dimen.canaveral.behavior1[21:30,] = c(row3, rep(128, 10), rep(cols[3], 10), rep(128, 10))
 dimen.canaveral.behavior1[31:40,] = c(row3, rep(128, 10), rep(cols[4], 10), rep(128, 10))
-
 #{Behavior 2}
 dimen.canaveral.behavior2[1:9,] = c(row4, rep(128, 9), rep(cols[5], 9), rep(128, 9))
 dimen.canaveral.behavior2[10:20,] = c(row5, rep(128, 11), rep(cols[6], 11), rep(128, 11))
