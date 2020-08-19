@@ -21,17 +21,9 @@ if(!require(OpenImageR)){
   install.packages("OpenImageR")
   require(OpenImageR)
 }
-source("imagematrix.R")
 source("theory_information.R")
 
-equalize <- function(data, nrow, ncol){
-  
-  data <- matrix(ecdf(data)(data), nrow = nrow, ncol = ncol)
-  
-  return(data)
-}
-
-###################################### Image Sample Parameters #######################################
+######################################## Image Sample Parameters #######################################
 
 #Defining the number of samples from each region analyzed
 ns.guatemala = ns.canaveral.behavior1 = ns.canaveral.behavior2 = ns.munich = ns.pasture = 40
