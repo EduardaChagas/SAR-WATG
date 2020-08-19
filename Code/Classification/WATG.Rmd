@@ -42,10 +42,10 @@ Entropy.Complexity = data.frame("Entropy" = numeric(n.total),
                                 "Region" = character(n.total), 
                                 stringsAsFactors=FALSE)
 
-Entropy.Complexity.csv = read.csv(file="../../Data/EntropyComplexityWATG.csv", 
+Entropy.Complexity.csv = read.csv(file="../../Data/EntropyComplexityWATGD3T1.csv", 
                                   header=TRUE, sep=",")
-Entropy.Complexity$Entropy = Entropy.Complexity.csv[1:n.total, 1]
-Entropy.Complexity$Complexity = Entropy.Complexity.csv[1:n.total, 2]
+Entropy.Complexity$Entropy = Entropy.Complexity.csv[, 1]
+Entropy.Complexity$Complexity = Entropy.Complexity.csv[, 2]
 Entropy.Complexity$Region = regions
 
 
@@ -80,10 +80,6 @@ pred = predict(knnFit, newdata = x_validation)
 xtab = table(pred, y_validation)
 cm = confusionMatrix(xtab)
 cm
-```
-
-```{r}
-knnFit
 ```
 
 ```{r}

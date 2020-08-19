@@ -124,6 +124,16 @@ n.total = (ns.guatemala + ns.canaveral.behavior1 + ns.canaveral.behavior2 + ns.m
 #The SAR data is available on https://drive.google.com/file/d/1jtbOcYwQfysfcUp4UhoA7lSl4_tPIqfa/view?usp=sharing and
 # correspond to HHHH band of an image taken from the Cape Canaveral (acquired Sep 22, 2016)
 
+#Pasture regions in Guatemala
+row = c(1, 50, 100, 400)
+col1 = seq(from = 910, to = 955, by = 5)
+col23 = seq(from = 950, to = 995, by = 5)
+col4 = seq(from = 1500, to = 1680, by = 20)
+dimen.pasture[1:10,] = c(rep(row[1], 10), rep(128, 10), col1, rep(128, 10))
+dimen.pasture[11:20,] = c(rep(row[2], 10), rep(128, 10), col23, rep(128, 10))
+dimen.pasture[21:30,] = c(rep(row[3], 10), rep(128, 10), col23, rep(128, 10))
+dimen.pasture[31:40,] = c(rep(row[4], 10), rep(128, 10), col4, rep(128, 10))
+
 #Ocean regions in Cape Canaveral
 row1 = c(50, 100, 150, 200, 250, 350, 450, 550, 650, 750)
 row2 = c(50, 100, 150, 200, 250, 300, 350, 400, 450, 550)
@@ -171,16 +181,6 @@ dimen.guatemala[21:30,] = c(row2, rep(128, 10), rep(cols[2], 10), rep(128, 10))
 dimen.guatemala[31:33,] = c(row3, rep(128, 3), rep(cols[3], 3), rep(128, 3))
 dimen.guatemala[34:37,] = c(row4, rep(128, 4), rep(cols[4], 4), rep(128, 4))
 dimen.guatemala[38:40,] = c(row4[1:3], rep(128, 3), rep(cols[5], 3), rep(128, 3))
-
-#Pasture regions in Guatemala
-row = c(1, 50, 100, 200)
-col1 = seq(from = 910, to = 955, by = 5)
-col23 = seq(from = 950, to = 995, by = 5)
-col4 = seq(from = 1000, to = 1045, by = 5)
-dimen.pasture[1:10,] = c(rep(row[1], 10), rep(128, 10), col1, rep(128, 10))
-dimen.pasture[11:20,] = c(rep(row[2], 10), rep(128, 10), col23, rep(128, 10))
-dimen.pasture[21:30,] = c(rep(row[3], 10), rep(128, 10), col23, rep(128, 10))
-dimen.pasture[31:40,] = c(rep(row[4], 10), rep(128, 10), col4, rep(128, 10))
 
 
 ###################################### Function of Analysis ##########################################

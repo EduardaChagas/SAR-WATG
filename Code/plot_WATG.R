@@ -184,9 +184,9 @@ plot.d3t1 <- function(){
   
 }
 
-#pdf("WATG.pdf", width = 10, height = 8) 
-#plot.WATG = plot.d3t1()
-#dev.off() 
+pdf("WATG.pdf", width = 10, height = 8) 
+plot.WATG = plot.d3t1()
+dev.off() 
 
 p = plot.transition.graph.analysis()
 pdf("WATGHC.pdf", width = 24, height = 15)

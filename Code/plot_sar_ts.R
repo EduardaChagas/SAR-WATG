@@ -4,6 +4,7 @@ if(!require(gtools)) install.packages("gtools")
 if(!require(ggplot2)) install.packages("ggplot2")
 if(!require(ggthemes)) install.packages("ggthemes")
 if(!require(ggpubr)) install.packages("ggpubr")
+if(!require(raster)) install.packages("raster")
 
 ###################################### Plots Generator #################################################
 hilbertcurve = unlist(read.table("../Data/Hilbert/HilbertCurves.txt")) + 1
@@ -66,16 +67,15 @@ p.munich = ggplot(munich.data, aes(x = index, y = observation)) +
           theme_few(base_size = 14, base_family = "serif")  + 
           theme(plot.title = element_text(hjust=0.5)) + 
           scale_colour_few("Dark")
-#ESAR
-load("../../Data/ESAR.Rdata")
-dimen.esar= c(650, 128, 1550, 128)
-HH_Int = imagematrix(equalize(matrix(Mod(SingleLookComplex[[1]]), nrow = 7134), nrow = 7134, ncol = 1475))
-HH_Int = t(HH_Int)
-img = HH_Int[dimen.esar[1]:(dimen.esar[1] + dimen.esar[2]), dimen.esar[3]:(dimen.esar[3] + dimen.esar[4])]
-ts = img[hilbertcurve]/max(img[hilbertcurve])
-esar.data = data.frame(index = c(1:length(ts)), observation = ts)
 
-p.esar = ggplot(esar.data, aes(x = index, y = observation)) +
+#Pasture
+dimen.pasture = c(1, 128, 910, 128)
+sar_data = raster(paste("../../Data/", "Guatemala", "/HHHH", ".grd", sep = ""))
+img = getValuesBlock(sar_data, row = dimen.pasture[1], nrows = dimen.pasture[2], col = dimen.pasture[3], ncols = dimen.pasture[4], format = "matrix")
+ts = img[hilbertcurve]/max(img[hilbertcurve])
+pasture.data = data.frame(index = c(1:length(ts)), observation = ts)
+
+p.pasture = ggplot(pasture.data, aes(x = index, y = observation)) +
   geom_line() + 
   labs(x="Index", y="Observation") +
   ggtitle("Pasture Area") + 
@@ -84,7 +84,7 @@ p.esar = ggplot(esar.data, aes(x = index, y = observation)) +
   scale_colour_few("Dark")
 
 pdf("SAR_TS.pdf", width = 18, height = 4) 
-ggarrange(p.guatemala, p.cape.1, p.cape.2, p.munich, p.esar,
+ggarrange(p.guatemala, p.cape.1, p.cape.2, p.munich, p.pasture,
           ncol = 5, nrow = 1, common.legend = TRUE, legend = "right") + 
   theme_few() + theme(text = element_text(size = 14, family="Times", face="italic"), plot.title = element_text(hjust = 0.5)) + 
   guides(colour = guide_legend(override.aes = list(size = 3)))

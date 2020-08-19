@@ -24,7 +24,7 @@ HC.Plane.no.cota <- function(dimension, color.signal, shape.signal, signal.value
   shape.select = c(17,18,19,8)
   XMIN = min(signal.values[,1]) + 0.0005
   XMAX = min(max(signal.values[,1]) + 0.0005, 1)
-  YMIN = max(0,min(signal.values[,2]) - 0.008)
+  YMIN = max(0, min(signal.values[,2]) - 0.008)
   YMAX = max(signal.values[,2]) + 0.008
   
   # Paleta montada a partir de https://coolors.co/
@@ -42,7 +42,8 @@ HC.Plane.no.cota <- function(dimension, color.signal, shape.signal, signal.value
   p = p + 
     geom_point(data = signal.values, aes(x = H, y = C, color = Regions, shape = Shape), size = 2) +
     labs(x = TeX("\\textit{H}"), y = TeX("\\textit{C}"))  +
-    xlim(limits=c(XMIN, XMAX)) + ylim(limits=c(YMIN, YMAX)) + 
+    #xlim(limits=c(XMIN, XMAX)) + ylim(limits=c(YMIN, YMAX)) + 
+    xlim(limits=c(0.735, 0.8)) + ylim(limits=c(0.275, 0.3)) + 
     scale_shape_identity() +
     theme_few(base_size = 18, base_family = "serif")  + 
     theme(plot.title = element_text(hjust=0.5)) + 
@@ -74,6 +75,6 @@ plot.TG.analysis <- function(){
   return(plot.TG)
 }
 
-#pdf("TG.pdf", width = 10, height = 8) 
+pdf("TG.pdf", width = 10, height = 8) 
 plot.TG = plot.TG.analysis()
-#dev.off() 
+dev.off() 

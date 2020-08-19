@@ -124,10 +124,10 @@ n.total = (ns.guatemala + ns.canaveral.behavior1 + ns.canaveral.behavior2 + ns.m
 # correspond to HHHH band of an image taken from the Cape Canaveral (acquired Sep 22, 2016)
 
 #Pasture regions in Guatemala
-row = c(1, 50, 100, 200)
+row = c(1, 50, 100, 400)
 col1 = seq(from = 910, to = 955, by = 5)
 col23 = seq(from = 950, to = 995, by = 5)
-col4 = seq(from = 1000, to = 1045, by = 5)
+col4 = seq(from = 1500, to = 1680, by = 20)
 dimen.pasture[1:10,] = c(rep(row[1], 10), rep(128, 10), col1, rep(128, 10))
 dimen.pasture[11:20,] = c(rep(row[2], 10), rep(128, 10), col23, rep(128, 10))
 dimen.pasture[21:30,] = c(rep(row[3], 10), rep(128, 10), col23, rep(128, 10))

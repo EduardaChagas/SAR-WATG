@@ -68,7 +68,7 @@ analysis.metrics <- function(){
       metrics.calculated$Precision[a] = Precision(pred, y_validation)
       metrics.calculated$F1[a] = F1_Score(pred, y_validation)
       me = ml_test(pred, y_validation, output.as.table = FALSE)
-      metrics.calculated$FPR[a] =  1 - (sum(me$specificity)/3)
+      metrics.calculated$FPR[a] =  1 - (sum(me$specificity)/4)
       cm = confusionMatrix(table(pred, y_validation))
       metrics.calculated$sensitivity[a] = sum(diag(cm$table))/sum(cm$table)
       a = a + 1
@@ -88,7 +88,7 @@ plot.dimension.tau <- function(){
   D = factor(D)
   
   
-  metrics.calculated.csv = read.csv("../Data/metricsCalculated.csv")
+  metrics.calculated.csv = read.csv("../Data/metrics.calculated.csv")
 
   rainbow_colors = palette(c("#A80055",
                              "#B18FCF",
@@ -116,7 +116,6 @@ plot.dimension.tau <- function(){
                        bquote(tau == 4), 
                        bquote(tau == 5)),  4)
 
-     pdf("ROC.pdf", width = 6, height = 4)
      ROC.curve =  ggplot(data = metrics.calculated.csv,
                          aes(x = FPR, y = Recall,
                              group = D, shape = D, color = D)) + 
@@ -127,10 +126,12 @@ plot.dimension.tau <- function(){
        scale_shape_identity() +
        theme_few(base_size = 12, base_family = "serif")  +
        theme(plot.title = element_text(hjust=0.5))
-     print(ROC.curve)
-     dev.off()
+     return(ROC.curve)
 }
 
 #analysis.metrics()
 
-plot.dimension.tau()
+pdf("ROC.pdf", width = 6, height = 4)
+ROC.curve = plot.dimension.tau()
+print(ROC.curve)
+dev.off()

@@ -74,9 +74,9 @@ plot.BP.analysis <- function(){
     return(plot.BP)
 }
 
-#pdf("BP.pdf", width = 10, height = 8) 
+pdf("BP.pdf", width = 10, height = 8) 
 plot.BP = plot.BP.analysis()
-#dev.off() 
+dev.off() 
 
 pdf("HCAnalysis.pdf", width = 18, height = 5) 
 ggarrange(plot.BP, plot.TG, plot.WATG,
