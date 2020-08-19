@@ -193,7 +193,7 @@ TG.analysis <- function(){
   Entropy.Complexity = matrix(nrow = n.total, ncol = 2)
   
   #Guatemala
-  sar_data = raster(paste("../../../Data/", "guatemala", "/HHHH", ".grd", sep = ""))
+  sar_data = raster(paste("../../../Data/", "Guatemala", "/HHHH", ".grd", sep = ""))
   for(j in c(1:ns.guatemala)){
     img = getValuesBlock(sar_data, row = dimen.guatemala[j,1], nrows = dimen.guatemala[j,2], col = dimen.guatemala[j,3], ncols = dimen.guatemala[j,4], format = "matrix")
     ts = img[hilbertcurve]/max(img[hilbertcurve])
@@ -203,7 +203,7 @@ TG.analysis <- function(){
     cat("Guatemala ", j, "\n")
   }
   #Cape Canaveral - behavior 1
-  sar_data = raster(paste("../../../Data/", "cape", "/HHHH", ".grd", sep = ""))
+  sar_data = raster(paste("../../../Data/", "Cape", "/HHHH", ".grd", sep = ""))
   for(j in c(1:ns.canaveral.behavior1)){
     img = getValuesBlock(sar_data, row = dimen.canaveral.behavior1[j,1], nrows = dimen.canaveral.behavior1[j,2], col = dimen.canaveral.behavior1[j,3], ncols = dimen.canaveral.behavior1[j,4], format = "matrix")
     ts = img[hilbertcurve]/max(img[hilbertcurve])
@@ -213,7 +213,7 @@ TG.analysis <- function(){
     cat("Cape 1 ", j, "\n")
   }
   #Cape Canaveral - behavior 2
-  sar_data = raster(paste("../../../Data/", "cape", "/HHHH", ".grd", sep = ""))
+  sar_data = raster(paste("../../../Data/", "Cape", "/HHHH", ".grd", sep = ""))
   for(j in c(1:ns.canaveral.behavior2)){
     img = getValuesBlock(sar_data, row = dimen.canaveral.behavior2[j,1], nrows = dimen.canaveral.behavior2[j,2], col = dimen.canaveral.behavior2[j,3], ncols = dimen.canaveral.behavior2[j,4], format = "matrix")
     ts = img[hilbertcurve]/max(img[hilbertcurve])
@@ -223,7 +223,7 @@ TG.analysis <- function(){
     cat("Cape 2 ", j, "\n")
   }
   #Munich
-  sar_data = raster(paste("../../../Data/", "munich", "/HHHH", ".grd", sep = ""))
+  sar_data = raster(paste("../../../Data/", "Munich", "/HHHH", ".grd", sep = ""))
   for(j in c(1:ns.munich)){
     img = getValuesBlock(sar_data, row = dimen.munich[j,1], nrows = dimen.munich[j,2], col = dimen.munich[j,3], ncols = dimen.munich[j,4], format = "matrix")
     ts = img[hilbertcurve]/max(img[hilbertcurve])
@@ -233,7 +233,7 @@ TG.analysis <- function(){
     cat("Munich ", j, "\n")
   }
   #Pasture
-  sar_data = raster(paste("../../../Data/", "guatemala", "/HHHH", ".grd", sep = ""))
+  sar_data = raster(paste("../../../Data/", "Guatemala", "/HHHH", ".grd", sep = ""))
   for(j in c(1:ns.pasture)){
     img = getValuesBlock(sar_data, row = dimen.pasture[j,1], nrows = dimen.pasture[j,2], col = dimen.pasture[j,3], ncols = dimen.pasture[j,4], format = "matrix")
     ts = img[hilbertcurve]/max(img[hilbertcurve])

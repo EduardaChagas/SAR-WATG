@@ -145,7 +145,7 @@ SURF.analysis <- function(){
     cat("Munich ", j, "\n")
   }
   #Pasture
-  sar_data = raster(paste("../../../Data/", "guatemala", "/HHHH", ".grd", sep = ""))
+  sar_data = raster(paste("../../../Data/", "Guatemala", "/HHHH", ".grd", sep = ""))
   for(j in c(1:ns.pasture)){
     img = getValuesBlock(sar_data, row = dimen.pasture[j,1], nrows = dimen.pasture[j,2], col = dimen.pasture[j,3], ncols = dimen.pasture[j,4], format = "matrix")
     img.surf = array(img, dim = c(1,128,128))
