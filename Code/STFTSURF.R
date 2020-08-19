@@ -96,7 +96,7 @@ dimen.guatemala[38:40,] = c(row4[1:3], rep(128, 3), rep(cols[5], 3), rep(128, 3)
 
 STFT.SURF.analysis <- function(){
   dim.max = 2000
-  surf.data = matrix(rep(0, 371200), nrow = 200, ncol = dim.max)
+  surf.data = matrix(rep(0, 400000), nrow = 200, ncol = dim.max)
   #Guatemala
   sar_data = raster(paste("../../../Data/", "guatemala", "/HHHH", ".grd", sep = ""))
   for(j in c(1:ns.guatemala)){
