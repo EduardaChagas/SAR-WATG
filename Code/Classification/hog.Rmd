@@ -71,9 +71,5 @@ confusionMatrix(xtab)
 
 
 ```{r}
-knnFit
-```
-
-```{r}
 cat("Accuracy: ", Accuracy(pred, y_validation), " Recall: ", Recall(pred, y_validation), " Precision: ", Precision(pred, y_validation), " F1-Score: ", F1_Score(pred, y_validation), "\n")
 ```
