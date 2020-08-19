@@ -186,7 +186,6 @@ dimen.pasture[31:40,] = c(rep(row[4], 10), rep(128, 10), col4, rep(128, 10))
 ###################################### Function of Analysis ##########################################
 
 TG.analysis <- function(){
-  
   n = 3
   tal = 1
   hilbertcurve = unlist(read.table("../Data/Hilbert/HilbertCurves.txt")) + 1
@@ -243,9 +242,7 @@ TG.analysis <- function(){
     Entropy.Complexity[(ns.canaveral.behavior1 + ns.canaveral.behavior2 + ns.guatemala + ns.munich) + j, 2] = Ccomplexity(as.vector(g))
     cat("Pasture ", j, "\n")
   }
-  
   write.csv(Entropy.Complexity,'../Data/EntropyComplexityTGD3T1.csv', row.names = FALSE)
-  
 }
 
 TG.analysis()
