@@ -155,7 +155,7 @@ plot.transition.graph.analysis <- function(){
     }
   }
   pdf("WATGHC.pdf", width = 24, height = 15)  
-  ggarrange(plots[[1]], plots[[2]], plots[[3]], plots[[4]], plots[[5]],
+  p = ggarrange(plots[[1]], plots[[2]], plots[[3]], plots[[4]], plots[[5]],
                 plots[[6]], plots[[7]], plots[[8]], plots[[9]], plots[[10]],
                 plots[[11]], plots[[12]], plots[[13]], plots[[14]], plots[[15]],
                 plots[[16]], plots[[17]], plots[[18]], plots[[19]], plots[[20]],
@@ -165,6 +165,7 @@ plot.transition.graph.analysis <- function(){
     labs(colour=expression(italic(Regions))) +
     theme_clean() + theme(text=element_text(size=14, family="Times"), axis.text.x=element_blank(), axis.text.y=element_blank(),plot.title = element_text(hjust=0.5)) + 
     guides(colour = guide_legend(override.aes = list(size=3)))
+  print(p)
  dev.off()
 }
 
@@ -184,9 +185,9 @@ plot.d3t1 <- function(){
   
 }
 
-pdf("WATG.pdf", width = 10, height = 8) 
-plot.WATG = plot.d3t1()
-dev.off() 
+#pdf("WATG.pdf", width = 10, height = 8) 
+#plot.WATG = plot.d3t1()
+#dev.off() 
 
 plot.transition.graph.analysis()
 

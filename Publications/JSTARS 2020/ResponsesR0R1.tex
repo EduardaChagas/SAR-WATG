@@ -1,5 +1,5 @@
 \RequirePackage{xr}
-\externaldocument{SARTexture-IT.R0}
+%\externaldocument{SARTexture-IT.R0}
 
 \documentclass[journal,onecolumn,draftcls,11pt]{IEEEtran}
 
@@ -10,7 +10,6 @@
 \usepackage[cmex10]{amsmath}
 \usepackage{amsfonts}
 \usepackage{color}
-\usepackage{todonotes}
 \usepackage{bm,bbm}
 \usepackage{wasysym}
 \usepackage{texnames}
@@ -62,7 +61,12 @@ To the best of our knowledge, we have addressed all the comments and suggestions
 \vskip3em\begin{tcolorbox}[colback=red!5!white,colframe=red!75!black,title=Comment \#1]
 As well known, SAR images have inherent speckle. Then, the robustness of features against speckle is very important to classification. Is it possible to analyze the robustness against speckle of the new features for SAR texture classification? 
 \end{tcolorbox}
-\todo[inline]{Estamos trabalhando nisso}
+
+We are grateful for the questioning, through which we have been able to expand our knowledge of the properties of the technique presented.
+
+\begin{tcolorbox}[colback=white,colframe=black,title=Changes \#1]
+	We studied the robustness of WATG and the features applied against the speckle and added a new subsection with the respective results at the end of section III.
+\end{tcolorbox}
 
 \vskip3em\begin{tcolorbox}[colback=red!5!white,colframe=red!75!black,title=Comment \#2]
 The equivalent number of looks of the experimental data should be mentioned.
@@ -109,7 +113,12 @@ The resolution of the experimental data should be mentioned.
 	In Fig.4, the four types of regions, forest, ocean type-1, ocean type-2,  and urban area, are given. In the following experiment, only three kinds of textures, forest, ocean, and urban area, are classified, as shown in Fig.7 and listed in Table I. Then, does the “ocean” in Fig.7 and Table I denote “ocean type-1” or “ocean type-2”?
 \end{tcolorbox}
 
-The results presented were based on samples organized as follows: 40 samples from the forest regions of Guatemala; 80 samples from the oceanic regions of Cape Canaveral, divided into two types with different contrasts; and 40 samples from urban areas in the city of Munich. Thus, the results are shown in Fig. 7 and Table I configure a set of samples with both types of contrast.
+The results presented were based on samples organized as follows: 
+$40$ samples from Guatemalan forest regions;
+$40$ samples from Guatemalan pasture regions;
+$80$ samples from the oceanic regions of Cape Canaveral, divided into two types with different contrast; and
+$40$ samples of urban regions of the city of Munich.
+Thus, the results are shown in Fig. 7 and Table I configure a set of samples with both types of contrast.
 Details on the dataset used and the dataset of oceanic regions are provided in the second paragraph in section III in "Image Dataset".
 
 
@@ -117,7 +126,10 @@ Details on the dataset used and the dataset of oceanic regions are provided in t
 	It is interesting to add some other classes, such as grass and bare soil, in the experiment. 
 	Actually, the three types of textures in the experiment are very different from each other.
 \end{tcolorbox}
-\todo[inline]{Estamos trabalhando nisso}
+
+\begin{tcolorbox}[colback=white,colframe=black,title=Changes \#6]
+    We added 40 samples of pasture areas to the analysis and redid all experiments to study the resulting changes.
+\end{tcolorbox}
 
 \vskip3em\begin{tcolorbox}[colback=red!5!white,colframe=red!75!black,title=Comment \#7]
 	In WATG, the authors take the scattering properties of target into account. What do the scattering properties denote? Are they related to the scattering statistics? Could the authors explain it in detail?	
@@ -157,15 +169,14 @@ In the quantitative evaluation, the GLCM-based classification method obtains goo
 \end{tcolorbox} 
 
 The problem presented here consists of classification with small samples. 
-As reported in section III-A, the data set that we built for conducting the experiments have only $160$ samples.
+As reported in section III-A, the data set that we built for conducting the experiments have only $200$ samples.
 Therefore, the presence of false positives and false negatives has a bigger impact on the final result of OA.
 
 \begin{tcolorbox}[colback=white,colframe=black,title=Changes \#9]
 	We updated the subsection III-D, adding more details about the result obtained by the GLCM-based classification method.
 	
-	"Although GLCM-based classification method obtains good TPR and PPV, it has a low OA provided by the impact of the presence of false positives and false negatives results."	
+	"Since the problem analyzed consists of classification with few samples, although the classification method GLCM-based obtains good TPR and PPV, it has a low OA provided by the impact of the presence of false-positive and false-negative results."	
 \end{tcolorbox}
-\todo[inline]{Precisa ser atualizado após os novos experimentos}
 
 \vskip3em\begin{tcolorbox}[colback=red!5!white,colframe=red!75!black,title=Comment \#10]
 	In section II, by using Hilbert-Peano curve, the authors turn the 2-D patch into a sequence, i.e., a 1-D signal, and maintain the spatial dependence. However, it may be not very suitable to name this 1-D signal as “a time series”, because this 1-D signal is not multi-temporal data.
@@ -326,23 +337,23 @@ Oriented textures are composed of straight and/or elongated patterns, so we can 
 	What can we conclude on all the presented weight techniques? What to use at the end from a thematic point of view?
 \end{tcolorbox} 
 
-In the experiments carried out to analyze homogeneous textures, among the weighting techniques presented, the ones that produced the worst performance were WPE and AAPE.
-These results can be explained by the weighting method applied, as both algorithms apply the parameter referring to the amplitude under the histogram of ordinal patterns.
-On the other hand, FGPE creates a new set of symbols by adding to the end of each ordinal pattern a parameter referring to its amplitude, managing to increase the granularity of the analysis, and improving performance.
-The best results, in general, are obtained by WATG, since it weighs the amplitude using no longer the pattern histogram, but using the transition graph.
+In the experiments carried out to analyze homogeneous textures, among the weighting techniques presented, the ones that showed the worst performance were FGPE and AAPE.
+Therefore, we conclude that his methods of weighting ordinal patterns cannot describe SAR texture samples well.
+On the other hand, the WPE obtained one of the best results of the analysis developed.
+The best results, in general, are obtained by WATG, since it weighs the amplitude no longer by the pattern histogram, but by the transition graph, giving greater importance to transitions with high variations in intensity.
 
 \begin{tcolorbox}[colback=white,colframe=black,title=Changes \#13]
 	Thank you very much for the comment.
 	At the end of subsection III D, we add a paragraph with the evaluation of the results obtained by these techniques.
 	
-	"Among the methods of weighting ordinal patterns, WPE produced the worst results: OA = $\text{OA}=\SI{87.5}{\percent}$ and $\text{F1-score}=\SI{72.7}{\percent}$.
+	"As we can observed in Table 1, among the methods of weighting ordinal patterns, FGPE produced the worst results: $\text{OA}=\SI{86.6}{\percent}$ and $\text{F1-score}=\SI{72.7}{\percent}$.
 	%
-	AAPE also produced the worst overall precision result, but it produced more consistent results in the other metrics, presenting $\text{F1-score} = \SI{76,9}{\percent}$.
-	Such results can be explained by the granularity of amplitude information considered in the calculation of the probability distribution since these techniques perform the weighting based on the histogram of ordinal patterns.
+	AAPE also produced a low F1-score result, but it produced more consistent results in the other metrics, presenting $\text{OA} = \SI{93.3}{\percent}$.
 	%
-	On the other hand, FGPE creates a new set of symbols by adding to the end of each ordinal pattern a variable referring to its amplitude, achieving an improvement in performance."	
+	On the other hand, WPE achieved one of the best results of the developed analysis: $\text{OA}=\SI{93.3}{\percent}$ and $\text{F1-score}=\SI{92.3}{\percent}$.
+	%
+	Therefore, we found that among such methods, WATG is the one that best describes the textures presented, obtaining the best performance."	
 \end{tcolorbox}
-\todo[inline]{Precisa ser atualizado após os novos experimentos}
 
 \section{Reviewer \#3}
 

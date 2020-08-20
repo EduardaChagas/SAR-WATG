@@ -129,7 +129,7 @@ plot.dimension.tau <- function(){
      return(ROC.curve)
 }
 
-#analysis.metrics()
+analysis.metrics()
 
 pdf("ROC.pdf", width = 6, height = 4)
 ROC.curve = plot.dimension.tau()
