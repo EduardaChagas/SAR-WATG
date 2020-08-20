@@ -120,7 +120,7 @@ plot(
 )
 
 ts = z[hilbertcurve]/max(z[hilbertcurve])
-g = transition.graph.weight(ts, dimension, 1)
+g = transition.graph.weight(ts, 6, 1)
 Entropy.Complexity[1,1] = shannonNormalized(as.vector(g))
 Entropy.Complexity[1,2] = Ccomplexity(as.vector(g))
 
@@ -145,14 +145,14 @@ Entropy.Complexity$Speckle.Looks = waves.types
 #the (h,c) point. Speckle and signal are comparable, since the signal is in [0,1], 
 #and the expected value of the speckle is 1. D = 6, looks = c(z, 500, 100, 1, 8, 3)
 p = cotas(factorial(6)^2)
-p = p + geom_point(data = Entropy.Complexity, aes(x = H, y = C, color = Speckle.Looks), size = 1.5, alpha = .4) + 
+p = p + geom_point(data = Entropy.Complexity, aes(x = H, y = C, color = Speckle.Looks), size = 2.5, alpha = .8) + 
   geom_label_repel(data = Entropy.Complexity, aes(x = H, y = C, label = waves.types), 
-                   segment.size = 0.1, min.segment.length = 0, force = 18, alpha = .4) +
-  ggtitle(expression(italic("H x C Plane"))) + 
-  labs(x = TeX("\\textit{H}"), y = TeX("\\textit{C}"))  +
+                   segment.size = 0.05, min.segment.length = 0, force = 18, alpha = 1) +
   xlim(limits=c(0.3, 0.6)) + ylim(limits=c(0.3, 0.6)) + 
   theme_few(base_size = 18, base_family = "serif")  + 
-  theme(plot.title = element_text(hjust=0.5), legend.position="none")
+  theme(plot.title = element_text(hjust=0.5), legend.position="none") +
+  ggtitle(TeX('\\textit{H} $\ \\times $\ \\textit{C Plane}')) +
+  labs(x = TeX("\\textit{H}"), y = TeX("\\textit{C}")) 
 
 pdf("p1.pdf", width = 8, height = 6) 
 p
@@ -169,7 +169,7 @@ z <- outer(x,y,deterministic)
 range(z) # it is in [-1, 1], let's scale it to [0,1]
 z <- normalize(z)
 ts = z[hilbertcurve]/max(z[hilbertcurve])
-g = transition.graph.weight(ts, dimension, 1)
+g = transition.graph.weight(ts, 6, 1)
 Entropy.Complexity.2[1,1] = shannonNormalized(as.vector(g))
 Entropy.Complexity.2[1,2] = Ccomplexity(as.vector(g))
 
@@ -196,8 +196,8 @@ Entropy.Complexity.2$Speckle.Looks = waves.types
 p = cotas(factorial(6)^2)
 p = p + geom_point(data = Entropy.Complexity.2, aes(x = H, y = C, color = Speckle.Looks), size = 1.5, alpha = .4) + 
   geom_label_repel(data = Entropy.Complexity.2, aes(x = H, y = C, label = waves.types), 
-                   segment.size = 0.1, min.segment.length = 0, force = 18, alpha = .4) +
-  ggtitle(expression(italic("H x C Plane"))) + 
+                   segment.size = 0.1, min.segment.length = 0, force = 18, alpha = 1) +
+  ggtitle(TeX("\\textit{H} $ \\times $ \\textit{C Plane}")) +
   labs(x = TeX("\\textit{H}"), y = TeX("\\textit{C}"))  +
   xlim(limits=c(0.3, 0.6)) + ylim(limits=c(0.3, 0.6)) + 
   theme_few(base_size = 18, base_family = "serif")  + 
@@ -218,7 +218,7 @@ z <- outer(x,y,deterministic)
 range(z) # it is in [-1, 1], let's scale it to [0,1]
 z <- normalize(z)
 ts = z[hilbertcurve]/max(z[hilbertcurve])
-g = transition.graph.weight(ts, dimension, 1)
+g = transition.graph.weight(ts, 6, 1)
 Entropy.Complexity.3[1,1] = shannonNormalized(as.vector(g))
 Entropy.Complexity.3[1,2] = Ccomplexity(as.vector(g))
 
@@ -245,8 +245,8 @@ Entropy.Complexity.3$Speckle.Looks = waves.types
 p = cotas(factorial(6)^2)
 p = p + geom_point(data = Entropy.Complexity.3, aes(x = H, y = C, color = Speckle.Looks), size = 1.5, alpha = .4) + 
   geom_label_repel(data = Entropy.Complexity.3, aes(x = H, y = C, label = waves.types), 
-                   segment.size = 0.1, min.segment.length = 0, force = 18, alpha = .4) +
-  ggtitle(expression(italic("H x C Plane"))) + 
+                   segment.size = 0.1, min.segment.length = 0, force = 18, alpha = 1) +
+  ggtitle(TeX("\\textit{H} $ \\times $ \\textit{C Plane}")) +
   labs(x = TeX("\\textit{H}"), y = TeX("\\textit{C}"))  +
   xlim(limits=c(0.3, 0.6)) + ylim(limits=c(0.3, 0.6)) + 
   theme_few(base_size = 18, base_family = "serif")  + 
