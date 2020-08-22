@@ -41,12 +41,6 @@
 
 \renewcommand{\Bbb}{\mathbb}
 
-% Author Orchid ID: enter ID or remove command
-%\newcommand{\orcidauthorA}{0000-0001-9647-0506} 
-%\newcommand{\orcidauthorB}{0000-0002-8002-5341} 
-%\newcommand{\orcidauthorC}{0000-0002-1288-2528} 
-%\newcommand{\orcidauthorD}{0000-0003-4523-6466}
-
 \newdimen\HilbertLastX
 \newdimen\HilbertLastY
 \newcounter{HilbertOrder}
@@ -113,7 +107,7 @@
 		However, these tools have limitations when applied to data without time dependency.
 		Given this context, we present a newly proposed technique for texture analysis and classification based on the Bandt-Pompe symbolization for SAR data.
 		It consists of
-		(i)~linearize a 2-D patch of the image using the Hilbert-Peano curve,
+		(i)~linearize a \mbox{2-D} patch of the image using the Hilbert-Peano curve,
 		(ii)~build an Ordinal Pattern Transition Graph that considers the data amplitude encoded into the weight of the edges;
 		(iii)~obtain a probability distribution function derived from this graph;
 		(iv)~compute Information Theory descriptors (Permutation Entropy and Statistical Complexity) from this distribution and use them as features to feed a classifier.
@@ -134,10 +128,7 @@
 	
 	\IEEEpeerreviewmaketitle
 	
-	%\newpage
-	%\tableofcontents
-	
-	\section{Introduction}
+	\section{Introduction}\label{Sec:Intro}
 	
 	\IEEEPARstart{T}{exture} is an elusive trait.
 	When dealing with remotely sensed images, the texture of different patches carries relevant information that, more often than not, is hard to quantify and to transform into useful and parsimonious features.
@@ -173,14 +164,27 @@
 	In higher resolution image classification activities, it is necessary to obtain more granular information from the data by extracting local characteristics of the data, such as scale and orientation.
 	In this scenario, techniques such as Fourier power spectrum~\cite{Florindo2012Fractal}, random fields~\cite{zhu2016antarctic}, Gabor filter~\cite{dumitru2014information} and wavelet transform~\cite{akbarizadeh2012new} are usually applied.
 	
-	In our approach, we opt to analyze the 1-D signals resulting from the linearization of the image samples, using non-parametric time series analysis techniques.
-	With this approach, we reduced the dimensionality of the data and map the spatial dependence of the pixels onto the temporal correlation used in such methods.
-	Next, we extract a probability distribution from the ordinal patterns of a new transition graph, herein proposed, which can discriminate different levels of amplitude, and we use well-known features borrowed from the Information Theory field to classify texture patches.
+	In our approach, we opt to analyze the \mbox{1-D} signals resulting from the linearization of the image samples, using non-parametric time series analysis techniques.
+	With this approach, we reduce the dimensionality of the data while preserving the spatial correlation structure.
+	Observations are then transformed into ordinal patterns with the Bandt-Pompe symbolization.
+	We use Information Theory descriptors to analyze the distributions these patterns induce, both directly and by building transition graphs among subsequent patterns.
 	
-	The main contribution of this work is the proposal of a new set of features for characterization and classification of SAR textures, based on a modification of the current ordinal patterns transition graph, incorporating relevant 1-D signal information.
-	Our proposal, hereinafter referred to as Weighted Amplitude Transition Graph (WATG), incorporates the absolute difference between the observations, weighting them in the calculation of the final value of their probabilities.
-	Experiments performed on homogeneous regions of SAR image textures indicate that this approach preserves essential information about the dynamics of the system, presenting excellent results in the classification of regions, where it has reached satisfactory levels of separability.
-	Since the proposed work has a low computational cost, the results obtained reveal that this technique has a great potential for incorporation in other applications, such as texture segmentation tools of SAR images.
+	Those descriptors are the Entropy and the Statistical Complexity, which are easy to obtain and are interpretable.
+	They reveal important features of the underlying process.
+	
+	We are guided by the following question:
+	\begin{quote}
+		Which is the best representation of a texture patch that allows extracting expressive Information Theory descriptors for the task of characterizing textures in the presence of speckle?
+	\end{quote}
+	We verified that the both the histogram of Bandt-Pompe ordinal patterns, and of classical transition graphs do not convey enough information for suitable applications as, for instance, classification.
+	
+	Henceforth, we propose the Weighted Amplitude Transition Graph (WATG).
+	This graph incorporates the absolute difference among observations as weights of the edges between nodes transitions.
+	Such weights take part in the computation of the probabilities and, thus, influence both Entropy and Statistical Complexity.
+	
+	The main contribution of this work is the proposal of a new representation of SAR textures which allows a low-dimensional characterization useful for, among other applications, their classification.
+	We compare its performance with the classical histograms of Bandt-Pompe ordinal patterns and the basic transition graph.
+	Since the proposed approach has a low computational cost, the results obtained suggest that this technique has good potential in other applications, such as texture segmentation tools of SAR images.
 	
 	The paper is structured as follows:
 	Section~\ref{methodology} describes our proposed methodology.
@@ -198,65 +202,23 @@
 	
 	\section{Methodology}\label{methodology}
 	
-	Algorithm~\ref{alg:watg} outlines our methodology.
-	%The main idea of the technique is as follows.
-	Line~\ref{Line:Peano} transforms the input texture patch $P$ in a 1-D signal with a Hilbert-Peano sequence.
-	%
-	With this, the spatial information is encoded into a one-dimensional signal.
-	%
-	Line~\ref{Line:Probs} computes 
-	the probability distribution of the weighted transition graph induced by the 1-D signal.
-	The WATG function is detailed in Lines~\ref{Line:WATGBegin}--\ref{Line:WATGEnd}.
-	%
-	Lines~\ref{Line:Shannon} and~\ref{Line:StatisticalComplexity} compute the two descriptors of the patch.
+	As outlined in Section~\ref{Sec:Intro}, we are interested in methods which employ Information Theory descriptors obtained from ordinal patterns.
+	Such techniques are defined for time series, so the first step of our proposal consists of turning \mbox{2-D} image patches into a \mbox{1-D} signal; this is discussed in Section~\ref{linearization}.
+	The second step, presented in Section~\ref{BP} is obtaining the ordinal patterns.
+	Such patterns can be used directly, or be the basis for building transition graphs; these graphs and their variants are described in Sections~\ref{OPTG} and~\ref{Methods}.
+	Our proposal is detailed in Section~\ref{WATG}, and is properties are assessed in Section~\ref{Sec:WATGProperties}
 	
-	The \texttt{WATG} function consists of three steps: 
-	(i)~each sub-sequence of size (dimension) $D$ of observations at delay $\tau$ is transformed into an ordinal pattern using the Bandt-Pompe symbolization (function \texttt{BPSymbolization}, Line~\ref{Line:BP}); 
-	(ii)~function \texttt{transitions} (Line~\ref{Line:Transitions}) calculates the sequence of alternations of the ordinal patterns; and 
-	(iii)~function \texttt{weigthGraph} (Line~\ref{Line:WG}) generates the incidence matrix of the graph using the as weights the amplitude differences between the time series elements.
-	Finally, the probability distribution is obtained by turning the transition matrix into a vector (Line~\ref{Line:WATGEnd}).
+	All these transformations produce different empirical probability distributions.
+	The final features computed on these distributions are the Entropy and Statistical Complexity, which are discussed in Section~\ref{HC}.
 	
-	These steps are also depicted in Fig.~\ref{fig:WATG}, and are detailed in the following sections.
-	
-	\begin{algorithm}[hbt]
-		\caption{$H \times C$ point from a patch using WATG}
-		\label{alg:watg}                                
-		\textbf{Input:} Patch of texture $P$, dimension $D$ and time delay \textbf{$\tau$}\\
-		\textbf{Output:} $H \times C$ feature
-		\begin{algorithmic}[1]
-			\State signal.1-D $\gets$ \texttt{hilbertCurve}($P$) \label{Line:Peano}
-			\State Probs $\gets$ \texttt{WATG}(signal.1-D, D, $\tau$) \label{Line:Probs}
-			\State H $\gets$ \texttt{ShannonEntropy}(Probs) \label{Line:Shannon}
-			\State C $\gets$ \texttt{StatisticalComplexity}(Probs) \label{Line:StatisticalComplexity}
-			
-			\vspace{0.15cm}
-			
-			\Function{\texttt{WATG}}{signal.1-D, D, $\tau$}
-			\State patterns $\gets$ \label{Line:WATGBegin} \texttt{BPSymbolization}(signal.1-D, D, $\tau$) \label{Line:BP}
-			\State transitions $\gets$ \texttt{transitions}(patterns) \label{Line:Transitions}
-			\State graph $\gets$ \texttt{weigthGraph}(signal.1-D, transitions) \label{Line:WG}
-			\State Probs $\gets$ \texttt{as.vector}(graph) \label{Line:WATGEnd}
-			\State \Return Probs
-			\EndFunction
-		\end{algorithmic}
-	\end{algorithm}
-	
-	
-	\begin{figure}[hbt]
-		\centering
-		\includegraphics[width=.7\columnwidth]{Figures/methodology.pdf}
-		\caption{Outline of the methodology used for the classification of textures.}
-		\label{fig:WATG}
-	\end{figure}
 	
 	\subsection{Linearization of image patches}\label{linearization}
 	
-	We perform a data dimensionality reduction by turning the 2-D patch into a 1-D signal.
-	This could be accomplished by reading the data bylines, columns, or any transformation of 2-D indexes into a sequence of integers.
+	We perform a data dimensionality reduction by turning the \mbox{2-D} patch into a \mbox{1-D} signal.
+	This could be accomplished by reading the data by lines, columns, or any transformation of \mbox{2-D} indexes into a sequence of integers.
 	In this work, we chose to use the Hilbert-Peano~\cite{Lee1994Texture} curve, due to its low computational cost and its ability to preserve relevant properties of pixel spatial correlation.
 	
 	Nguyen et al.~\cite{nguyen1982space} firstly employed Space-filling curves, to map texture into a one-dimensional signal.
-	%When used as scanning methods of an image, such functions preserve relevant properties of pixel spatial correlation~\cite{Lee1994Texture}.
 	Carincotte et al.~\cite{Carincotte2006changeDetection} used the Hilbert-Peano curve in the problem of change detection in pairs of SAR images.
 	The authors noted that this transformation exploits the spatial locality and that its pseudo-randomness
 	of direction changes works well for a large family of images, especially
@@ -289,12 +251,8 @@
 	
 	\subsection{Bandt-Pompe Symbolization}\label{BP}
 	
-	%Step~\ref{item:WOPTG} consists of two stages.
-	%In the first, the time series is transformed into a sequence of ordinal patterns.
-	%In the second, we build a weighted graph describing the transitions between these patterns.
-	
 	The representation of time series by ordinal patterns was introduced by Bandt and Pompe~\cite{Bandt2002Permutation} as a transformation resistant to noise, and invariant to nonlinear monotonic transformations.
-	The first step of the \texttt{WATG} subroutine is to calculate the ordinal patterns of the 1-D signal by Band-Pompe symbolization.
+	The first step of the \texttt{WATG} subroutine is to calculate the ordinal patterns of the \mbox{1-D} signal by Band-Pompe symbolization.
 	
 	Consider ${\mathcal X} \equiv \{x_t\}_{t=1}^{T}$ a real valued time series of length $T$. 
 	Let ${\mathfrak A}_{D}$ (with $D \geq 2$ and $D \in {\Bbb N}$) be the symmetric group of order $D!$ formed by all 
@@ -336,6 +294,9 @@
 	\end{equation}
 	where  $t\in \{1, \dots, T-(D-1)\tau\}$.
 	These probabilities meet the conditions $p(\widetilde\pi_t^D) \ge 0$ and  $\sum_{i=1}^{D!} p(\widetilde\pi_t^D) = 1$, and are invariant before monotonic transformations of the time series values.
+	%\textcolor{red}{Apontar para um exemplo}
+	%%%ETCC Done (?)
+	For example, the presence of $\alpha$ multiplicative noise in ${\mathcal X}$ does not change the results of the patterns produced.
 	
 	\subsection{Ordinal Pattern Transition Graph}\label{OPTG}
 	
@@ -416,7 +377,7 @@
 	p(\widetilde \pi_t^D) = \frac{\sum_{i : \{\mathbf{X}^{(D,\tau)}_i \mapsto \widetilde\pi^D_t\}} w_{i}}{\sum_{i = 1}^{T-(D-1)\tau} w_{i}}.
 	\end{equation}
 	
-	\subsection{Weighted Ordinal Patterns Transition Graph}\label{WATG}
+	\subsection{WATG -- Weighted Ordinal Patterns Transition Graph}\label{WATG}
 	
 	Our proposal for computing the probability distribution, henceforth referred to as Weighted Amplitude Transition Graph (WATG), takes into account the dispersion of the return values, leading to a good.
 	We propose a modification of the current ordinal pattern transition graph, incorporating the absolute difference between the observations that produced the patterns.
@@ -430,7 +391,7 @@
 	
 	Each $\mathbf{X}^{(D, \tau)}_t$ vector is associated with a weight $\beta_t$ that measures the largest difference between its elements:
 	\begin{equation}
-	\beta_t = \max\{x_i - x_j\},
+	\beta_t = \max\{|x_i - x_j|\},
 	\end{equation}
 	where $x_i, x_j \in \mathbf{X}^{(D, \tau)}_t$.
 	
@@ -457,7 +418,7 @@
 	Computing these quantities is the last step of the algorithm, i.e., obtaining the point in the $H \times C$ plane.
 	
 	Entropy measures the disorder or unpredictability of a system characterized by a probability measure $\mathbbm{P}$.
-	Let $\mathbbm{P} = \{p_{(\widetilde\pi^D_1, \widetilde\pi^D_1)}, p_{(\widetilde\pi^D_1, \widetilde\pi^D_2)}, \dots, p_{(\widetilde\pi^D_{D!}, \widetilde\pi^D_{D!})} \} = \{p_1,\dots,p_{D!^2}\}$ be the probability function obtained from the 1-D signal weighted amplitude transition graph $\mathbbm{X}$.
+	Let $\mathbbm{P} = \{p_{(\widetilde\pi^D_1, \widetilde\pi^D_1)}, p_{(\widetilde\pi^D_1, \widetilde\pi^D_2)}, \dots, p_{(\widetilde\pi^D_{D!}, \widetilde\pi^D_{D!})} \} = \{p_1,\dots,p_{D!^2}\}$ be the probability function obtained from the \mbox{1-D} signal weighted amplitude transition graph $\mathbbm{X}$.
 	Its normalized Shannon entropy is given by:	
 	\begin{equation}
 	H(\mathbbm{P}) = -\frac1{2\log D!}\sum_{\ell=1}^{D!^2} p_{\ell} \log p_{\ell} .
@@ -489,7 +450,56 @@
 	$D! \times D!$ in our case.
 	Through such a tool it is possible to discover the nature of the series, determining if it corresponds to a chaotic (or other deterministic dynamics) or stochastic sequences
 	
-	\subsection{Properties}
+	Algorithm~\ref{alg:watg} outlines our methodology.
+	Line~\ref{Line:Peano} transforms the input texture patch $P$ in a \mbox{1-D} signal with a Hilbert-Peano sequence.
+	%
+	With this, the spatial information is encoded into a one-dimensional signal.
+	%
+	Line~\ref{Line:Probs} computes 
+	the probability distribution of the weighted transition graph induced by the \mbox{1-D} signal.
+	The WATG function is detailed in Lines~\ref{Line:WATGBegin}--\ref{Line:WATGEnd}.
+	%
+	Lines~\ref{Line:Shannon} and~\ref{Line:StatisticalComplexity} compute the two descriptors of the patch.
+	
+	The \texttt{WATG} function consists of three steps: 
+	(i)~each sub-sequence of size (dimension) $D$ of observations at delay $\tau$ is transformed into an ordinal pattern using the Bandt-Pompe symbolization (function \texttt{BPSymbolization}, Line~\ref{Line:BP}); 
+	(ii)~function \texttt{transitions} (Line~\ref{Line:Transitions}) calculates the sequence of alternations of the ordinal patterns; and 
+	(iii)~function \texttt{weigthGraph} (Line~\ref{Line:WG}) generates the incidence matrix of the graph using the as weights the amplitude differences between the time series elements.
+	Finally, the probability distribution is obtained by turning the transition matrix into a vector (Line~\ref{Line:WATGEnd}).
+	
+	These steps are also depicted in Fig.~\ref{fig:WATG}, and are detailed in the following sections.
+	
+	\begin{algorithm}[hbt]
+		\caption{$H \times C$ point from a patch using WATG}
+		\label{alg:watg}                                
+		\textbf{Input:} Patch of texture $P$, dimension $D$ and time delay \textbf{$\tau$}\\
+		\textbf{Output:} $H \times C$ feature
+		\begin{algorithmic}[1]
+			\State signal.\mbox{1-D} $\gets$ \texttt{hilbertCurve}($P$) \label{Line:Peano}
+			\State Probs $\gets$ \texttt{WATG}(signal.\mbox{1-D}, D, $\tau$) \label{Line:Probs}
+			\State H $\gets$ \texttt{ShannonEntropy}(Probs) \label{Line:Shannon}
+			\State C $\gets$ \texttt{StatisticalComplexity}(Probs) \label{Line:StatisticalComplexity}
+			
+			\vspace{0.15cm}
+			
+			\Function{\texttt{WATG}}{signal.\mbox{1-D}, D, $\tau$}
+			\State patterns $\gets$ \label{Line:WATGBegin} \texttt{BPSymbolization}(signal.\mbox{1-D}, D, $\tau$) \label{Line:BP}
+			\State transitions $\gets$ \texttt{transitions}(patterns) \label{Line:Transitions}
+			\State graph $\gets$ \texttt{weigthGraph}(signal.\mbox{1-D}, transitions) \label{Line:WG}
+			\State Probs $\gets$ \texttt{as.vector}(graph) \label{Line:WATGEnd}
+			\State \Return Probs
+			\EndFunction
+		\end{algorithmic}
+	\end{algorithm}
+	
+	\begin{figure}[hbt]
+		\centering
+		\includegraphics[width=.7\columnwidth]{Figures/methodology.pdf}
+		\caption{Outline of the methodology used for the classification of textures.}
+		\label{fig:WATG}
+	\end{figure}
+	
+	\subsection{Properties}\label{Sec:WATGProperties}
 	
 	We conducted two experiments to analyze the response of WATG to different noise levels and image rotations.
 	Our truth is the deterministic image generated by the function:
@@ -497,58 +507,68 @@
 	z(x,y) = \sin (4x + 0.5y), 
 	\end{equation*}
 	where  $x, y \in [-2\pi, 2\pi]$.
-	The speckle noise was modeled as outcomes of independent, identically distributed unitary-mean Gamma random variables with shape parameter $L$ (the number of looks, which controls the signa-to-noise ratio)
-	$W(L) \sim \Gamma(L, L)
-	$,
+	Fig.~\ref{Fig:TestZ} shows this function as a $128\times128$-pixel patch.
+	
+	The speckle noise was modeled as outcomes of independent, identically distributed unitary-mean Gamma random variables with shape parameter $L$ (the number of looks, which controls the signal-to-noise ratio)
+	$W(L) \sim \Gamma(L, L)$,
 	with $L \in \{1, 100, 150, 200, 250, 300, 350, 400, 450, 500\}$.
 	The observed images $I(L)$ are the pixelwise product of $z$ and $w(L)$.
+	Fig.~\ref{Fig:TestZW} shows the product $I(100)$.
 	
-	The robustness analysis in image rotations was performed using $I(l)^T$, which corresponds to the $I$ transpose.
-	Examples of the different images generated can be seen in Fig.~\ref{fig:speckle}.
-	
-	%%% Horror!!! Por que não usou subfigure?
-	%%% Alterado 
-	\begin{figure}
+	\begin{figure}[hbt]
 		\centering
-		\subfigure[$z$]{\label{fig:speckle1}\includegraphics[width = 28mm]{Figures/z.png}}
-		\subfigure[$I(100)$]{\label{fig:speckle2}\includegraphics[width = 28mm]{Figures/z100.png}}
-		\subfigure[$I^T(500)$]{\label{fig:speckle3}\includegraphics[width = 28mm]{Figures/z500t.png}}
-		\caption{Visual representation of the data used in the robustness experiment.}
-		\label{fig:speckle}
+		\subfigure[$z$]{\label{Fig:TestZ}\includegraphics[width = 28mm]{Figures/z.png}}
+		\subfigure[$I(100)$]{\label{Fig:TestZW}\includegraphics[width = 28mm]{Figures/z100.png}}
+		\subfigure[$I^{\text{T}}(500)$]{\label{Fig:TestRot}\includegraphics[width = 28mm]{Figures/z500t.png}}
+		\caption{Ground truth, speckled, and speckled transposed versions.}
+		\label{Fig:TestZWL}
 	\end{figure}
 	
-	As a result, we were able to verify that the higher $I$, the less noisy the pixels become, and we can see the in Fig.~\Ref{fig:speckleHC} that the statistical complexity and permutation entropy of the associated texture will be lower.
-	On the other hand, we observe that the features are slightly sensitive to rotation, presenting variations in the order of magnitude of only 4 decimal places, thus maintaining the order of the position of the samples in the $H \times C$ plane.
+	Fig.~\ref{Fig:TestSpeckleHC} shows how the point in the $H\times C$ plane varies according to the level of noise introduced.
+	The ground truth (identified as ``\textsf{0}'') has relatively low entropy and is close to the maximum complexity (the continuous line is the upper bound).
+	This is typical of deterministic sequences.
+	When we inject single-look speckle ($L=1$), the entropy increases along with the complexity.
+	The technique is, thus, able to identify the deterministic component even when it is embedded in the strongest possible speckle noise.
+	The point ``\textsf{1}'' shifts towards ``\textsf{0}'' when the signal-to-noise progressively increases.
 	
 	\begin{figure}[hbt]
 		\includegraphics[width=0.45\textwidth]{Figures/waves1.pdf}
 		\caption{Modifications to the $H \times C$ Plane features by adding different multiplicative noises.}
-		\label{fig:speckleHC}
+		\label{Fig:TestSpeckleHC}
 	\end{figure}
 	
-	\section{EXPERIMENTAL RESULTS AND ANALYSIS}\label{Results}
+	We also verified that the points in the $H\times C$ plane are almost insensitive to rotations.
+	Fig.~\ref{Fig:TestRot} shows the transpose of $I(500)$.
+	In all cases, the coordinates $(h,c)$ of the transposed noisy images were equal, up to the fourth decimal place, to those of the original version.
 	
-	In this section, we describe the dataset, 
+	These experiments provide evidence that the WATG mapping is little sensitive to rotations (thanks to the use of Peano-Hillbert curves), and that it is able to identify the presence of underlying structural information in the presence of varying levels of speckle.
+	
+	\section{Results}\label{Results}
+	
+	In this section, we describe the datasets, 
 	the classification process, and 
-	the results of the experiments.
-	To assess the performance of the technique here proposed, we first analyze the impact of its parameters and then compare its results in the classification with other methods.
+	the results of applying WATG.
 	
-	\subsection{Image Dataset}
+	%%%ETCC Texto alterado 
+	%\textcolor{red}{
+	To assess the performance of the technique here proposed, we analyze the impact of its parameters and compare its results in the classification with other methods.
+	%}
 	
-	The proposed method was evaluated by dataset based on three quad-polarimetric L-band SAR images from the NASA Jet Propulsion Laboratory’s (JPL’s) uninhabited aerial vehicle synthetic aperture radar (UAVSAR) with $\sim 2$m range resolution and $36$ looks.
+	\subsection{Image Datasets}
+	
+	We used three quad-polarimetric L-band SAR images from the NASA Jet Propulsion Laboratory’s (JPL’s) uninhabited aerial vehicle synthetic aperture radar (UAVSAR) sensor.
+	These images have $L=36$ nominal looks.
 	We used the HH backscatter magnitudes of:
 	\begin{itemize}
-		\item Sierra del Lacandón National Park, forest region in Guatemala (acquired on April 10, 2015)\footnote{\protect{\url{https://uavsar.jpl.nasa.gov/cgi-bin/product.pl?jobName=Lacand_30202_15043_006_150410_L090_CX_01\#dados}}}. 
-		It was $8917 \times 3300$ pixels and its image resolution is 
-		\SI[inter-unit-product =$\cdot$]{10}{\meter} $\times$ \SI[inter-unit-product =$\cdot$]{2}{\meter};
-		%%% ACF Usar \SI para digitar unidades
-		%%% ETCC Done
-		\item Cape Canaveral Ocean Regions (acquired on September 22, 2016).
-		It was $7038 \times 3300$ pixels and its image resolution is  
-		\SI[inter-unit-product =$\cdot$]{10}{\meter} $\times$ \SI[inter-unit-product =$\cdot$]{2}{\meter};
-		\item Urban area of the city of Munich, Germany (acquired on June 5, 2015)\footnote{\protect{\url{https://uavsar.jpl.nasa.gov/cgi-bin/product.pl?jobName=munich_19417_15088_002_150605_L090_CX_01\#data}}}.
-		It was $5773 \times 3300$ pixels and its image resolution is  
-		\SI[inter-unit-product =$\cdot$]{10}{\meter} $\times$ \SI[inter-unit-product =$\cdot$]{3}{\meter}.
+		\item a forest region of Sierra del Lacandón National Park, Guatemala, (acquired on April 10, 2015)\footnote{\protect{\url{https://uavsar.jpl.nasa.gov/cgi-bin/product.pl?jobName=Lacand_30202_15043_006_150410_L090_CX_01\#dados}}}. 
+		The image has $8917 \times 3300$ pixels with 
+		\SI[inter-unit-product =$\cdot$]{10}{\meter} $\times$ \SI[inter-unit-product =$\cdot$]{2}{\meter} resolution.
+		\item ocean regions from Cape Canaveral Ocean (acquired on September 22, 2016).
+		The image has $7038 \times 3300$ pixels with 
+		\SI[inter-unit-product =$\cdot$]{10}{\meter} $\times$ \SI[inter-unit-product =$\cdot$]{2}{\meter} resolution;
+		\item an urban area of the city of Munich, Germany (acquired on June 5, 2015)\footnote{\protect{\url{https://uavsar.jpl.nasa.gov/cgi-bin/product.pl?jobName=munich_19417_15088_002_150605_L090_CX_01\#data}}}.
+		The image has $5773 \times 3300$ pixels with 
+		\SI[inter-unit-product =$\cdot$]{10}{\meter} $\times$ \SI[inter-unit-product =$\cdot$]{3}{\meter} resolution.
 	\end{itemize}
 	
 	We manually selected $200$ samples of size $128 \times 128$ to compose the dataset used in the experiments.
@@ -557,47 +577,52 @@
 	$40$ samples from Guatemalan pasture regions;
 	$80$ samples from the oceanic regions of Cape Canaveral, divided into two types with different contrast; and
 	$40$ samples of urban regions of the city of Munich.
-	Fig.~\ref{fig:samples} shows examples of each.
+	Fig.~\ref{fig:samples&Series} shows examples of each.
 	
-	%In the classification, to avoid overlapping between samples and to preserve the general distribution of the classes, the training, test and validation data were determined based on a random sampling carried out in each region of analysis.
 	We randomly split the samples in training (\SI{85}{\percent}) and test (\SI{15}{\percent}) sets.
 	We used the first set to train a $k$-nearest neighbor classifier algorithm with tenfold cross-validation.
-	%The test samples were not used in the training stage.
 	
 	\subsection{Analysis of ordinal patterns methods}
 	
-	Fig.~\ref{fig:timeSeries} shows examples of the ocean, forest, urban, and pasture samples as sequences values, after the linearization process.
-	Data resulting from remote sensing have a peculiar feature that justifies the application in this article:
+	Fig.~\ref{fig:samples&Series} shows examples of the ocean, forest, urban, and pasture samples as sequences values, after the linearization process.
+	
 	The variation in the magnitude of the targets' backscatter and, consequently, in the intensity of the image pixels, depends on the intrinsic properties of the regions under analysis.
-	Urban targets usually exhibit the strongest variation, followed by pasture, forests, and finally, water bodies.
+	Urban targets usually exhibit the strongest variation, followed by forest, pasture, forests, and finally, water bodies.
 	By adding information related to amplitude, the proposed method is able to increase, compared to traditional methods, the granularity of information captured by ordinal patterns.
+	
 	Fig.~\ref{fig:plotsHC} shows the evolution of the descriptive power of these techniques.
 	
 	The Bandt-Pompe symbolization was the first method based on ordinal patterns proposed in the literature.
 	As shown in Fig.~\ref{fig:plotsHC} left, it provides a limited separation of the textures.
 	Transition graphs (Fig.~\ref{fig:plotsHC} center) improve the spread of the features, but with some amount of confusion.
 	Our proposal, shown in Fig.~\ref{fig:plotsHC} right, produces well-separated features.
-	%When considering the dynamics of alternating between consecutive patterns in a sequence, the transition graphs provide more information about the reference target and, consequently, this method is able to differentiate most of these dynamics, but there are challenging situations without a clear separation between them, causing misclassifications.
-	%On the other hand, as discussed in the section~\ref{WATG}, the weighted graph provides greater weight for transitions between ordinal patterns that have a wide range of amplitude.
-	%While in the traditional graph, the weight of the edges was obtained only by the frequency of the transitions, in the proposed method the symbols that appear with the same frequency gain different importance.
 	In this way, we were able to obtain, for this experiment, a perfect characterization and, consequently, the high descriptive power of the regions.
-	%In addition, some edges may disappear if the variation in amplitude between ordinal patterns is zero.
 	
+	%%% ACF Juntar as figuras 6 e 7 em uma com duas linhas de figuras.
+	%%% Usar oito figuras independentes
+	%%% Usar \subfigure
+	%%% Não colocar título nas figuras das séries
+	%%% ETCC Done
 	\begin{figure*}[hbt]
-		\begin{tabular}{ccccc}
-			\includegraphics[width=0.175\textwidth]{Figures/guatemalaflorest.pdf} &   \includegraphics[width=0.175\textwidth]{Figures/Cape1.pdf} &
-			\includegraphics[width=0.175\textwidth]{Figures/Cape2.pdf} &  \includegraphics[width=0.175\textwidth]{Figures/munichUrban.pdf} &  \includegraphics[width=0.175\textwidth]{Figures/pasture.pdf} \\
-		\end{tabular}
+		\centering
+		\subfigure{\label{Fig:figGuatemala}\includegraphics[width = 35mm]{Figures/guatemalaflorest.pdf}}
+		\subfigure{\label{Fig:figCape1}\includegraphics[width = 35mm]{Figures/Cape1.pdf}}
+		\subfigure{\label{Fig:figCape2}\includegraphics[width = 35mm]{Figures/Cape2.pdf}}
+		\subfigure{\label{Fig:figMunich}\includegraphics[width = 35mm]{Figures/munichUrban.pdf}}
+		\subfigure{\label{Fig:figPasture}\includegraphics[width = 35mm]{Figures/pasture.pdf}}
+		
+		\subfigure{\label{Fig:TSGuatemala}\includegraphics[width = 35mm]{Figures/tsguatemala.pdf}}
+		\subfigure{\label{Fig:TSCape1}\includegraphics[width = 35mm]{Figures/tscape1.pdf}}
+		\subfigure{\label{Fig:TSCape2}\includegraphics[width = 35mm]{Figures/tscape2.pdf}}
+		\subfigure{\label{Fig:TSMunich}\includegraphics[width = 35mm]{Figures/tsmunich.pdf}}
+		\subfigure{\label{Fig:TSPasture}\includegraphics[width = 35mm]{Figures/tspasture.pdf}}
+		
 		\caption{Types of regions analyzed: Guatemala forest, Canaveral ocean type 1, ocean type 2, Munich urban area, and pasture area.}
-		\label{fig:samples}
+		\label{fig:samples&Series}
 	\end{figure*}
 	
-	\begin{figure*}[hbt]
-		\includegraphics[width=2\columnwidth]{Figures/SAR_TS.pdf}
-		\caption{Amplitude of different types of regions}
-		\label{fig:timeSeries}
-	\end{figure*}
-	
+	%%% ACF Seria possível codificar o peso dos arcos com espessura ou cor? Só se não der muito trabalho.
+	%%% ETCC Done
 	\begin{figure*}[hbt]
 		\includegraphics[width=2\columnwidth]{Figures/graphs.pdf}
 		\caption{Example of the difference in weights at the edges in a sample of Munich urban regions in the transition graph and in the weighted graph of ordinal patterns
@@ -614,17 +639,17 @@
 	
 	As already described in Section~\ref{WATG}, our proposal weights the edges in terms of the difference of amplitudes.
 	As expected, the greatest impact is observed on the transition graphs obtained from urban areas.
-	The urban area 1-D signal shown in Fig.~\ref{fig:timeSeries} has the largest dynamic range.
+	The urban area \mbox{1-D} signal shown in Fig.~\ref{fig:samples&Series} has the largest dynamic range.
 	Fig.~\ref{fig:graphs} shows how this information alters the weights of the transition graph.
 	Notice, in particular, that 
 	$(v_{\widetilde \pi^3_{123}}, v_{\widetilde \pi^3_{123}})$ almost doubled, while 
 	$(v_{\widetilde \pi^3_{312}}, v_{\widetilde \pi^3_{231}})$ and $(v_{\widetilde \pi^3_{213}}, v_{\widetilde \pi^3_{132}})$ became negligible.
 	We highlight the impact of the weighting on the probability distribution in the two extreme cases observed:
 	\begin{itemize}
-		\item If the 1-D signal presents a low amplitude variation and intensity peaks between, then the transitions of ordinal patterns that represent the latter have larger weights.
+		\item If the \mbox{1-D} signal presents a low amplitude variation and intensity peaks between, then the transitions of ordinal patterns that represent the latter have larger weights.
 		This contributes so that the probability distribution becomes less uniform among the symbols, since it will be more concentrated in these edges.
 		This will also cause a drop in the Entropy, when compared to the traditional method.
-		\item In 1-D signal that show a uniform amplitude variation, the weights are well distributed between their edges, giving rise to a more random probability distribution, thus obtaining larger entropy.
+		\item In \mbox{1-D} signal that show a uniform amplitude variation, the weights are well distributed between their edges, giving rise to a more random probability distribution, thus obtaining larger entropy.
 	\end{itemize}
 	
 	\subsection{Experiments on sliding window selection}
@@ -645,7 +670,7 @@
 	\end{figure} 
 	
 	We used the ROC curve shown in Fig.~\ref{fig:ROC} for different values of $D \in \{3, 4, 5, 6 \} $ and $\tau \in \{1, 2, 3, 4, 5 \}$ to select the best configuration.
-	As we can see in Fig.~\ref{fig:ROC}, the configurations that extracted most information from the 1-D signal and, thus, that presented the best results in the experiments, are $(D = 3, \tau = 1)$ and $(D = 4, \tau = 1)$.
+	As we can see in Fig.~\ref{fig:ROC}, the configurations that extracted most information from the \mbox{1-D} signal and, thus, that presented the best results in the experiments, are $(D = 3, \tau = 1)$ and $(D = 4, \tau = 1)$.
 	The technique, thus, shows its best performance choosing the parameters with the lowest computational cost.
 	
 	Figure~\ref{fig:Regions} shows the points in the $H\times C$ produced by the same samples with all the parameters mentioned above.
@@ -689,23 +714,26 @@
 	In the classification, we used the $k$-nearest neighbor algorithm with Euclidean distance, selecting the value of $k$ with the automatic grid search method of the Caret R package~\cite{kuhn2008building}.
 	For validation, we used $10$-fold cross-validation.
 	More details about the classifier and the sampling can be seen in~\cite{mitchell1997machine}.
-	
+	%%%ETCC definições de TPR, PPV, OA e F1-Score alteradas para o modo texto
 	Table~\ref{tab:result1} summarizes the number of features each method produces, as well as its performance of classifying the $200$ samples.
 	We assess the effectiveness of each approach using the following metrics: 
 	\begin{itemize}
 		\item Recall or True Positive Rate (TPR): Total of the correctly detected class of regions over the total of regions for given ground truth.
 		\begin{equation*}
-		TPR = \frac{\text{True Positive}}{\text{True Positive} + \text{False Negative}}.
+		\text{TPR} = \frac{\text{True Positive}}{\text{True Positive} + \text{False Negative}}.
 		\end{equation*}
+		%
 		\item Precision or Positive Predictive Value (PPV): Total of regions correctly predicted over the total of regions classified by the algorithm.
 		\begin{equation*}
-		PPV = \frac{\text{True Positive}}{\text{True Positive} + \text{False Positive}}.
+		\text{PPV} = \frac{\text{True Positive}}{\text{True Positive} + \text{False Positive}}.
 		\end{equation*}
+		%
 		\item Overall Accuracy (OA): Total of regions correctly classified. 
 		Knowing the number of true positive (TP) for each region, we have to:
 		\begin{equation*}
-		OA = \frac{\text{TP}_{ocean} + \text{TP}_{forest} + \text{TP}_{urban}}{\text{Total Regions}}.
+		\text{OA} = \frac{\text{TP}_{ocean} + \text{TP}_{forest} + \text{TP}_{urban}}{\text{Total Regions}}.
 		\end{equation*}
+		%
 		\item F1-score: The harmonic mean of precision and recall.
 		\begin{equation*}
 		\text{F1-score} = 2 \times \frac{PPV \times TPR}{PPV + TPR}.
@@ -813,7 +841,7 @@
 	However, WATG achieves that same performance using only $2$ features.
 	This reduction implies less computational power requirement and avoids the curse of dimensionality~\cite{TheCursesofDimensionality2018}.
 	
-	\section{CONCLUSION}\label{Conclusion}
+	\section{Conclusions}\label{Conclusion}
 	
 	We presented and assessed a new method of analysis and classification of SAR image textures.
 	This method consists of three steps: 
@@ -826,7 +854,7 @@
 	Experiments using patches from UAVSAR images showed that the proposal performs better than GLCM, Bandt-Pompe, Transition Graphs, SURF, STFT + SURF, and other techniques of amplitude information analysis in ordinal patterns and that it provides the same quality of results obtained with Gabor filters and HOG.
 	However, while Gabor filters employ $80$ features and HOG employ $54$ features, our proposal requires only two.
 	Since the proposed method has a lower number of descriptive features than its direct competitors, we were able to obtain some additional advantages under this.
-	First, by reducing the dimension of the features to 2-D, we can accurately visualize the differences between the classes of regions analyzed.
+	First, by reducing the dimension of the features to \mbox{2-D}, we can accurately visualize the differences between the classes of regions analyzed.
 	In addition, for machine learning algorithms, the smaller the number of dimensions, the faster the process, and less storage space are required.
 	So, we managed to avoid overfitting classification models, a recurring problem in data with high dimensionality.
 	
@@ -834,14 +862,14 @@
 	The use of transition detection techniques and the segmentation of these signals in a stage before the use of WATG may increase the power of its application and will be fruitful avenues for future work.
 	
 	
-	\section{SOURCE CODE AVAILABILITY} 
+	\section{Reproducibility and Replicability} 
 	
 	The text, source code, and data used in this study are available at the \textit{SAR-WATG} repository \url{https://github.com/EduardaChagas/SAR-WATG}.
 	
 	\bibliographystyle{IEEEtran}
 	\bibliography{AbbrevRefs}
 	
-	\section*{ACKNOWLEDGEMENTS}\label{ACKNOWLEDGEMENTS}
+	\section*{Acknowledgements}\label{ACKNOWLEDGEMENTS}
 	
 	This work was partially funded by the Coordination for the Improvement of Higher Education Personnel (CAPES) and National Council for Scientific and Technological Development (CNPq).
 	
