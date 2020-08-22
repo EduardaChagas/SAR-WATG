@@ -104,7 +104,7 @@ raster         2.9.5
 ---
 
 
-Finally, if you have any questions or you want to report anaything, feel free to reach me at: eduarda.chagas@dcc.ufmg.br. 
+Finally, if you have any questions or you want to report anything, feel free to reach me at: eduarda.chagas@dcc.ufmg.br. 
 
 
 
