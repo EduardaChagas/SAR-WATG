@@ -30,7 +30,7 @@ Our procedure consists of the following steps:
 
 #### Datasets
 
-For this analysis, we used the HH backscatter magnitudes of three quad-polarimetric L-band SAR images from the NASA Jet Propulsion Laboratory’s (JPL’s) uninhabited aerial vehicle synthetic aperture radar (UAVSAR) sensor with $L=36$ nominal looks, available at <a href="https://uavsar.jpl.nasa.gov/cgi-bin">jet propulsion laboratory</a>.:
+For this analysis, we used the HH backscatter magnitudes of three quad-polarimetric L-band SAR images from the NASA Jet Propulsion Laboratory’s (JPL’s) uninhabited aerial vehicle synthetic aperture radar (UAVSAR) sensor with L=36 nominal looks, available at <a href="https://uavsar.jpl.nasa.gov/cgi-bin">jet propulsion laboratory</a>.:
 
 - Forest and pasture region of <a href="https://uavsar.jpl.nasa.gov/cgi-bin/product.pl?jobName=Lacand_30202_15043_006_150410_L090_CX_01#dados">Sierra del Lacandón National Park, Guatemala, (acquired on April 10, 2015)</a>. The image has 8917 x 3300 pixels with 10m x 2m resolution.
 
