@@ -1,7 +1,6 @@
 # Analysis and Classification of SAR Textures using Information Theory
 
-#### [Eduarda C. Chagas](mailto:eduarda.chagas@dcc.ufmg.br), [Alejandro C. Frery](mailto:acfrery@laccan.ufal.br), [Heitor S. Ramos](mailto:ramosh@dcc.ufmg.br), and [Osvaldo A. Rosso](mailto:oarosso@gmail.com)
-
+#### [Eduarda C. Chagas](mailto:eduarda.chagas@dcc.ufmg.br), [Alejandro C. Frery](mailto:acfrery@laccan.ufal.br), [Osvaldo A. Rosso](mailto:oarosso@gmail.com), and [Heitor S. Ramos](mailto:ramosh@dcc.ufmg.br)
 
 
 ### This repository contains all the data and code used to develop our research in the related paper submitted to J-STARS. 
@@ -10,7 +9,7 @@
 
 #### Abstract
 
-We propose a new technique texture analysis and classification based on the Bandt-Pompe symbolization, and we apply it to SAR data. It consists of (i) linearize a 2-D patch of the image using the Hilbert-Peano curve, (ii) build an Ordinal Pattern Transition Graph that considers the data amplitude encoded into the weight of the edges; (iii) obtain a probability distribution function derived from this graph; (iv) compute Information Theory descriptors (Permutation Entropy and Statistical Complexity) from this distribution, and use them as features to feed a classifier. The ordinal pattern graph we propose considers that the weight of the edges is related to the absolute difference of observations, which encodes the information about the data amplitude. This modification takes into account the scattering properties of the target and leads to the characterization of several types of textures. Experiments with data from Munich urban areas, Guatemala forest regions, and Cape Canaveral ocean samples show the effectiveness of our technique, which achieves satisfactory levels of separability. The two descriptors chosen in this work are easy and quick to calculate and are used as input for a k-nearest neighbor classifier. Experiments show that this technique presents results similar to state-of-the-art techniques that employ a much larger number of features and, consequently, require a higher computational cost.
+The use of Bandt-Pompe probability distributions and descriptors of Information Theory has been presenting satisfactory results with low computational cost in the time series analysis literature. However, these tools have limitations when applied to data without time dependency. Given this context, we present a newly proposed technique for texture analysis and classification based on the Bandt-Pompe symbolization for SAR data. It consists of (i) linearize a 2-D patch of the image using the Hilbert-Peano curve, (ii) build an Ordinal Pattern Transition Graph that considers the data amplitude encoded into the weight of the edges; (iii) obtain a probability distribution function derived from this graph; (iv) compute Information Theory descriptors (Permutation Entropy and Statistical Complexity) from this distribution and use them as features to feed a classifier. The ordinal pattern graph we propose considers that the weight of the edges is related to the absolute difference of observations, which encodes the information about the data amplitude. This modification takes into account the scattering properties of the target and leads to the characterization of several types of textures. Experiments with data from Munich urban areas, Guatemala forest regions and Cape Canaveral ocean samples show the effectiveness of our technique in homogeneous areas, which achieves satisfactory levels of separability. The two descriptors chosen in this work are easy and quick to calculate and are used as input for a k-nearest neighbor classifier. Experiments show that this technique presents results similar to state-of-the-art techniques that employ a much larger number of features and, consequently, require a higher computational cost.
 
 #### Methodology
 
@@ -31,29 +30,27 @@ Our procedure consists of the following steps:
 
 #### Datasets
 
-For this analysis, three SAR images with different regions were used, available at <a href="https://uavsar.jpl.nasa.gov/cgi-bin">jet propulsion laboratory</a>.:
+For this analysis, we used the HH backscatter magnitudes of three quad-polarimetric L-band SAR images from the NASA Jet Propulsion Laboratory’s (JPL’s) uninhabited aerial vehicle synthetic aperture radar (UAVSAR) sensor with $L=36$ nominal looks, available at <a href="https://uavsar.jpl.nasa.gov/cgi-bin">jet propulsion laboratory</a>.:
 
-- Parque Nacional Sierra del Lacandón, Guatemala (acquired April 10, 2015).
+- Forest and pasture region of <a href="https://uavsar.jpl.nasa.gov/cgi-bin/product.pl?jobName=Lacand_30202_15043_006_150410_L090_CX_01#dados">Sierra del Lacandón National Park, Guatemala, (acquired on April 10, 2015)</a>. The image has 8917 x 3300 pixels with 10m x 2m resolution.
 
-- Cape Canaveral Ocean Regions (acquired September 22, 2016).
+- Ocean regions from Cape Canaveral Ocean (acquired on September 22, 2016). The image has 7038 x 3300 pixels with 10m x 2m resolution.
 
-- Urban area of the city of Munich, Germany (acquired June 5, 2015).
+- Urban area of the city of <a href="https://uavsar.jpl.nasa.gov/cgi-bin/product.pl?jobName=munich_19417_15088_002_150605_L090_CX_01#data">Munich, Germany (acquired on June 5, 2015)</a>. The image has 5773 x 3300 pixels with 10m x 3m resolution.
 
-The images used in this experiment are results from the HHHH SAR band and each sample is represented by a 128 × 128 subimage.
-
-We manually selected 160 samples to compose the dataset used in the experiments. It is organized as follows:
+We manually selected 200 samples of size 128 x 128 to compose the dataset used in the experiments. It is organized as follows:
 
 - 40 samples from Guatemalan forest regions;
+- 40 samples from Guatemalan pasture regions;
 - 80 samples from the oceanic regions of Cape Canaveral, divided into two types with different contrast; and
 - 40 samples of urban regions of the city of Munich.
 
 #### The repository is organized as follows:
 - `/Code` - the scripts used to develop our research; 
-- `/Common` - the BibTex files used in the reports developed; 
 - `/Data` - the auxiliary data used during analysis; 
 - `/Figures`- Illustrations used in final report; 
 - `/Images`- Illustration of the results obtained throughout the research, alongside the methodology files corresponding to our *overview* figure; 
-- `/Reports`- the reports developed during the study. 
+- `/Publications`- the scientific reports developed during the study. 
 
 ### Software requirements
 
@@ -97,7 +94,7 @@ raster         2.9.5
 
 ### Additional files
 
-- [Submitted file](<https://github.com/EduardaChagas/SAR-WATG/blob/master/Publications/JSTARS%202020/SARTexture-IT.R0.pdf>)
+- [Submitted file](<https://github.com/EduardaChagas/SAR-WATG/blob/master/Publications/JSTARS%202020/SARTexture-IT.R1.pdf>)
 
 - [References](<http://htmlpreview.github.io/?https://github.com/EduardaChagas/SAR-WATG/blob/master/Publications/JSTARS%202020/ReferencesR0.html>)
 
