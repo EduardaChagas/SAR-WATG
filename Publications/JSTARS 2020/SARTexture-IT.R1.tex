@@ -1,14 +1,12 @@
 \documentclass[journal]{IEEEtran}
 
 \usepackage{subfigure}
-\usepackage{setspace}
 \usepackage{caption}  
 \usepackage[english]{babel} 
 \usepackage{amsfonts,amsmath,bm,bbm}
 \usepackage{hyperref} 
 \usepackage{graphicx,xurl}
 \usepackage{rotating}
-\usepackage{lipsum}
 \usepackage{xcolor} 
 \usepackage{tikz}
 \usepackage{ifthen}
@@ -249,6 +247,9 @@
 		\caption{Hilbert-Peano curves in areas of: (a)~$8 \times 8$, (b)~$16 \times 16$, and (c)~$32 \times 32$ pixels. }\label{fig:Hilbert}
 	\end{figure} 
 	
+	Figs.~\ref{Fig:figGuatemala}, \ref{Fig:figCape1}, \ref{Fig:figCape2}, \ref{Fig:figMunich}, and~\ref{Fig:figPasture} show five image patches with different textures.
+	Figs.~\ref{Fig:TSGuatemala}, \ref{Fig:TSCape1}, \ref{Fig:TSCape2}, \ref{Fig:TSMunich}, and~\ref{Fig:TSPasture} present their 1-D representation as signals. 
+	
 	\subsection{Bandt-Pompe Symbolization}\label{BP}
 	
 	The representation of time series by ordinal patterns was introduced by Bandt and Pompe~\cite{Bandt2002Permutation} as a transformation resistant to noise, and invariant to nonlinear monotonic transformations.
@@ -294,11 +295,9 @@
 	\end{equation}
 	where  $t\in \{1, \dots, T-(D-1)\tau\}$.
 	These probabilities meet the conditions $p(\widetilde\pi_t^D) \ge 0$ and  $\sum_{i=1}^{D!} p(\widetilde\pi_t^D) = 1$, and are invariant before monotonic transformations of the time series values.
-	%\textcolor{red}{Apontar para um exemplo}
-	%%%ETCC Done (?)
 	For example, the presence of $\alpha$ multiplicative noise in ${\mathcal X}$ does not change the results of the patterns produced.
 	
-	\subsection{Ordinal Pattern Transition Graph}\label{OPTG}
+	\subsection{Graph of Transitions between Ordinal Patterns}\label{OPTG}
 	
 	Alternatively, one may form an oriented graph with the transitions from $\widetilde\pi_t^D$ to $\widetilde\pi_{t+1}^D$. 
 	The Ordinal Pattern Transition Graph ${G} = ({V}, {E})$ 
@@ -340,6 +339,8 @@
 	p(\widetilde \pi_t^D) = \frac{\sum_{i : \{\mathbf{X}^{(D,\tau)}_i \mapsto \widetilde\pi^D_t\}} w_{i}}{\sum_{i = 1}^{T-(D-1)\tau} w_{i}}.
 	\end{equation}
 	
+	Fig.~\ref{Fig:UrbanWATG} shows the weighted graph produced by the urban area shown in Figs.~\ref{Fig:figMunich} (as image) and~\ref{Fig:TSMunich} (as signal).
+	
 	\subsubsection{Fine-Grained Permutation Entropy}\label{FGPE}
 	
 	The Fine-Grained Permutation Entropy (FGPE) was introduced in Ref.~\cite{xiao2009fine}.
@@ -377,7 +378,7 @@
 	p(\widetilde \pi_t^D) = \frac{\sum_{i : \{\mathbf{X}^{(D,\tau)}_i \mapsto \widetilde\pi^D_t\}} w_{i}}{\sum_{i = 1}^{T-(D-1)\tau} w_{i}}.
 	\end{equation}
 	
-	\subsection{WATG -- Weighted Ordinal Patterns Transition Graph}\label{WATG}
+	\subsection{Weighted Graph of Transitions between Ordinal Patterns -- WATG}\label{WATG}
 	
 	Our proposal for computing the probability distribution, henceforth referred to as Weighted Amplitude Transition Graph (WATG), takes into account the dispersion of the return values, leading to a good.
 	We propose a modification of the current ordinal pattern transition graph, incorporating the absolute difference between the observations that produced the patterns.
@@ -411,6 +412,10 @@
 	Note that the conditions $p(\widetilde\pi^D_i, \widetilde\pi^D_j) \ge 0$ and $\sum_{\widetilde\pi^D_i, \widetilde\pi^D_j} p(\widetilde\pi^D_i, \widetilde\pi^D_j) = 1$ are satisfied.
 	
 	Thus, series with uniform amplitudes have edges with probability of occurrence well distributed along the graph, while those with large peaks have edges with probability of occurrence much higher than the others.
+	
+	Fig.~\ref{Fig:UrbanWATG} shows the weighted graph produced by the urban  area shown in Figs.~\ref{Fig:figMunich} (as image) and~\ref{Fig:TSMunich} (as signal) using this approach.
+	Notice the difference in weights with respect to Fig.~\ref{Fig:UrbanWATG}, which was obtained with WPE.
+	
 	
 	\subsection{Information-Theoretic Descriptors}\label{HC}
 	
@@ -549,10 +554,8 @@
 	the classification process, and 
 	the results of applying WATG.
 	
-	%%%ETCC Texto alterado 
-	%\textcolor{red}{
 	To assess the performance of the technique here proposed, we analyze the impact of its parameters and compare its results in the classification with other methods.
-	%}
+	
 	
 	\subsection{Image Datasets}
 	
@@ -598,35 +601,29 @@
 	Our proposal, shown in Fig.~\ref{fig:plotsHC} right, produces well-separated features.
 	In this way, we were able to obtain, for this experiment, a perfect characterization and, consequently, the high descriptive power of the regions.
 	
-	%%% ACF Juntar as figuras 6 e 7 em uma com duas linhas de figuras.
-	%%% Usar oito figuras independentes
-	%%% Usar \subfigure
-	%%% Não colocar título nas figuras das séries
-	%%% ETCC Done
+	
 	\begin{figure*}[hbt]
 		\centering
-		\subfigure{\label{Fig:figGuatemala}\includegraphics[width = 35mm]{Figures/guatemalaflorest.pdf}}
-		\subfigure{\label{Fig:figCape1}\includegraphics[width = 35mm]{Figures/Cape1.pdf}}
-		\subfigure{\label{Fig:figCape2}\includegraphics[width = 35mm]{Figures/Cape2.pdf}}
-		\subfigure{\label{Fig:figMunich}\includegraphics[width = 35mm]{Figures/munichUrban.pdf}}
-		\subfigure{\label{Fig:figPasture}\includegraphics[width = 35mm]{Figures/pasture.pdf}}
+		\subfigure[Forest\label{Fig:figGuatemala}]{\includegraphics[width = 35mm]{Figures/guatemalaflorest.pdf}}
+		\subfigure[Sea -- lower contrast\label{Fig:figCape1}]{\includegraphics[width = 35mm]{Figures/Cape1.pdf}}
+		\subfigure[Sea -- higher contrast\label{Fig:figCape2}]{\includegraphics[width = 35mm]{Figures/Cape2.pdf}}
+		\subfigure[Urban\label{Fig:figMunich}]{\includegraphics[width = 35mm]{Figures/munichUrban.pdf}}
+		\subfigure[Pasture\label{Fig:figPasture}]{\includegraphics[width = 35mm]{Figures/pasture.pdf}}
 		
-		\subfigure{\label{Fig:TSGuatemala}\includegraphics[width = 35mm]{Figures/tsguatemala.pdf}}
-		\subfigure{\label{Fig:TSCape1}\includegraphics[width = 35mm]{Figures/tscape1.pdf}}
-		\subfigure{\label{Fig:TSCape2}\includegraphics[width = 35mm]{Figures/tscape2.pdf}}
-		\subfigure{\label{Fig:TSMunich}\includegraphics[width = 35mm]{Figures/tsmunich.pdf}}
-		\subfigure{\label{Fig:TSPasture}\includegraphics[width = 35mm]{Figures/tspasture.pdf}}
-		
-		\caption{Types of regions analyzed: Guatemala forest, Canaveral ocean type 1, ocean type 2, Munich urban area, and pasture area.}
+		\subfigure[Signal -- forest\label{Fig:TSGuatemala}]{\includegraphics[width = 35mm]{Figures/tsguatemala.pdf}}
+		\subfigure[Signal -- sea\label{Fig:TSCape1}]{\includegraphics[width = 35mm]{Figures/tscape1.pdf}}
+		\subfigure[Signal -- sea\label{Fig:TSCape2}]{\includegraphics[width = 35mm]{Figures/tscape2.pdf}}
+		\subfigure[Signal -- sea\label{Fig:TSMunich}]{\includegraphics[width = 35mm]{Figures/tsmunich.pdf}}
+		\subfigure[Signal -- pasture\label{Fig:TSPasture}]{\includegraphics[width = 35mm]{Figures/tspasture.pdf}}
+		\caption{Types of regions (Guatemala forest, Canaveral ocean types 1 and 2, Munich urban area, and pasture area) and their signal representation.}
 		\label{fig:samples&Series}
 	\end{figure*}
 	
-	%%% ACF Seria possível codificar o peso dos arcos com espessura ou cor? Só se não der muito trabalho.
-	%%% ETCC Done
 	\begin{figure*}[hbt]
-		\includegraphics[width=2\columnwidth]{Figures/graphs.pdf}
-		\caption{Example of the difference in weights at the edges in a sample of Munich urban regions in the transition graph and in the weighted graph of ordinal patterns
-			transition to dimension 3 and delay 1}
+		\centering
+		\subfigure[Transition Graph\label{Fig:UrbanTG}]{\includegraphics[width = 85mm]{Figures/UrbanTG.pdf}}
+		\subfigure[WATG\label{Fig:UrbanWATG}]{\includegraphics[width = 85mm]{Figures/UrbanWATG.pdf}}
+		\caption{Example of the difference in weights at the edges in a sample of Munich urban regions in the transition graph and in the weighted graph of ordinal patterns transition with dimension 3 and delay 1}
 		\label{fig:graphs}
 	\end{figure*}
 	
@@ -714,7 +711,6 @@
 	In the classification, we used the $k$-nearest neighbor algorithm with Euclidean distance, selecting the value of $k$ with the automatic grid search method of the Caret R package~\cite{kuhn2008building}.
 	For validation, we used $10$-fold cross-validation.
 	More details about the classifier and the sampling can be seen in~\cite{mitchell1997machine}.
-	%%%ETCC definições de TPR, PPV, OA e F1-Score alteradas para o modo texto
 	Table~\ref{tab:result1} summarizes the number of features each method produces, as well as its performance of classifying the $200$ samples.
 	We assess the effectiveness of each approach using the following metrics: 
 	\begin{itemize}
@@ -731,12 +727,12 @@
 		\item Overall Accuracy (OA): Total of regions correctly classified. 
 		Knowing the number of true positive (TP) for each region, we have to:
 		\begin{equation*}
-		\text{OA} = \frac{\text{TP}_{ocean} + \text{TP}_{forest} + \text{TP}_{urban}}{\text{Total Regions}}.
+		\text{OA} = \frac{\text{TP}_{\text{ocean}} + \text{TP}_{\text{forest}} + \text{TP}_{\text{urban}}}{\text{Total Regions}}.
 		\end{equation*}
 		%
 		\item F1-score: The harmonic mean of precision and recall.
 		\begin{equation*}
-		\text{F1-score} = 2 \times \frac{PPV \times TPR}{PPV + TPR}.
+		\text{F1-score} = 2 \times \frac{\text{PPV} \times \text{TPR}}{\text{PPV} + \text{TPR}}.
 		\end{equation*}
 	\end{itemize}
 	
@@ -864,7 +860,7 @@
 	
 	\section{Reproducibility and Replicability} 
 	
-	The text, source code, and data used in this study are available at the \textit{SAR-WATG} repository \url{https://github.com/EduardaChagas/SAR-WATG}.
+	Following the guidelines presented in Ref.~\cite{ABadgingSystemforReproducibilityandReplicabilityinRemoteSensingResearch}, the text, source code, and data used in this study are available at the \textit{SAR-WATG} repository \url{https://github.com/EduardaChagas/SAR-WATG}.
 	
 	\bibliographystyle{IEEEtran}
 	\bibliography{AbbrevRefs}
