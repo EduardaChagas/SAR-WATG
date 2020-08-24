@@ -65,7 +65,7 @@ As well known, SAR images have inherent speckle. Then, the robustness of feature
 We are grateful for the questioning, through which we have been able to expand our knowledge of the properties of the technique presented.
 
 \begin{tcolorbox}[colback=white,colframe=black,title=Changes \#1]
-	We studied the robustness of WATG and the features applied against the speckle and added a new subsection with the respective results at the end of section III.
+	We studied the robustness of WATG and the features applied against the speckle and added a new subsection with the respective results at the end of section II.
 \end{tcolorbox}
 
 \vskip3em\begin{tcolorbox}[colback=red!5!white,colframe=red!75!black,title=Comment \#2]
@@ -75,11 +75,8 @@ The equivalent number of looks of the experimental data should be mentioned.
 \begin{tcolorbox}[colback=white,colframe=black,title=Changes \#2]
 	We updated the information regarding the dataset of SAR images textures presented in section III-A:
 
-    "The proposed method was evaluated by dataset based on three quad-polarimetric L-band SAR images from the NASA Jet Propulsion Laboratory’s (JPL’s) uninhabited aerial vehicle synthetic aperture radar (UAVSAR) with $\sim 2$m range resolution and $36$ looks."
+    "We used the HH backscatter magnitudes of three quad-polarimetric L-band SAR images from the NASA Jet Propulsion Laboratory’s (JPL’s) uninhabited aerial vehicle synthetic aperture radar (UAVSAR) sensor with $L=36$ nominal looks"
 \end{tcolorbox}
-
-%Thank you very much for this suggestion.
-%We made the changes, as requested:
 
 
 \vskip3em\begin{tcolorbox}[colback=red!5!white,colframe=red!75!black,title=Comment \#3]
@@ -97,17 +94,20 @@ The resolution of the experimental data should be mentioned.
 
 \begin{tcolorbox}[colback=white,colframe=black,title=Changes \#4]
 	We updated the information regarding each of the images presented in section III-A:
-	\begin{itemize}
-		\item Sierra del Lacandón National Park, forest region in Guatemala (acquired on April 10, 2015). 
-		It was $8917 \times 3300$ pixels and its image resolution is $10m \times 2m$;
-		\item Cape Canaveral Ocean Regions (acquired on September 22, 2016).
-		It was $7038 \times 3300$ pixels and its image resolution is $10m \times 2m$;
-		\item Urban area of the city of Munich, Germany (acquired on June 5, 2015).
-		It was $5773 \times 3300$ pixels and its image resolution is $10m \times 3m$.
-	\end{itemize}
+\begin{itemize}
+	\item forest and pasture region of Sierra del Lacandón National Park, Guatemala, (acquired on April 10, 2015)\footnote{\protect{\url{https://uavsar.jpl.nasa.gov/cgi-bin/product.pl?jobName=Lacand_30202_15043_006_150410_L090_CX_01\#dados}}}. 
+	The image has $8917 \times 3300$ pixels with 
+	\SI[inter-unit-product =$\cdot$]{10}{\meter} $\times$ \SI[inter-unit-product =$\cdot$]{2}{\meter} resolution.
+	%
+	\item ocean regions from Cape Canaveral Ocean (acquired on September 22, 2016).
+	The image has $7038 \times 3300$ pixels with 
+	\SI[inter-unit-product =$\cdot$]{10}{\meter} $\times$ \SI[inter-unit-product =$\cdot$]{2}{\meter} resolution;
+	%
+	\item urban area of the city of Munich, Germany (acquired on June 5, 2015)\footnote{\protect{\url{https://uavsar.jpl.nasa.gov/cgi-bin/product.pl?jobName=munich_19417_15088_002_150605_L090_CX_01\#data}}}.
+	The image has $5773 \times 3300$ pixels with 
+	\SI[inter-unit-product =$\cdot$]{10}{\meter} $\times$ \SI[inter-unit-product =$\cdot$]{3}{\meter} resolution.
+\end{itemize}
 \end{tcolorbox}
-
-%We added a rationale for the choice of this Algorithm:
 
 \vskip3em\begin{tcolorbox}[colback=red!5!white,colframe=red!75!black,title=Comment \#5]
 	In Fig.4, the four types of regions, forest, ocean type-1, ocean type-2,  and urban area, are given. In the following experiment, only three kinds of textures, forest, ocean, and urban area, are classified, as shown in Fig.7 and listed in Table I. Then, does the “ocean” in Fig.7 and Table I denote “ocean type-1” or “ocean type-2”?
@@ -118,9 +118,8 @@ $40$ samples from Guatemalan forest regions;
 $40$ samples from Guatemalan pasture regions;
 $80$ samples from the oceanic regions of Cape Canaveral, divided into two types with different contrast; and
 $40$ samples of urban regions of the city of Munich.
-Thus, the results are shown in Fig. 7 and Table I configure a set of samples with both types of contrast.
-Details on the dataset used and the dataset of oceanic regions are provided in the second paragraph in section III in "Image Dataset".
-
+Thus, the results are shown in Fig. 6 and Table I configure a set of samples with both types of contrast.
+Details on the dataset used and the oceanic regions are provided in the second paragraph in section III in "Image Dataset".
 
 \vskip3em\begin{tcolorbox}[colback=red!5!white,colframe=red!75!black,title=Comment \#6]
 	It is interesting to add some other classes, such as grass and bare soil, in the experiment. 
@@ -132,7 +131,10 @@ Details on the dataset used and the dataset of oceanic regions are provided in t
 \end{tcolorbox}
 
 \vskip3em\begin{tcolorbox}[colback=red!5!white,colframe=red!75!black,title=Comment \#7]
-	In WATG, the authors take the scattering properties of target into account. What do the scattering properties denote? Are they related to the scattering statistics? Could the authors explain it in detail?	
+	In WATG, the authors take the scattering properties of target into account. 
+	What do the scattering properties denote? 
+	Are they related to the scattering statistics? 
+	Could the authors explain it in detail?	
 \end{tcolorbox}
 
 In general, we know that the intensity of dispersion in urban areas is stronger than in forest regions.
@@ -146,10 +148,10 @@ This results in a particularly low backscatter which, in turn, thanks to the mul
 At WATG we know that when the 1-D signal presents a uniform amplitude variation, the weights are well distributed between the edges, thus obtaining a random probability distribution and consequently a high entropy.
 
 \begin{tcolorbox}[colback=white,colframe=black,title=Changes \#7]
-	We updated the first paragraph of subsection II E to emphasize which physical properties of the signal the technique can emphasize in characterization and classification activities:
+	We updated the first paragraph of subsection II-E to emphasize the physical properties of the signal that the technique can emphasize in characterization and classification activities:
 	
-	"Our proposal for computing the probability distribution, henceforth referred to as Weighted Amplitude Transition Graph (WATG), takes into account the dispersion intensity of the target's backscatter, leading to a good characterization of the textures.
-	We propose a modification of the current ordinal pattern transition graph, incorporating the absolute difference between the observations that produced the patterns."
+	"Our proposal for computing the probability distribution, henceforth referred to as Weighted Amplitude Transition Graph (WATG), takes into account the dispersion of the return values, leading to a good.
+    We propose a modification of the current ordinal pattern transition graph, incorporating the absolute difference between the observations that produced the patterns."
 \end{tcolorbox}
 
 
@@ -160,7 +162,7 @@ At WATG we know that when the 1-D signal presents a uniform amplitude variation,
 I agree with the reviewer and modifications have been incorporated into the manuscript.
 
 \begin{tcolorbox}[colback=white,colframe=black,title=Changes \#8]
-	The metrics formulas used in the work were incorporated in "Quantitative Evaluation" in section III.
+	The metrics formulas used in the work were incorporated in section III-D.
 \end{tcolorbox}
 
 
@@ -171,12 +173,7 @@ In the quantitative evaluation, the GLCM-based classification method obtains goo
 The problem presented here consists of classification with small samples. 
 As reported in section III-A, the data set that we built for conducting the experiments have only $200$ samples.
 Therefore, the presence of false positives and false negatives has a bigger impact on the final result of OA.
-
-\begin{tcolorbox}[colback=white,colframe=black,title=Changes \#9]
-	We updated the subsection III-D, adding more details about the result obtained by the GLCM-based classification method.
-	
-	"Since the problem analyzed consists of classification with few samples, although the classification method GLCM-based obtains good TPR and PPV, it has a low OA provided by the impact of the presence of false-positive and false-negative results."	
-\end{tcolorbox}
+As can be seen in table I, GLCM achieved excellent results with the dataset with the new samples in all the metrics analyzed.
 
 \vskip3em\begin{tcolorbox}[colback=red!5!white,colframe=red!75!black,title=Comment \#10]
 	In section II, by using Hilbert-Peano curve, the authors turn the 2-D patch into a sequence, i.e., a 1-D signal, and maintain the spatial dependence. However, it may be not very suitable to name this 1-D signal as “a time series”, because this 1-D signal is not multi-temporal data.
@@ -202,10 +199,10 @@ For this, a new step would need to be included to detect transitions between the
 We believe that fruitful results can be obtained in this line in future works.
 
 \begin{tcolorbox}[colback=white,colframe=black,title=Changes \#1]
-	Thank you for the comment. To solve this problem, we added in the conclusion one paragraph explains our thematic problem and possible applications, how the potential applicability of the work in the semantic segmentation of regions.
+	Thank you for the comment. 
+	To solve this problematic, we reformulating the introduction and added in the conclusion one paragraph explains our thematic problem:
 	
-	"Since the application of this work is limited to texture patches from homogeneous regions, we aim in the future study the possible impacts of analysis on heterogeneous areas, such as cultivation zones and mixed urban regions.
-	The use of transition detection techniques and the segmentation of these signals in a stage before the use of WATG may increase the power of its application and will be fruitful avenues for future work."
+	"Since the application of this work is limited to texture patches from homogeneous regions, we aim in the future study the possible impacts heterogeneous areas, such as mixed culture and urban regions."
 \end{tcolorbox}
 
 
@@ -244,7 +241,7 @@ We opted for the choice of Hilbert-Peano curves due to their property of preserv
 
 \begin{tcolorbox}[colback=white,colframe=black,title=Changes \#5]
 	We updated the article, reinforcing only the use of Hilbert-Peano curves. 
-	For this, we add the following modification at the end of subsection II. A:
+	For this, we add the following modification at the end of subsection II-A:
 	
 	"In this work, we use Hilbert-Peano patches of size $128 \times 128$."
 \end{tcolorbox}
@@ -332,9 +329,11 @@ As we can see, when considering $\tau = 1$, more patterns related to the image i
 \end{tcolorbox} 
 
 Oriented textures are composed of straight and/or elongated patterns, so we can infer that such types of images have high values of statistical complexity.
+However, we demonstrated in the section II-G experiment that our technique mapping is little sensitive to rotations (thanks to the use of Peano-Hilbert curves).
 
 \vskip3em\begin{tcolorbox}[colback=red!5!white,colframe=red!75!black,title=Comment \#13]
-	What can we conclude on all the presented weight techniques? What to use at the end from a thematic point of view?
+	What can we conclude on all the presented weight techniques? 
+	What to use at the end from a thematic point of view?
 \end{tcolorbox} 
 
 In the experiments carried out to analyze homogeneous textures, among the weighting techniques presented, the ones that showed the worst performance were FGPE and AAPE.
@@ -346,13 +345,13 @@ The best results, in general, are obtained by WATG, since it weighs the amplitud
 	Thank you very much for the comment.
 	At the end of subsection III D, we add a paragraph with the evaluation of the results obtained by these techniques.
 	
-	"As we can observed in Table 1, among the methods of weighting ordinal patterns, FGPE produced the worst results: $\text{OA}=\SI{86.6}{\percent}$ and $\text{F1-score}=\SI{72.7}{\percent}$.
-	%
-	AAPE also produced a low F1-score result, but it produced more consistent results in the other metrics, presenting $\text{OA} = \SI{93.3}{\percent}$.
-	%
-	On the other hand, WPE achieved one of the best results of the developed analysis: $\text{OA}=\SI{93.3}{\percent}$ and $\text{F1-score}=\SI{92.3}{\percent}$.
-	%
-	Therefore, we found that among such methods, WATG is the one that best describes the textures presented, obtaining the best performance."	
+	"Table I shows that, among the methods of weighting ordinal patterns, FGPE produced the worst results: $\text{OA}=\SI{86.6}{\percent}$ and $\text{F1-score}=\SI{72.7}{\percent}$.
+    %
+    AAPE also produced a low F1-score, but it produced consistently better results in the other metrics, presenting $\text{OA} = \SI{93.3}{\percent}$.
+    %
+    WPE achieved one of the best results: $\text{OA}=\SI{93.3}{\percent}$ and $\text{F1-score}=\SI{92.3}{\percent}$.
+    %
+    WATG is the one that best describes the textures, as it obtains the best achievable performance on all metrics: \SI{100}{\percent}."	
 \end{tcolorbox}
 
 \section{Reviewer \#3}
@@ -361,14 +360,25 @@ The best results, in general, are obtained by WATG, since it weighs the amplitud
 	The authors would better provide a clear motivation of proposed method in abstract. Why the Bandt-Peano symbolization is employed in this paper. The readers can be then interested in this work
 \end{tcolorbox} 
 
-We agree that the abstract did not describe well the motivations of the work, as well as our contribution. Therefore, the abstract was reformulated so that we can meet these expectations.
+We agree that the abstract did not describe well the motivations of the work, as well as our contribution. 
+Therefore, the abstract was reformulated so that we can meet these expectations.
 
 \begin{tcolorbox}[colback=white,colframe=black,title=Changes \#1]
 	We updated the abstract as :
 	
 	“The use of Bandt-Pompe probability distributions and descriptors of Information Theory has been presenting satisfactory results with low computational cost in the time series analysis literature~\cite{Aquino2017Characterization, Rosso2016Signatures, Schieber2016network}.
-	However, these tools have limitations when applied to data without time dependency.  Given this context, we present a newly proposed technique for texture analysis and classification based on the Bandt-Pompe symbolization for SAR data. It consists of  (i) linearize a 2-D patch of the image using the Hilbert-Peano curve, (ii) build an Ordinal Pattern Transition Graph that considers the data amplitude encoded into the weight of the edges; (iii) obtain a probability distribution function derived from this graph; (iv) compute Information Theory descriptors (Permutation Entropy and Statistical Complexity) from this distribution and use them as features to feed a classifier. The ordinal pattern graph we propose considers that the weight of the edges is related to the absolute difference of observations, which encodes the information about the data amplitude.         This modification takes into account the scattering properties of the target and leads to the characterization of several types of textures. Experiments with data from Munich urban areas, Guatemala forest regions and Cape Canaveral ocean samples show the effectiveness of our technique in homogeneous areas, which achieves satisfactory levels of separability. The two descriptors chosen in this work are easy and quick to calculate and are used as input for a k-nearest neighbor classifier. Experiments show that this technique presents results similar to state-of-the-art techniques that employ a much larger number of features and, consequently, require a higher computational cost. ”
-	
+	However, these tools have limitations when applied to data without time dependency.
+	Given this context, we present a newly proposed technique for texture analysis and classification based on the Bandt-Pompe symbolization for SAR data.
+	It consists of
+	(i)~linearize a \mbox{2-D} patch of the image using the Hilbert-Peano curve,
+	(ii)~build an Ordinal Pattern Transition Graph that considers the data amplitude encoded into the weight of the edges;
+	(iii)~obtain a probability distribution function derived from this graph;
+	(iv)~compute Information Theory descriptors (Permutation Entropy and Statistical Complexity) from this distribution and use them as features to feed a classifier.
+	The ordinal pattern graph we propose considers that the weight of the edges is related to the absolute difference of observations, which encodes the information about the data amplitude. 
+	This modification takes into account the scattering properties of the target and leads to the characterization of several types of textures.
+	Experiments with data from Munich urban areas, Guatemala forest regions and Cape Canaveral ocean samples show the effectiveness of our technique in homogeneous areas, which achieves satisfactory levels of separability.
+	The two descriptors chosen in this work are easy and quick to calculate and are used as input for a k-nearest neighbor classifier.
+	Experiments show that this technique presents results similar to state-of-the-art techniques that employ a much larger number of features and, consequently, require a higher computational cost.”
 \end{tcolorbox}
 
 \vskip3em\begin{tcolorbox}[colback=red!5!white,colframe=red!75!black,title=Comment \#2]
@@ -404,14 +414,7 @@ Thank you very much for this suggestion.
 We agree with the reviewer and modifications have been incorporated into the manuscript.
 
 \begin{tcolorbox}[colback=white,colframe=black,title=Changes \#5]
-We modified the first paragraph of section II, adding details of the methodology motivation used:
-
-"The methodology applied in this work is shown in Alg. 1.
-The main idea of the technique is as follows.
-Since the Bandt-Pompe symbolization is performed on 1-D signals, after receiving the P texture patch, the algorithm uses Hilbert-Peano curves to linearizes the image, thus preserving the spatial correlation structure of the pixels.
-Then, the procedure calls WATG subroutine to calculate the probability distribution under the linearized texture, considering the transition of ordinal patterns and their amplitude, thus taking into account the spreading properties of the target that influence the pixel intensity.
-Finally, Shannon's permutation entropy and statistical complexity are calculated to estimate the randomness and structural dependence degree of the signal dynamics underlying.
-This features obtained in the last step can be used either for characterization or classification."
+We modified the Introduction, adding details about the motivation of the methodology used, and the research questions we want to solve.
 \end{tcolorbox}
 
 
@@ -445,7 +448,6 @@ Based on this, we do not use DL techniques as a baseline due to the following po
 \end{tcolorbox}
 
 \bibliographystyle{IEEEtran}
-%\bibliography{bibtex/sar.bib}
 \bibliography{AbbrevRefs}
 
 \end{document}
