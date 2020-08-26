@@ -151,7 +151,7 @@ p = p + geom_point(data = Entropy.Complexity, aes(x = H, y = C, color = Speckle.
   xlim(limits=c(0.3, 0.6)) + ylim(limits=c(0.3, 0.6)) + 
   theme_few(base_size = 18, base_family = "serif")  + 
   theme(plot.title = element_text(hjust=0.5), legend.position="none") +
-  ggtitle(TeX('\\textit{H} $\ \\times $\ \\textit{C Plane}')) +
+  #ggtitle(TeX('\\textit{H} $\ \\times $\ \\textit{C Plane}')) +
   labs(x = TeX("\\textit{H}"), y = TeX("\\textit{C}")) 
 
 pdf("p1.pdf", width = 8, height = 6) 
@@ -246,7 +246,7 @@ p = cotas(factorial(6)^2)
 p = p + geom_point(data = Entropy.Complexity.3, aes(x = H, y = C, color = Speckle.Looks), size = 1.5, alpha = .4) + 
   geom_label_repel(data = Entropy.Complexity.3, aes(x = H, y = C, label = waves.types), 
                    segment.size = 0.1, min.segment.length = 0, force = 18, alpha = 1) +
-  ggtitle(TeX("\\textit{H} $ \\times $ \\textit{C Plane}")) +
+  #ggtitle(TeX("\\textit{H} $ \\times $ \\textit{C Plane}")) +
   labs(x = TeX("\\textit{H}"), y = TeX("\\textit{C}"))  +
   xlim(limits=c(0.3, 0.6)) + ylim(limits=c(0.3, 0.6)) + 
   theme_few(base_size = 18, base_family = "serif")  + 

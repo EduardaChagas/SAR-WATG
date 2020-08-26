@@ -66,7 +66,56 @@ pred = predict(knnFit, newdata = x_validation)
 #knnFit$results
 
 xtab = table(pred, y_validation)
-confusionMatrix(xtab)
+cm = confusionMatrix(xtab)
+cm = cm$table
+round((accuracy <- sum(diag(cm)) / sum(cm)), 3)
+```
+
+```{r}
+get.conf.stats <- function(cm) {
+    out <- vector("list", length(cm))
+    for (i in seq_along(cm)) {
+        x <- cm[[i]]
+        tp <- x$table[x$positive, x$positive] 
+        fp <- sum(x$table[x$positive, colnames(x$table) != x$positive])
+        fn <- sum(x$table[colnames(x$table) != x$positie, x$positive])
+        # TNs are not well-defined for one-vs-all approach
+        elem <- c(tp = tp, fp = fp, fn = fn)
+        out[[i]] <- elem
+    }
+    df <- do.call(rbind, out)
+    rownames(df) <- unlist(lapply(cm, function(x) x$positive))
+    return(as.data.frame(df))
+}
+get.micro.f1 <- function(cm) {
+    cm.summary <- get.conf.stats(cm)
+    tp <- sum(cm.summary$tp)
+    fn <- sum(cm.summary$fn)
+    fp <- sum(cm.summary$fp)
+    pr <- tp / (tp + fp)
+    re <- tp / (tp + fn)
+    f1 <- 2 * ((pr * re) / (pr + re))
+    return(f1)
+}
+df <- data.frame("Prediction" = pred, "Reference" = y_validation, stringsAsFactors=TRUE)
+cm <- vector("list", length(levels(df$Reference)))
+for (i in seq_along(cm)) {
+    positive.class <- levels(df$Reference)[i]
+    # in the i-th iteration, use the i-th class as the positive class
+    cm[[i]] <- confusionMatrix(df$Prediction, df$Reference, 
+                               positive = positive.class)
+}
+micro.f1 <- get.micro.f1(cm)
+get.macro.f1 <- function(cm) {
+    c <- cm[[1]]$byClass # a single matrix is sufficient
+    re <- sum(c[, "Recall"]) / nrow(c)
+    pr <- sum(c[, "Precision"]) / nrow(c)
+    f1 <- 2 * ((re * pr) / (re + pr))
+    return(f1)
+}
+macro.f1 <- get.macro.f1(cm)
+print(paste0("Micro F1 is: ", round(micro.f1, 3)))
+print(paste0("Macro F1 is: ", round(macro.f1, 3)))
 ```
 
 ```{r}
