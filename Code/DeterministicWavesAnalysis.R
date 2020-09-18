@@ -13,6 +13,7 @@ if(!require(ggplot2)) install.packages("ggplot2")
 if(!require(ggrepel)) install.packages("ggrepel")
 if(!require(ggthemes)) install.packages("ggthemes")
 if(!require(latex2exp)) install.packages("latex2exp")
+if(!require(scales)) install.packages("scales")
 source("imagematrix.R")
 source("theory_information.R")
 
@@ -105,7 +106,6 @@ transition.graph.weight <- function(series, dimension, delay){
 ############################################## Analysis ################################################
 
 hilbertcurve = unlist(read.table("../Data/Hilbert/HilbertCurves.txt")) + 1
-Entropy.Complexity = data.frame(H = length(12), C = length(12), "Speckle Looks" = as.factor(waves.types))
 
 x <- y <- seq(-2*pi, 2*pi, length.out = 128)
 deterministic <- function(x, y) {sin(4*x+.5*y)}
@@ -118,6 +118,8 @@ plot(
     equalize(z, 128, 128)
   )
 )
+
+Entropy.Complexity = data.frame(H = length(12), C = length(12), "Speckle Looks" =length(12))
 
 ts = z[hilbertcurve]/max(z[hilbertcurve])
 g = transition.graph.weight(ts, 6, 1)
@@ -253,5 +255,220 @@ p = p + geom_point(data = Entropy.Complexity.3, aes(x = H, y = C, color = Speckl
   theme(plot.title = element_text(hjust=0.5), legend.position="none")
 
 pdf("p3.pdf", width = 8, height = 6) 
+p
+dev.off() 
+
+## Rescale z and applying L = 100 ---------------------------------------------------
+
+set.seed(1234567890) # for reproducibility
+hilbertcurve = unlist(read.table("../Data/Hilbert/HilbertCurves.txt")) + 1
+Entropy.Complexity.4 = data.frame(H = length(12), C = length(12), Alpha = length(12))
+SpeckleLooks = matrix(rgamma(128*128, shape = 100, rate = 100), nrow = 128)
+
+x = y = seq(-2*pi, 2*pi, length.out = 128)
+
+deterministic <- function(x, y) {sin(4*x+.5*y)}
+z = outer(x, y, deterministic)
+
+a = 1
+alpha = seq(from = 0, to = 0.9, by = 0.1)
+for(i in alpha){
+  zz = rescale(z, to = c(i, 1))
+  zLook <- zz * t(SpeckleLooks)
+  ts = zLook[hilbertcurve]/max(zLook[hilbertcurve])
+  g = transition.graph.weight(ts, 6, 1)
+  Entropy.Complexity.4[a, 1] = shannonNormalized(as.vector(g))
+  Entropy.Complexity.4[a, 2] = Ccomplexity(as.vector(g))
+  a = a + 1
+}
+alpha.types = as.factor(alpha)
+Entropy.Complexity.4$Alpha = alpha.types
+
+p = cotas(factorial(6)^2)
+p = p + geom_point(data = Entropy.Complexity.4, aes(x = H, y = C, color = Alpha), size = 1.5, alpha = .4) + 
+  geom_label_repel(data = Entropy.Complexity.4, aes(x = H, y = C, label = Alpha), 
+                   segment.size = 0.1, min.segment.length = 0, force = 18, alpha = 1) +
+  ggtitle(TeX("\\textit{H} $ \\times $ \\textit{C Plane} with L = 100")) +
+  labs(x = TeX("\\textit{H}"), y = TeX("\\textit{C}"))  +
+  xlim(limits=c(0, 0.75)) + 
+  #ylim(limits=c(0.3, 0.6)) + 
+  theme_few(base_size = 18, base_family = "serif")  + 
+  theme(plot.title = element_text(hjust=0.5), legend.position="none")
+
+pdf("p_L100.pdf", width = 8, height = 6) 
+p
+dev.off() 
+
+## Rescale z and applying L = 300 ---------------------------------------------------
+
+set.seed(1234567890) # for reproducibility
+hilbertcurve = unlist(read.table("../Data/Hilbert/HilbertCurves.txt")) + 1
+Entropy.Complexity.4 = data.frame(H = length(12), C = length(12), Alpha = length(12))
+SpeckleLooks = matrix(rgamma(128*128, shape = 300, rate = 300), nrow = 128)
+
+x = y = seq(-2*pi, 2*pi, length.out = 128)
+
+deterministic <- function(x, y) {sin(4*x+.5*y)}
+z = outer(x, y, deterministic)
+
+a = 1
+alpha = seq(from = 0, to = 0.9, by = 0.1)
+for(i in alpha){
+  zz = rescale(z, to = c(i, 1))
+  zLook <- zz * t(SpeckleLooks)
+  ts = zLook[hilbertcurve]/max(zLook[hilbertcurve])
+  g = transition.graph.weight(ts, 6, 1)
+  Entropy.Complexity.4[a, 1] = shannonNormalized(as.vector(g))
+  Entropy.Complexity.4[a, 2] = Ccomplexity(as.vector(g))
+  a = a + 1
+}
+alpha.types = as.factor(alpha)
+Entropy.Complexity.4$Alpha = alpha.types
+
+p = cotas(factorial(6)^2)
+p = p + geom_point(data = Entropy.Complexity.4, aes(x = H, y = C, color = Alpha), size = 1.5, alpha = .4) + 
+  geom_label_repel(data = Entropy.Complexity.4, aes(x = H, y = C, label = Alpha), 
+                   segment.size = 0.1, min.segment.length = 0, force = 18, alpha = 1) +
+  ggtitle(TeX("\\textit{H} $ \\times $ \\textit{C Plane} with L = 300")) +
+  labs(x = TeX("\\textit{H}"), y = TeX("\\textit{C}"))  +
+  xlim(limits=c(0, 0.75)) + 
+  #ylim(limits=c(0.3, 0.6)) + 
+  theme_few(base_size = 18, base_family = "serif")  + 
+  theme(plot.title = element_text(hjust=0.5), legend.position="none")
+
+pdf("p_L300.pdf", width = 8, height = 6) 
+p
+dev.off() 
+
+## Rescale z and applying L = 500 ---------------------------------------------------
+
+set.seed(1234567890) # for reproducibility
+hilbertcurve = unlist(read.table("../Data/Hilbert/HilbertCurves.txt")) + 1
+Entropy.Complexity.4 = data.frame(H = length(12), C = length(12), Alpha = length(12))
+SpeckleLooks = matrix(rgamma(128*128, shape = 500, rate = 500), nrow = 128)
+
+x = y = seq(-2*pi, 2*pi, length.out = 128)
+
+deterministic <- function(x, y) {sin(4*x+.5*y)}
+z = outer(x, y, deterministic)
+
+a = 1
+alpha = seq(from = 0, to = 0.9, by = 0.1)
+for(i in alpha){
+  zz = rescale(z, to = c(i, 1))
+  zLook <- zz * t(SpeckleLooks)
+  ts = zLook[hilbertcurve]/max(zLook[hilbertcurve])
+  g = transition.graph.weight(ts, 6, 1)
+  Entropy.Complexity.4[a, 1] = shannonNormalized(as.vector(g))
+  Entropy.Complexity.4[a, 2] = Ccomplexity(as.vector(g))
+  a = a + 1
+}
+alpha.types = as.factor(alpha)
+Entropy.Complexity.4$Alpha = alpha.types
+
+p = cotas(factorial(6)^2)
+p = p + geom_point(data = Entropy.Complexity.4, aes(x = H, y = C, color = Alpha), size = 1.5, alpha = .4) + 
+  geom_label_repel(data = Entropy.Complexity.4, aes(x = H, y = C, label = Alpha), 
+                   segment.size = 0.1, min.segment.length = 0, force = 18, alpha = 1) +
+  ggtitle(TeX("\\textit{H} $ \\times $ \\textit{C Plane} with L = 500")) +
+  labs(x = TeX("\\textit{H}"), y = TeX("\\textit{C}"))  +
+  xlim(limits=c(0, 0.75)) + 
+  #ylim(limits=c(0.3, 0.6)) + 
+  theme_few(base_size = 18, base_family = "serif")  + 
+  theme(plot.title = element_text(hjust=0.5), legend.position="none")
+
+pdf("p_L500.pdf", width = 8, height = 6) 
+p
+dev.off() 
+
+## Analysis rescaling z to [0.5, 1] ---------------------------------------------------
+hilbertcurve = unlist(read.table("../Data/Hilbert/HilbertCurves.txt")) + 1
+
+x <- y <- seq(-2*pi, 2*pi, length.out = 128)
+deterministic <- function(x, y) {sin(4*x+.5*y)}
+z <- outer(x,y,deterministic)
+z <- rescale(z, to = c(0.5, 1))
+
+Entropy.Complexity = data.frame(H = length(12), C = length(12), "Speckle Looks" =length(12))
+
+ts = z[hilbertcurve]/max(z[hilbertcurve])
+g = transition.graph.weight(ts, 6, 1)
+Entropy.Complexity[1,1] = shannonNormalized(as.vector(g))
+Entropy.Complexity[1,2] = Ccomplexity(as.vector(g))
+
+a = 2
+waves.types = 0
+looks = c(1, seq(from = 50, to = 500, by = 50))
+for(l in looks){
+  set.seed(1234567890) # for reproducibility
+  SpeckleLooks <- matrix(rgamma(128*128, shape = l, rate = l), nrow = 128)
+  waves.types = c(waves.types, l)
+  zLook <- z * SpeckleLooks 
+  ts = zLook[hilbertcurve]/max(zLook[hilbertcurve])
+  g = transition.graph.weight(ts, 6, 1)
+  Entropy.Complexity[a, 1] = shannonNormalized(as.vector(g))
+  Entropy.Complexity[a, 2] = Ccomplexity(as.vector(g))
+  a = a + 1
+}
+waves.types = as.factor(waves.types)
+Entropy.Complexity$Speckle.Looks = waves.types
+
+p = cotas(factorial(6)^2)
+p = p + geom_point(data = Entropy.Complexity, aes(x = H, y = C, color = Speckle.Looks), size = 2.5, alpha = .8) + 
+  geom_label_repel(data = Entropy.Complexity, aes(x = H, y = C, label = waves.types), 
+                   segment.size = 0.05, min.segment.length = 0, force = 18, alpha = 1) +
+  xlim(limits=c(0.3, 0.6)) + ylim(limits=c(0.3, 0.6)) + 
+  theme_few(base_size = 18, base_family = "serif")  + 
+  theme(plot.title = element_text(hjust=0.5), legend.position="none") +
+  ggtitle(TeX('\\textit{H} $\ \\times $\ \\textit{C Plane} with \\alpha = 0.5')) +
+  labs(x = TeX("\\textit{H}"), y = TeX("\\textit{C}")) 
+
+pdf("p_a.5.pdf", width = 8, height = 6) 
+p
+dev.off() 
+
+## Analysis rescaling z to [0.9, 1] ---------------------------------------------------
+hilbertcurve = unlist(read.table("../Data/Hilbert/HilbertCurves.txt")) + 1
+
+x <- y <- seq(-2*pi, 2*pi, length.out = 128)
+deterministic <- function(x, y) {sin(4*x+.5*y)}
+z <- outer(x,y,deterministic)
+z <- rescale(z, to = c(0.9, 1))
+
+Entropy.Complexity = data.frame(H = length(12), C = length(12), "Speckle Looks" =length(12))
+
+ts = z[hilbertcurve]/max(z[hilbertcurve])
+g = transition.graph.weight(ts, 6, 1)
+Entropy.Complexity[1,1] = shannonNormalized(as.vector(g))
+Entropy.Complexity[1,2] = Ccomplexity(as.vector(g))
+
+a = 2
+waves.types = 0
+looks = c(1, seq(from = 50, to = 500, by = 50))
+for(l in looks){
+  set.seed(1234567890) # for reproducibility
+  SpeckleLooks <- matrix(rgamma(128*128, shape = l, rate = l), nrow = 128)
+  waves.types = c(waves.types, l)
+  zLook <- z * SpeckleLooks 
+  ts = zLook[hilbertcurve]/max(zLook[hilbertcurve])
+  g = transition.graph.weight(ts, 6, 1)
+  Entropy.Complexity[a, 1] = shannonNormalized(as.vector(g))
+  Entropy.Complexity[a, 2] = Ccomplexity(as.vector(g))
+  a = a + 1
+}
+waves.types = as.factor(waves.types)
+Entropy.Complexity$Speckle.Looks = waves.types
+
+p = cotas(factorial(6)^2)
+p = p + geom_point(data = Entropy.Complexity, aes(x = H, y = C, color = Speckle.Looks), size = 2.5, alpha = .8) + 
+  geom_label_repel(data = Entropy.Complexity, aes(x = H, y = C, label = waves.types), 
+                   segment.size = 0.05, min.segment.length = 0, force = 18, alpha = 1) +
+  xlim(limits=c(0.3, 0.6)) + ylim(limits=c(0.3, 0.6)) + 
+  theme_few(base_size = 18, base_family = "serif")  + 
+  theme(plot.title = element_text(hjust=0.5), legend.position="none") +
+  ggtitle(TeX('\\textit{H} $\ \\times $\ \\textit{C Plane} with \\alpha = 0.9')) +
+  labs(x = TeX("\\textit{H}"), y = TeX("\\textit{C}")) 
+
+pdf("p_a.9.pdf", width = 8, height = 6) 
 p
 dev.off() 
