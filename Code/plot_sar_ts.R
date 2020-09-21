@@ -46,7 +46,7 @@ p.cape.1
 dev.off() 
 
 #Cape 2
-dimen.canaveral.behavior2 = c(250, 128, 1, 128)
+dimen.canaveral.behavior2 = c(150, 128, 550, 128)
 sar_data = raster(paste("../../Data/", "Cape", "/HHHH", ".grd", sep = ""))
 img = getValuesBlock(sar_data, row = dimen.canaveral.behavior2[1], nrows = dimen.canaveral.behavior2[2], col = dimen.canaveral.behavior2[3], ncols = dimen.canaveral.behavior2[4], format = "matrix")
 ts = img[hilbertcurve]/max(img[hilbertcurve])

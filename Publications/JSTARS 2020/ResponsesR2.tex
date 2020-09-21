@@ -1,0 +1,86 @@
+\RequirePackage{xr}
+\externaldocument{SARTexture-IT.R1}
+
+\documentclass[journal,onecolumn,draftcls,11pt]{IEEEtran}
+
+\usepackage{graphicx}
+\usepackage{subfigure}
+\usepackage{booktabs}
+\usepackage[T1]{fontenc}
+\usepackage[cmex10]{amsmath}
+\usepackage{amsfonts}
+\usepackage{color}
+\usepackage{bm,bbm}
+\usepackage{wasysym}
+\usepackage{texnames}
+\usepackage{todonotes}
+\usepackage{url}
+\usepackage[boxed]{algorithm2e}   % AAB inserido
+\usepackage[listings]{tcolorbox}
+\usepackage[binary-units]{siunitx}
+\usepackage{multirow,bigstrut}
+\usepackage{capt-of}
+\begin{document}
+\title{Analysis and Classification of SAR Textures using Information Theory}
+
+\author{Eduarda~T.~C.~Chagas,
+	Alejandro~C.~Frery,
+	Osvaldo~A.~Rosso,
+	and~Heitor~S.~Ramos}
+
+\maketitle
+
+\IEEEpeerreviewmaketitle
+
+\section{Editor}
+\begin{tcolorbox}[colback=red!5!white,colframe=red!75!black,title=Comment \#1]
+Your manuscript JSTARS-2020-00645.R1 Analysis and Classification of SAR Textures using Information Theory has been reviewed by the J-STARS Editorial Review Board and recommended for publication subject to satisfactory response to minor revisions suggested. It is recommended that you resubmit your manuscript as revised in accordance with the Editorial Review Board comments given below.
+\end{tcolorbox}
+
+\section{Reviewer \#1}
+
+\vskip3em\begin{tcolorbox}[colback=red!5!white,colframe=red!75!black,title=Comment \#1]
+It is good to add the experiment about the robustness against speckle. However, please give the definition of L. Does this parameter denote the equivalent number of looks (ENL)? If so, setting L as 100 or higher in the experiment is not reasonable for SAR image. In your experiment, the equivalent number of looks (ENL) of image from JPL are 36. So, setting L as 100,150 or higher is not reasonable in fact. ENL could be set as within [1~30] with a step of 5. 
+\end{tcolorbox}
+
+\begin{tcolorbox}[colback=white,colframe=black,title=Change \#1]
+\end{tcolorbox}
+
+\vskip3em\begin{tcolorbox}[colback=red!5!white,colframe=red!75!black,title=Comment \#2]
+In Fig.6, should “(i) Signal – sea” be “(i) Signal – Urban”? Please check it carefully.
+\end{tcolorbox}
+
+\begin{tcolorbox}[colback=white,colframe=black,title=Change \#2]
+
+\end{tcolorbox}
+
+
+\vskip3em\begin{tcolorbox}[colback=red!5!white,colframe=red!75!black,title=Comment \#3]
+The authors claim that they take the scattering properties of target into account. Could the authors directly point out the scattering properties considered? Is it the anisotropic or isotropic property of the target? If so, give a brief discussion about why their method could consider this property in Section II. 
+\end{tcolorbox}
+
+\begin{tcolorbox}[colback=white,colframe=black,title=Change \#3]
+
+\end{tcolorbox}
+
+\vskip3em\begin{tcolorbox}[colback=red!5!white,colframe=red!75!black,title=Comment \#4]
+In Fig.6, does the observation denote the intensity of the image pixels? As depicted by authors, Fig.6(b) which denotes the sea region with low intensities and low contrast should correspond to Fig.6(g). But the intensities of this region shown in Fig.(g) seem to be large. Therefore, I am confused by this figure. The authors could use the histogram of this region to check it.
+\end{tcolorbox}
+
+\begin{tcolorbox}[colback=white,colframe=black,title=Change \#4]
+\end{tcolorbox}
+
+\section{Reviewer \#2}
+
+\vskip3em\begin{tcolorbox}[colback=red!5!white,colframe=red!75!black,title=Comment \#1]
+	I have nevertheless a 'tiny' comment about the diff in latex (moreover very practical): I do not understand why many of the equations have updated from red to blue with the same content.
+\end{tcolorbox}
+
+\begin{tcolorbox}[colback=white,colframe=black,title=Change \#1]
+\end{tcolorbox}
+
+%\bibliographystyle{IEEEtran}
+%\bibliography{AbbrevRefs}
+
+\end{document}
+
