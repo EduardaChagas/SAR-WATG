@@ -119,6 +119,15 @@ plot(
   )
 )
 
+SpeckleLooks <- matrix(rgamma(128*128, shape = 1, rate = 1), nrow = 128)
+waves.types = c(waves.types, l)
+zLook <- z * SpeckleLooks
+plot(
+  imagematrix(
+    equalize(zLook, 128, 128)
+  )
+)
+
 Entropy.Complexity = data.frame(H = length(12), C = length(12), "Speckle Looks" =length(12))
 
 ts = z[hilbertcurve]/max(z[hilbertcurve])
@@ -128,7 +137,7 @@ Entropy.Complexity[1,2] = Ccomplexity(as.vector(g))
 
 a = 2
 waves.types = 0
-looks = c(1, seq(from = 50, to = 500, by = 50))
+looks = c(1, seq(from = 5, to = 50, by = 5))
 for(l in looks){
   set.seed(1234567890) # for reproducibility
   SpeckleLooks <- matrix(rgamma(128*128, shape = l, rate = l), nrow = 128)
@@ -142,6 +151,47 @@ for(l in looks){
 }
 waves.types = as.factor(waves.types)
 Entropy.Complexity$Speckle.Looks = waves.types
+
+Entropy.Complexity.2 = data.frame(H = length(12), C = length(12), "Speckle Looks" =length(12))
+
+i = 1
+for(l in looks){
+  set.seed(1234567890)
+  SpeckleLooks = matrix(rgamma(128*128, shape = l, rate = l), nrow = 128)
+  zz = rescale(z, to = c(0.95, 1))
+  zLook <- zz * t(SpeckleLooks)
+  ts = zLook[hilbertcurve]/max(zLook[hilbertcurve])
+  g = transition.graph.weight(ts, 6, 1)
+  Entropy.Complexity.2[i, 1] = shannonNormalized(as.vector(g))
+  Entropy.Complexity.2[i, 2] = Ccomplexity(as.vector(g))
+  i = i + 1
+}
+waves.types = as.factor(waves.types)
+Entropy.Complexity.2$Speckle.Looks = waves.types
+
+Entropy.Complexity.3 = data.frame(H = length(12), C = length(12), "Speckle Looks" =length(12))
+
+i = 1
+for(l in looks){
+  set.seed(1234567890)
+  SpeckleLooks = matrix(rgamma(128*128, shape = l, rate = l), nrow = 128)
+  zz = rescale(z, to = c(1, 1))
+  zLook <- zz * t(SpeckleLooks)
+  ts = zLook[hilbertcurve]/max(zLook[hilbertcurve])
+  g = transition.graph.weight(ts, 6, 1)
+  Entropy.Complexity.3[i, 1] = shannonNormalized(as.vector(g))
+  Entropy.Complexity.3[i, 2] = Ccomplexity(as.vector(g))
+  i = i + 1
+}
+waves.types = as.factor(waves.types)
+Entropy.Complexity.3$Speckle.Looks = waves.types
+
+set.seed(1234567890)
+Pure.speckle <- matrix(runif(128*128), nrow=128)
+ts = Pure.speckle[hilbertcurve]/max(Pure.speckle[hilbertcurve])
+g = transition.graph.weight(ts, 6, 1)
+h = shannonNormalized(as.vector(g))
+c = Ccomplexity(as.vector(g))
 
 ##This figure illustrates the effect of the number of looks on 
 #the (h,c) point. Speckle and signal are comparable, since the signal is in [0,1], 
@@ -191,6 +241,8 @@ for(l in looks){
 }
 waves.types = as.factor(waves.types)
 Entropy.Complexity.2$Speckle.Looks = waves.types
+
+
 
 ##This figure illustrates the effect of the number of looks on 
 #the (h,c) point. Speckle and signal are comparable, since the signal is in [0,1], 

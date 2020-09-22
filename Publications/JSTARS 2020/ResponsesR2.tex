@@ -1,5 +1,5 @@
 \RequirePackage{xr}
-\externaldocument{SARTexture-IT.R1}
+\externaldocument{SARTexture-IT.R2}
 
 \documentclass[journal,onecolumn,draftcls,11pt]{IEEEtran}
 
@@ -43,6 +43,11 @@ Your manuscript JSTARS-2020-00645.R1 Analysis and Classification of SAR Textures
 It is good to add the experiment about the robustness against speckle. However, please give the definition of L. Does this parameter denote the equivalent number of looks (ENL)? If so, setting L as 100 or higher in the experiment is not reasonable for SAR image. In your experiment, the equivalent number of looks (ENL) of image from JPL are 36. So, setting L as 100,150 or higher is not reasonable in fact. ENL could be set as within [1~30] with a step of 5. 
 \end{tcolorbox}
 
+Indeed, $L$ is the number of looks.
+The data are simulated as samples from a collection of independent identically distributed random variables for each value of $L$, so it is not the equivalent number of looks (which may differ from the nominal value due to, among other reasons, spatial correlation).
+Following the reviewer's suggestion, we have restricted its values to $L\in\{1,5,10,\dots,50\}$.
+We left the largest value, namely $L=50$, to show how the technique performs in images which have been subjected to state-of-the-art despeckling filters.
+
 \begin{tcolorbox}[colback=white,colframe=black,title=Change \#1]
 \end{tcolorbox}
 
@@ -50,9 +55,8 @@ It is good to add the experiment about the robustness against speckle. However, 
 In Fig.6, should “(i) Signal – sea” be “(i) Signal – Urban”? Please check it carefully.
 \end{tcolorbox}
 
-\begin{tcolorbox}[colback=white,colframe=black,title=Change \#2]
-
-\end{tcolorbox}
+Thanks for noticing this inconsistency.
+We changed the legends.
 
 
 \vskip3em\begin{tcolorbox}[colback=red!5!white,colframe=red!75!black,title=Comment \#3]
@@ -60,15 +64,16 @@ The authors claim that they take the scattering properties of target into accoun
 \end{tcolorbox}
 
 \begin{tcolorbox}[colback=white,colframe=black,title=Change \#3]
-
+\textcolor{red}{Para Alejandro (j\'a comecei)}
 \end{tcolorbox}
 
 \vskip3em\begin{tcolorbox}[colback=red!5!white,colframe=red!75!black,title=Comment \#4]
 In Fig.6, does the observation denote the intensity of the image pixels? As depicted by authors, Fig.6(b) which denotes the sea region with low intensities and low contrast should correspond to Fig.6(g). But the intensities of this region shown in Fig.(g) seem to be large. Therefore, I am confused by this figure. The authors could use the histogram of this region to check it.
 \end{tcolorbox}
 
-\begin{tcolorbox}[colback=white,colframe=black,title=Change \#4]
-\end{tcolorbox}
+Firstly, we now present the equalized versions of the patches, in order to enhance visualization.
+\textcolor{red}{Eduarda vai fazer os histogamas das imagens sem equalizar.}
+\textcolor{red}{Alejandro vai comentar.}
 
 \section{Reviewer \#2}
 

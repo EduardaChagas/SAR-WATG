@@ -595,7 +595,7 @@ We randomly split the samples in training (\SI{85}{\percent}) and test (\SI{15}{
 We used the first set to train a $k$-nearest neighbor classifier algorithm with tenfold
 cross-validation.
 
-\begin{figure*}%[!htb]
+\begin{figure*}
 	\centering
 	\subfigure[Forest\label{Fig:figGuatemala}]{\includegraphics[width = 35mm]{Figures/guatemalaflorest.pdf}}
 	\subfigure[Sea -- lower contrast\label{Fig:figCape1}]{\includegraphics[width = 35mm]{Figures/Cape1.pdf}}
@@ -626,7 +626,7 @@ The variation in the magnitude of the targets' backscatter and, consequently, in
 Urban targets usually exhibit the strongest variation, followed by forest, pasture, forests, and finally, water bodies.
 By adding such information related to the amplitude, the proposed method is able to increase, compared to traditional methods, the granularity of information captured by ordinal patterns.
 
-\begin{figure*}%[!htb]
+\begin{figure*}
 	\centering
 	\subfigure[Transition Graph\label{Fig:UrbanTG}]{\includegraphics[width = 85mm]{Figures/UrbanTG.pdf}}
 	\subfigure[WATG\label{Fig:UrbanWATG}]{\includegraphics[width = 85mm]{Figures/UrbanWATG.pdf}}
@@ -657,7 +657,7 @@ Transition graphs (Fig.~\ref{fig:plotsHC} center) improve the spread of the feat
 Our proposal, shown in Fig.~\ref{fig:plotsHC} right, produces well-separated features.
 In this way, we were able to obtain, for this experiment, a perfect characterization and, consequently, the high descriptive power of the regions.
 
-\begin{figure*}%[!htb]
+\begin{figure*}
 	\includegraphics[width=2\columnwidth]{Figures/HCAnalysis.pdf}
 	\caption{Location of Guatemala (forest), Cape Canaveral (ocean), and Munich (urban) in the $H \times C$ plane for dimension 3 and delay 1. 
 	The continuous curves correspond to the maximum and minimum values of $C$ as a function of $H$.}
@@ -679,7 +679,7 @@ Fig.~\ref{fig:ROC} shows the ROC plane for different values of $D \in \{3, 4, 5,
 The configurations that extracted most information from the \mbox{1-D} signal and, thus, that presented the best results in the experiments, are $(D = 3, \tau = 1)$ and $(D = 4, \tau = 1)$.
 The technique, thus, shows its best performance choosing the parameters with the lowest computational cost.
 
-\begin{figure}%[H]
+\begin{figure}
 	\includegraphics[width=\columnwidth]{Figures/ROC.pdf}
 	\caption{Evaluation of the sliding window parameters using ROC curve}
 	\label{fig:ROC}
@@ -689,7 +689,7 @@ Figure~\ref{fig:Regions} shows the points in the $H\times C$ produced by the sam
 The spatial distribution of the points changes with the parameters and specific configurations promote better separation.
 This figure shows that the discrimination ability decreases with increasing $\tau$.
 Larger values of delay dilute the spatial dependence, as neighboring points in the sample tend to be more distant in the image.
-For this reason, we use $\tau=1$. Figure~\ref{fig:Regions} suggests that only one feature ($H$ or $C$) is sufficient to discriminate the classes studied. Although this is true for the experiments herein conducted, we opt to preserve the most common ordinal pattern analysis, which uses both features. As we studied only homogeneous patches, we still do not know how this approach performs with heterogeneous patches. %In this last case, it is necessary to detect borders to segment the images into homogeneous patches. 
+For this reason, we use $\tau=1$. Figure~\ref{fig:Regions} suggests that only one feature ($H$ or $C$) is sufficient to discriminate the classes studied. Although this is true for the experiments herein conducted, we opt to preserve the most common ordinal pattern analysis, which uses both features. As we studied only homogeneous patches, we still do not know how this approach performs with heterogeneous patches. 
 For this last situation, we may need both features.
 
 \begin{sidewaysfigure*}

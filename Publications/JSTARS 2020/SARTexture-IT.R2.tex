@@ -1,5 +1,6 @@
 \documentclass[journal]{IEEEtran}
 
+\usepackage{cite}
 \usepackage{subfigure}
 \usepackage{caption}  
 \usepackage[english]{babel} 
@@ -88,7 +89,7 @@ Osvaldo~A.~Rosso \orcidicon{0000-0002-1288-2528},
 and~Heitor~S.~Ramos \orcidicon{0000-0003-4523-6466},\IEEEmembership{IEEE~Senior~Member}
 	
 	\thanks{E.\ T.\ C.\ Chagas and H.\ S.\ Ramos ar with Departamento de Ci\^encia da Computa\c c\~ao, Universidade Federal de Minas Gerais, Belo Horizonte, Minas Gerais, Brazil (e-mail: eduarda.chagas@dcc.ufmg.br, ramosh@dcc.ufmg.br).}
-	\thanks{A.\ C.\ Frery is with the School of Mathematics and Statistics, Victoria University of Wellington, 6140 New Zealand; (e-mail: alejandro.frery@vuw.ac.nz)}
+	\thanks{A.\ C.\ Frery is with the School of Mathematics and Statistics, Victoria University of Wellington, 6140 New Zealand; (e-mail: \mbox{alejandro.frery@vuw.ac.nz})}
 	\thanks{O.\ A.\ Rosso is with Instituto de F\'isica, Universidade Federal de Alagoas, Brasil (e-mail: oarosso@if.ufal.br)}
 	\thanks{Manuscript received XX YY, 20ZZ; revised WW UU, 20VV.}}
 
@@ -109,7 +110,7 @@ and~Heitor~S.~Ramos \orcidicon{0000-0003-4523-6466},\IEEEmembership{IEEE~Senior~
 	(iii)~obtain a probability distribution function derived from this graph;
 	(iv)~compute Information Theory descriptors (Permutation Entropy and Statistical Complexity) from this distribution and use them as features to feed a classifier.
 	The ordinal pattern graph we propose considers that the edges' weight is related to the absolute difference of observations, which encodes the information about the data amplitude. 
-	This modification considers the scattering properties of the target and leads to the characterization of several types of textures.
+	This modification considers the unfavorable signal-to-noise ratio of the target and leads to the characterization of several types of textures.
 	Experiments with data from Munich urban areas, Guatemala forest regions and Cape Canaveral ocean samples show the effectiveness of our technique in homogeneous areas, achieving satisfactory separability levels.
 	The two descriptors chosen in this work are easy and quick to calculate and are used as input for a k-nearest neighbor classifier.
 	Experiments show that this technique presents results similar to state-of-the-art techniques that employ a much larger number of features and, consequently, impose a higher computational cost.
@@ -393,9 +394,15 @@ p(\widetilde \pi_t^D) = \frac{\sum_{i : \{\mathbf{X}^{(D,\tau)}_i \mapsto \widet
 % It is known that for SAR imagery, non-stationary 
 
 Most man-made targets are anisotropic scatterers because their particular shape determines the relationship between their scatterings and vision directions.
-Natural targets, such as lawns and forests, are generally isotropic in flat areas because they produce volume scatterings with random phases. In this way, we can associate non-stationary signals with man-made targets and stationary signals with natural targets.  Water surfaces cause the mirror-like reflection of the incident electromagnetic wave. It results in an unusually low backscatter, which, thanks to multiplicative noise, translates into a homogeneous region, almost without characteristics and without textures~\cite{wu2013man}.
+Natural targets, such as lawns and forests, are generally isotropic in flat areas because they produce volume scatterings with random phases. 
+In this way, we can associate non-stationary signals with man-made targets and stationary signals with natural targets.  
+Water surfaces cause the mirror-like reflection of the incident electromagnetic wave. 
+It results in an unusually low backscatter, which, thanks to multiplicative noise, translates into a homogeneous region, almost without characteristics and without textures~\cite{wu2013man}.
+In any case, speckle produces low signal-to-noise ratio images.
 
-Our proposal hereinafter referred to  Weighted Amplitude Transition Graph (WATG), differs from the traditional ordinal pattern transition graph by incorporating the absolute difference between successive patterns. Since WATG encodes the amplitude of the signal into the edges' weights, the information on the intensity of dispersion can be captured and used to distinguish classes of regions. Our hypothesis is that such encoding is effective to discriminate the regions captured by SAR imagery.
+Our proposal hereinafter referred to  Weighted Amplitude Transition Graph (WATG), differs from the traditional ordinal pattern transition graph by incorporating the absolute difference between successive patterns. 
+Since WATG encodes the amplitude of the signal into the edges' weights, the information on the intensity of dispersion can be captured and used to distinguish classes of regions. 
+Our hypothesis is that such encoding is effective to discriminate the regions captured by SAR imagery.
 
 % We know that we can correlate non-stationary targets with man-made targets and stationary targets with natural targets due to the characteristics of their dispersers
 % The water surfaces have a particularly low backscatter, which, in turn, thanks to the multiplicative noise, translates into a homogeneous region, almost without characteristics and without textures.
@@ -404,6 +411,7 @@ Our proposal hereinafter referred to  Weighted Amplitude Transition Graph (WATG)
 First, each $\mathcal{X}$ time series is scaled to $[0, 1]$, since we are interested in a metric able to compare datasets:
 \begin{equation}
 \frac{x_i - x_{\min}}{x_{\max} - x_{\min}} \longmapsto x_i,
+\label{eq:scaling}
 \end{equation}
 where $x_{\min}$ and $x_{\max}$ are, respectively, the minimum and maximum values of the series.
 This transformation is relatively stable before contamination, e.g., if instead of $x_{\max}$ we observe $k x_{\max}$ with $k\geq 1$, the relative values are not altered. Nevertheless, other more resistant transformations as, for instance, $z$ scores, might be considered.
@@ -502,6 +510,7 @@ These steps are also depicted in Fig.~\ref{fig:WATG}.
 		\State Probs $\gets$ \texttt{WATG}(signal.\mbox{1-D}, D, $\tau$) \label{Line:Probs}
 		\State H $\gets$ \texttt{ShannonEntropy}(Probs) \label{Line:Shannon}
 		\State C $\gets$ \texttt{StatisticalComplexity}(Probs) \label{Line:StatisticalComplexity}
+		\State \Return $\text{H}\times\text{C}$
 		
 		\vspace{0.15cm}
 		
@@ -534,15 +543,15 @@ Fig.~\ref{Fig:TestZ} shows this function as a $128\times128$-pixel patch.
 
 The speckle noise was modeled as outcomes of independent, identically distributed unitary-mean Gamma random variables with shape parameter $L$ (the number of looks, which controls the signal-to-noise ratio)
 $W(L) \sim \Gamma(L, L)$,
-with $L \in \{1, 100, 150, 200, 250, 300, 350, 400, 450, 500\}$.
+with $L \in \{1, 5, 10, 15, \dots, 45, 50\}$.
 The observed images $I(L)$ are the pixelwise product of $z$ and $w(L)$.
-Fig.~\ref{Fig:TestZW} shows the product $I(100)$.
+Fig.~\ref{Fig:TestZW} shows the product $I(1)$.
 
 \begin{figure}
 	\centering
-	\subfigure[$z$]{\label{Fig:TestZ}\includegraphics[width = 28mm]{Figures/z.png}}
-	\subfigure[$I(100)$]{\label{Fig:TestZW}\includegraphics[width = 28mm]{Figures/z100.png}}
-	\subfigure[$I^{\text{T}}(500)$]{\label{Fig:TestRot}\includegraphics[width = 28mm]{Figures/z500t.png}}
+	\subfigure[$z$]{\label{Fig:TestZ}\includegraphics[width = 28mm]{Figures/Z.pdf}}
+	\subfigure[$I(1)$]{\label{Fig:TestZW}\includegraphics[width = 28mm]{Figures/Z1.pdf}}
+	\subfigure[$I^{\text{T}}(1)$]{\label{Fig:TestRot}\includegraphics[width = 28mm]{Figures/Z1t.pdf}}
 	\caption{Ground truth, speckled, and speckled transposed versions.}
 	\label{Fig:TestZWL}
 \end{figure}
@@ -561,7 +570,7 @@ The point ``\textsf{1}'' shifts towards ``\textsf{0}'' when the signal-to-noise 
 \end{figure}
 
 We also verified that the points in the $H\times C$ plane are almost insensitive to rotations.
-Fig.~\ref{Fig:TestRot} shows the transpose of $I(500)$.
+Fig.~\ref{Fig:TestRot} shows the transpose of $I(1)$.
 In all cases, the coordinates $(h,c)$ of the transposed noisy images were equal, up to the fourth decimal place, to those of the original version.
 
 These experiments provide evidence that the WATG mapping is little sensitive to rotations (thanks to the use of Hilbert-Peano curves), and that it can identify the presence of underlying structural information in the presence of varying levels of speckle.
@@ -589,7 +598,12 @@ $40$ samples from Guatemalan forest regions;
 $40$ samples from Guatemalan pasture regions;
 $80$ samples from the oceanic regions of Cape Canaveral, divided into two types with different contrast; and
 $40$ samples of urban regions of the city of Munich.
-Fig.~\ref{fig:samples&Series} shows examples of each. In our analysis, both types of ocean images are grouped.
+Fig.~\ref{fig:samples&Series} shows examples of each.
+We applied equalization to the patches to improve their visualization.
+On the one hand, the Bandt-Pompe representation does not change with it because it is a monotonic transformation.
+On the other hand, WATG does change as the result of altering the observed values.
+Notice that the subsequent texture analysis employs the unprocessed data.
+In our analysis, both types of ocean images are grouped.
 
 We randomly split the samples in training (\SI{85}{\percent}) and test (\SI{15}{\percent}) sets.
 We used the first set to train a $k$-nearest neighbor classifier algorithm with tenfold
@@ -598,17 +612,23 @@ cross-validation.
 \begin{figure*}%[!htb]
 	\centering
 	\subfigure[Forest\label{Fig:figGuatemala}]{\includegraphics[width = 35mm]{Figures/guatemalaflorest.pdf}}
-	\subfigure[Sea -- lower contrast\label{Fig:figCape1}]{\includegraphics[width = 35mm]{Figures/Cape1.pdf}}
+	\subfigure[Sea -- lower contrast\label{Fig:figCape1}]{\includegraphics[width = 35mm]{Figures/Cape12.pdf}}
 	\subfigure[Sea -- higher contrast\label{Fig:figCape2}]{\includegraphics[width = 35mm]{Figures/Cape2.pdf}}
 	\subfigure[Urban\label{Fig:figMunich}]{\includegraphics[width = 35mm]{Figures/munichUrban.pdf}}
 	\subfigure[Pasture\label{Fig:figPasture}]{\includegraphics[width = 35mm]{Figures/pasture.pdf}}
 	
 	\subfigure[Signal -- forest\label{Fig:TSGuatemala}]{\includegraphics[width = 35mm]{Figures/tsguatemala.pdf}}
-	\subfigure[Signal -- sea\label{Fig:TSCape1}]{\includegraphics[width = 35mm]{Figures/tscape1.pdf}}
+	\subfigure[Signal -- sea\label{Fig:TSCape1}]{\includegraphics[width = 35mm]{Figures/tscape12.pdf}}
 	\subfigure[Signal -- sea\label{Fig:TSCape2}]{\includegraphics[width = 35mm]{Figures/tscape2.pdf}}
-	\subfigure[Signal -- sea\label{Fig:TSMunich}]{\includegraphics[width = 35mm]{Figures/tsmunich.pdf}}
+	\subfigure[Signal -- urban\label{Fig:TSMunich}]{\includegraphics[width = 35mm]{Figures/tsmunich.pdf}}
 	\subfigure[Signal -- pasture\label{Fig:TSPasture}]{\includegraphics[width = 35mm]{Figures/tspasture.pdf}}
-	\caption{Types of regions (Guatemala forest, Canaveral ocean types 1 and 2, Munich urban area, and pasture area) and their signal representation.}
+	
+	\subfigure[Histogram -- forest\label{Fig:HistGuatemala}]{\includegraphics[width = 35mm]{Figures/guatemala-hist.pdf}}
+	\subfigure[Histogram -- sea\label{Fig:HistCape1}]{\includegraphics[width = 35mm]{Figures/cape1-hist.pdf}}
+	\subfigure[Histogram -- sea\label{Fig:HistCape2}]{\includegraphics[width = 35mm]{Figures/cape2-hist.pdf}}
+	\subfigure[Histogram -- urban\label{Fig:HistMunich}]{\includegraphics[width = 35mm]{Figures/munich-hist.pdf}}
+	\subfigure[Histogram -- pasture\label{Fig:HistPasture}]{\includegraphics[width = 35mm]{Figures/pasture-hist.pdf}}
+	\caption{Types of regions (Guatemala forest, Canaveral ocean types 1 and 2, Munich urban area, and pasture area), their signal representation, and histograms.}
 	\label{fig:samples&Series}
 \end{figure*}
 
@@ -620,7 +640,10 @@ To assess the performance of the technique here proposed, we analyze the impact 
 
 \subsection{Analysis of ordinal patterns methods}
 
-Fig.~\ref{fig:samples&Series} shows examples of the ocean, forest, urban, and pasture both as image patches and as 1-D sequences after the linearization process.
+Fig.~\ref{fig:samples&Series} shows examples of the ocean, forest, urban, and pasture both as image patches and as 1-D sequences after the linearization process:
+the first row shows the equalized patches,
+the second row presents the original data as a signal,
+and the third row shows the histograms of the original data after scaling with~\eqref{eq:scaling}.
 
 The variation in the magnitude of the targets' backscatter and, consequently, in the intensity of the image pixels, depends on the intrinsic properties of the region under analysis.
 Urban targets usually exhibit the strongest variation, followed by forest, pasture, forests, and finally, water bodies.
@@ -912,5 +935,20 @@ The information includes a link to download the $200$ labeled samples we employe
 \section*{Acknowledgements}\label{ACKNOWLEDGEMENTS}
 
 This work was partially funded by the Coordination for the Improvement of Higher Education Personnel (CAPES) and National Council for Scientific and Technological Development (CNPq).
+
+\begin{IEEEbiography}[{\includegraphics[width=1.6in,height=1in,clip,keepaspectratio]{Figures/duda.jpg}}]{Eduarda T. C. Chagas} is a Master's student in Computer Science at Federal University of Minas Gerais since 2019. 
+She is graduated in Computer Science at the Federal University of Alagoas. 
+Her research interests include time series analysis, information theory, urban computing, and statistical computing.
+\end{IEEEbiography}
+
+\begin{IEEEbiography}[{\includegraphics[width=1.2in,height=1.2in,clip,keepaspectratio]{Figures/alejandro.jpeg}}] {Alejandro C. Frery} (Senior Member, IEEE) received the B.Sc. degree in electronic and electrical engineering from the Universidad de Mendoza, Mendoza, Argentina, in 1985, the M.Sc. degree in applied mathematics (statistics) from the Instituto de Matemática Pura e Aplicada, Rio de Janeiro, Brazil, in 1990, and the Ph.D. degree in applied computing from the Instituto Nacional de Pesquisas Espaciais, São José dos Campos, Brazil, in 1993.
+He is currently a Professor of Statistics and Data Science with the School of Mathematics and Statistics, Victoria University of Wellington, Wellington, New Zealand, and holds a Huashan Scholar position (2019–2021) with the Key Lab of Intelligent Perception and Image Understanding of the Ministry of Education, Xidian University, Xi’an, China. His research interests include statistical computing and stochastic modeling.
+\end{IEEEbiography}
+
+\begin{IEEEbiography}[{\includegraphics[width=1.2in,height=1.15in,clip,keepaspectratio]{Figures/rosso.jpeg}}] {Osvaldo A. Rosso} was born in Rojas, Buenos Aires, Argentina, in 15 October 1954. He received the M.Sc. and Ph.D. degrees in physics from the Universidad Nacional de La Plata, La Plata, Buenos Aires, in 1978 and 1984, respectively. Actually, he is Adjoint Professor at Instituto de Física, Universidade Federal de Alagoas (UFAL), Maceió, Alagoas, Brazil. He is Huashan Scholar, School of Artificial Intellegence, Xidian University, Xi’an, China (2019-2021). From March 1985 to December 2019, he has held a permanent research position at the Argentinean Consejo Nacional de Investigaciones Científicas y Técnicas (CONICET), Argentina, being Principal Researcher. He has authored or co-authored over 290 research publications including about 164 papers published in international journals (Hirch index H = 41, Scopus Total of citations = 6278). His current research interests include time series analysis, nonlinear dynamics, information theory, complex networks and their applications to physics, biological, and medical sciences.
+\end{IEEEbiography}
+
+\begin{IEEEbiography}[{\includegraphics[width=1.2in,height=1.4in,clip,keepaspectratio]{Figures/Heitor.jpeg}}] {Heitor S. Ramos} (Senior Member, IEEE) received the B.Sc. degree in electrical engineering from the Universidade Federal da Paraíba (UFPB), in 1992, the M.Sc. degree in computing modeling from the Universidade Federal de Alagoas (UFAL), in 2004, and the Ph.D. degree in computer science from the Universidade Federal de Minas Gerais (UFMG), in 2012. He is currently an Associate Professor with the Department of Computer Science, Federal University of Minas Gerais, DCC/UFMG, Brazil. His research interests include wireless networks, sensors networks, mobile and ad hoc networks, and urban computing.
+\end{IEEEbiography}
 
 \end{document}  
