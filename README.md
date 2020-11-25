@@ -100,6 +100,21 @@ raster         2.9.5
 
 ---
 
+If this repository was useful, please reference:
+
+``` r
+@article{9229107,
+  author={E. {Chagas} and A. C. {Frery} and O. {Rosso} and H. {S.Ramos}},
+  journal={IEEE Journal of Selected Topics in Applied Earth Observations and Remote Sensing}, 
+  title={Analysis and Classification of SAR Textures using Information Theory}, 
+  year={2020},
+  volume={},
+  number={},
+  pages={1-1},
+  doi={10.1109/JSTARS.2020.3031918}
+  }
+ ``` 
+
 
 Finally, if you have any questions or you want to report anything, feel free to reach me at: eduarda.chagas@dcc.ufmg.br. 
 
